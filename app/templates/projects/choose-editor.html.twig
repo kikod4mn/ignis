@@ -1,0 +1,46 @@
+{% extends "base/app.html.twig" %}
+{% block title %}Choose users to edit {{ project.name }}{% endblock %}
+{% block body %}
+	{# FORM WRAPPER #}
+	<div class="col-12 col-lg-8 col-xl-6 mx-auto">
+		{# FORM START #}
+		{{ form_start(chooseUserForm, {'attr':{'class':'bg-light rounded-1 shadow-3 my-5 mx-sm-4 mx-1 py-4 px-2 px-sm-4'}}) }}
+		{# FORM START #}
+		
+		{# FORM HEADER #}
+		<div class="form-row">
+			<h1 class="text-center w-100">Choose users to edit the project {{ project.name }}</h1>
+		</div>
+		{# FORM HEADER #}
+		
+		{# GENERAL ERRORS #}
+		<div class="flash flash__error">
+			{{ form_errors(chooseUserForm) }}
+		</div>
+		{# GENERAL ERRORS #}
+		
+		{# PROJECT CATEGORY #}
+		<div class="form-group py-1 px-md-1 p-lg-3">
+			{% if chooseUserForm._canEdit.vars.errors is not empty and chooseUserForm._canEdit.vars.errors.length > 0 %}
+				<div class="flash flash__danger">{{ form_errors(chooseUserForm._canEdit) }}</div>
+			{% endif %}
+			<div class="form-group">
+				{{ form_label(chooseUserForm._canEdit, null, {'label_attr':{'class':'form-label'}}) }}
+				{{ form_widget(chooseUserForm._canEdit, {'attr':{'class':'form-select'}}) }}
+			</div>
+		</div>
+		{# PROJECT CATEGORY #}
+		
+		{# FORM SUBMIT #}
+		<div class="form-group py-1 px-md-1 p-lg-3 text-center">
+			{{ form_widget(chooseUserForm.save, {'attr':{'class':'btn btn-primary'}}) }}
+		</div>
+		{# FORM SUBMIT #}
+		
+		{# FORM END #}
+		{{ form_rest(chooseUserForm) }}
+		{{ form_end(chooseUserForm) }}
+		{# FORM END #}
+	</div>
+	{# FORM WRAPPER #}
+{% endblock %}

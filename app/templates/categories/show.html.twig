@@ -1,0 +1,19 @@
+{% extends 'base/app.html.twig' %}
+{% block title %}{{ category.name }}{% endblock %}
+{% block body %}
+	<div class="container mb-5 pb-3 px-0 mx-auto">
+		<div class="mt-5 pb-3 pt-4 bg__dark text__light">
+			<h1 class="text-center text-uppercase">{{ category.name }}</h1>
+			<p class="text-center small p-0 m-0">UUID - {{ category.uuid }}</p>
+		</div>
+		{% if is_granted('ROLE_ADD_LANGUAGE') and is_granted('ROLE_EDIT_LANGUAGE') %}
+			<div class="col-12 m-0 p-0">
+				{{ include('categories/category-parts/_admin-actions.html.twig') }}
+			</div>
+		{% endif %}
+		{{ include('categories/category-parts/_general-public-full.html.twig') }}
+		
+		{{ include('categories/category-parts/_projects.html.twig') }}
+	</div>
+{% endblock %}
+

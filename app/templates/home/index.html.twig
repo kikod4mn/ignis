@@ -1,0 +1,62 @@
+{% extends "base/app.html.twig" %}
+{% block title %}Ignis Project Management{% endblock %}
+{% block body %}
+	<div class="container px-0">
+		{# HERO #}
+		<div class="row">
+			<div class="w-100 text-center bg-image" style="background-image: url('{{ asset('build/images/_bg_1.jpg') }}');height: 650px;">
+				<div class="mask" style="background-color: rgba(0, 0, 0, 0.6);">
+					<div class="d-flex justify-content-center align-items-end h-100 pb-5">
+						<div class="text-white">
+							<h1 class="mb-3 text__danger">IGNIS</h1>
+							<h4 class="mb-3 text__info">Simple and lightweight project tracker</h4>
+							<a class="btn btn-primary bg__info text__light btn-lg" href="{{ path('learn-more') }}" role="button">Learn more</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		{# HERO #}
+		{# DISCLAIMER #}
+		<div class="row m-5 p-5 flash flash__danger">
+			<h2 class="text-center text-uppercase">Disclaimer</h2>
+			<p>IGNIS is a test system and not open for public. You may register an account, but before administrator's explicit approval your account cannot
+			   access any project areas.</p>
+		</div>
+		{# DISCLAIMER #}
+		
+		{# FEATURES #}
+		<div class="row py-5">
+			{# CARD #}
+			<div class="col-md-4">
+				<div class="bg-primary bg-gradient">icon or img here</div>
+				<h2>Projects</h2>
+				<p>Create complex projects and track their completion.</p>
+				<a href="{{ path('learn-more') }}" class="text-uppercase text-decoration-none">Learn more <i class="fas fa-chevron-right"></i></a>
+			</div>
+			{# CARD #}
+			
+			{# CARD #}
+			<div class="col-md-4">
+				<div class="bg-primary bg-gradient">icon or img here</div>
+				<h2>Features</h2>
+				<p>Add and track project features. Monitor implemented and un-complete features from a single panel for your project.</p>
+				<a href="{{ path('learn-more') }}" class="text-uppercase text-decoration-none">Learn more <i class="fas fa-chevron-right"></i></a>
+			</div>
+			{# CARD #}
+			
+			{# CARD #}
+			<div class="col-md-4">
+				<div class="bg-primary bg-gradient">icon or img here</div>
+				<h2>Bug Tracker</h2>
+				<p>Enables you to monitor who has fixed and approved the fix for a bug.</p>
+				<a href="{{ path('learn-more') }}" class="text-uppercase text-decoration-none">Learn more <i class="fas fa-chevron-right"></i></a>
+			</div>
+			{# CARD #}
+		</div>
+		{# FEATURES #}
+	
+	</div>
+{% endblock %}
+
+

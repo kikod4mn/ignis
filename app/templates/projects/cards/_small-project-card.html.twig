@@ -1,0 +1,8 @@
+<div class="card text-center col-12 col-md-6 col-lg-4 my-1 mx-0 p-1">
+	<div class="card-body">
+		<h5 class="card-title">{{ project.name }}</h5>
+		<p class="card-text">{{ project.description|length > 150 ? project.description|slice(0, 150) ~ '...' : project.description }}</p>
+		<a href="{{ path('project-show', {'project_uuid':project.uuid}) }}" class="btn btn-primary">View Project</a>
+	</div>
+	<div class="card-footer text-muted">{{ project.createdAt }}</div>
+</div>

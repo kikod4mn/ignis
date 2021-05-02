@@ -1,0 +1,15 @@
+<div class="row mx-auto p-2 pt-0 bg-white border-3 shadow-3">
+	<div class="col-12 col-xl-6">
+		<h5 class="text-uppercase p-0 m-0 text__dark-accent">User roles and permissions</h5>
+		{% for role in user.roles %}
+			<p class="p-0 m-0">{{ role }}</p>
+		{% endfor %}
+	</div>
+	<hr class="mt-2 mb-1 d-xl-none p-0 m-0">
+	<div class="col-12 col-xl-6">
+		<h5 class="text-uppercase p-0 m-0 text__dark-accent">Security</h5>
+		<p class="p-0 m-0">Password token requested at: {{ user.passwordResetTokenRequestedAt }}</p>
+		<p class="p-0 m-0">Password token requested from IP: {{ user.passwordResetTokenRequestedFromIp }}</p>
+		<p class="p-0 m-0">Password token requested from browser: {{ user.passwordResetTokenRequestedFromBrowser }}</p>
+	</div>
+</div>

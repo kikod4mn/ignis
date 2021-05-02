@@ -1,0 +1,29 @@
+<div class="container p__t-15 p__b-5">
+	{% for message in app.flashes('INFO_MESSAGE') %}
+		<div class="flash flash__info">
+			<h4>Information!</h4>
+			<p>{{ message }}</p>
+		</div>
+	{% endfor %}
+	{% for message in app.flashes('SUCCESS_MESSAGE') %}
+		<div class="flash flash__success">
+			<h4>Success!</h4>
+			<p>{{ message }}</p>
+		</div>
+	{% endfor %}
+	{% for message in app.flashes('WARNING_MESSAGE') %}
+		<div class="flash flash__warning">
+			<h4>Warning!</h4>
+			<p>{{ message }}</p>
+		</div>
+	{% endfor %}
+	{% for message in app.flashes('DANGER_MESSAGE') %}
+		<div class="flash flash__danger">
+			<h4>Error!</h4>
+			<p>{{ message }}</p>
+		</div>
+	{% endfor %}
+	{% for message in app.flashes %}
+		{{ message }}
+	{% endfor %}
+</div>

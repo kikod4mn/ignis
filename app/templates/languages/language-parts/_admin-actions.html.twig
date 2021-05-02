@@ -1,0 +1,10 @@
+<div class="m-0 pb-3 pt-4 text__light bg__info-accent">
+	<h5 class="text-center text-uppercase">Admin Tools</h5>
+</div>
+<div class="row mx-auto p-2 pb-0 m-0">
+	<div class="col-auto mx-auto m-0 pt-3 pb-4">
+		<a href="{{ path('languages-create') }}" class="text-uppercase text-decoration-none">Add New Language</a>
+		<a href="{{ path('language-edit', {'language_uuid':language.uuid}) }}" class="text-uppercase text-decoration-none">Edit Language</a>
+		<a href="{{ path('language-delete', {'language_uuid':language.uuid}) }}" class="text-uppercase text-decoration-none">Delete Language</a>
+	</div>
+</div>

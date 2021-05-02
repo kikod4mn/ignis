@@ -1,0 +1,16 @@
+<div class="m-0 pb-3 pt-4 text__light bg__info-accent">
+	<h5 class="text-center text-uppercase">Features</h5>
+</div>
+<div class="row mx-auto p-2 pb-0 m-0 border-3 shadow-3">
+	<div class="row m-0 p-0">
+		<div class="text-center col-12 m-0 p-0">
+			<a class="btn btn-outline-dark" href="{{ path('project-show-features', {'project_uuid':project.uuid, 'page':1}) }}">All Features</a>
+			{% if is_granted('ROLE_PROJECT_LEAD') %}
+				<a href="{{ path('feature-create', {'project_uuid':project.uuid}) }}" class="btn btn-outline-primary">Add Feature</a>
+			{% endif %}
+		</div>
+	</div>
+	{% for feature in project.features %}
+		{{ include('features/card/_small-feature-card-project-show.html.twig') }}
+	{% endfor %}
+</div>

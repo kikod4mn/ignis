@@ -1,0 +1,50 @@
+{% extends 'base/app.html.twig' %}
+{% block title %}Log in to Ignis{% endblock %}
+{% block body %}
+	{% if error %}
+		<div class="flash flash__danger">{{ error.messageData }}</div>
+	{% endif %}
+	{% if app.user %}
+		<div class="mb-3">You are logged in as {{ app.user.username }}, <a href="{{ path('security-logout') }}">Logout</a></div>
+	{% else %}
+		<div class="col-12 col-lg-8 col-xl-6 mx-auto">
+			<form action="{{ path('security-login') }}" method="POST" class="bg-light rounded-1 shadow-3 my-5 mx-sm-4 mx-1 py-4 px-2 px-sm-4">
+				<h1 class="text-center">Login to IGNIS</h1>
+				<input type="hidden" name="security_login[_token]" value="{{ csrf_token('_security_login[_csrf_token]') }}">
+				<div class="form-group py-1 px-md-1 p-lg-3">
+					<div class="form-outline">
+						<input class="form-control form-control-lg custom__form-input" id="login-email" type="email"
+						       name="security_login[_email]" required value="{{ lastUsername }}">
+						<label class="form-label" for="login-email">Email Address</label>
+					</div>
+				</div>
+				<div class="form-group py-1 px-md-1 p-lg-3">
+					<div class="form-outline">
+						<input class="form-control form-control-lg custom__form-input" id="login-password" type="password"
+						       name="security_login[_password]" required>
+						<label class="form-label" for="login-password">Password</label>
+					</div>
+				</div>
+				<div class="form-group pt-1 px-md-1 px-lg-3">
+					<div class="row">
+						<div class="col-6">
+							<div class="form-check">
+								<input class="form-check-input" id="remember-me" type="checkbox" name="security_login[_remember_me]">
+								<label class="form-check-label" for="remember-me">Remember Me</label>
+							</div>
+						</div>
+						<div class="col-6">
+							<p class="text-right">
+								<a href="{{ path('credentials-forgot-password') }}">Forgot password?</a>
+							</p>
+						</div>
+					</div>
+				</div>
+				<div class="form-group py-1 px-md-1 p-lg-3 text-center">
+					<input id="submit-form-button" class="btn btn-primary" type="submit" value="Login">
+				</div>
+				<div class="signup-link">Not yet registered? <a href="{{ path('account-register') }}">Signup now</a></div>
+			</form>
+		</div>
+	{% endif %}
+{% endblock %}

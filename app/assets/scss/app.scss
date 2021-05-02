@@ -1,0 +1,22 @@
+@import '../../node_modules/bootstrap/scss/bootstrap';
+@import './customize/responsive-border';
+@import './variables/colors';
+@import './variables/utility';
+@import './utility/typography';
+@import './utility/bg';
+@import './components/custom-form';
+@import './components/back-to-top-button';
+@import './components/flash';
+
+$font-family-sans-serif : 'Source Sans Pro', sans-serif;
+$font-family-serif      : 'Proza Libre', sans-serif;
+$font-family-monospace  : 'Source Code Pro', monospace;
+$font-family-base       : $font-family-sans-serif;
+
+* {
+	font-family : $font-family-base;
+	}
+
+h1, h2, h3, h4, h5, h6 {
+	font-family : 'Proza Libre', sans-serif;
+	}

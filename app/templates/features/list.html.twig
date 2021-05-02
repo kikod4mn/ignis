@@ -1,0 +1,34 @@
+{% extends 'base/app.html.twig' %}
+{% block title %}Features for - {{ project.name }}{% endblock %}
+{% block body %}
+	
+	
+	<div class="container mb-5 pb-3 px-0 mx-auto">
+		<div class="mt-5 pb-3 pt-4 bg__dark text__light">
+			<h1 class="text-center text-uppercase">Features for - {{ project.name }}</h1>
+			<div class="row m-0 p-0">
+				<div class="text-center col-12 m-0 p-0">
+					<a class="btn btn-outline-light" href="{{ path('project-show', {'project_uuid':project.uuid}) }}">Back to project</a>
+				</div>
+			</div>
+		</div>
+		
+		{# DISPLAY PAGINATION #}
+		{{ include('base/pagination/pagination.html.twig') }}
+		{# DISPLAY PAGINATION #}
+		
+		<div class="row">
+			{% for feature in pagination %}
+				<div class=" col-12 col-md-6 col-lg-4 m-0 p-0 border bg__light border-dark shadow-3 mx-auto">
+					{{ include('features/card/_large-feature-card.html.twig') }}
+				</div>
+			{% endfor %}
+		</div>
+		
+		{# DISPLAY PAGINATION #}
+		{{ include('base/pagination/pagination.html.twig') }}
+		{# DISPLAY PAGINATION #}
+	</div>
+
+
+{% endblock %}

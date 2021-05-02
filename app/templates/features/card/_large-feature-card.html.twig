@@ -1,0 +1,9 @@
+<div class="card m-0 p-0">
+	<div class="card-body">
+		<h5 class="card-title">{{ feature.title }}</h5>
+		<p class="card-text">{{ feature.description }}</p>
+		{% if is_granted('ROLE_PROJECT_LEAD') %}
+			<a href="{{ path('feature-edit', {'project_uuid':feature.project.uuid, 'feature_uuid':feature.uuid}) }}" class="card-link">Edit</a>
+		{% endif %}
+	</div>
+</div>

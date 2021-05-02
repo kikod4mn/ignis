@@ -1,0 +1,24 @@
+{% extends "base/app.html.twig" %}
+{% block title %}Test all page routes and templates{% endblock %}
+{% block body %}
+	<div class="container">
+		<a class="btn btn-outline-primary" href="{{ path('home') }}">Home</a>
+		<a class="btn btn-outline-primary" href="{{ path('learn-more') }}">Learn More</a>
+		<a class="btn btn-outline-primary" href="{{ path('terms-and-conditions') }}">Terms and Conditions</a>
+		<a class="btn btn-outline-primary" href="{{ path('profile-show-public', {'user_uuid':user.uuid}) }}">Profile Public</a>
+		<a class="btn btn-outline-primary" href="{{ path('profile-show-self', {'user_uuid':user.uuid}) }}">Profile Show Only Self</a>
+		<a class="btn btn-outline-primary" href="{{ path('admin-users-activate', {'user_uuid':user.uuid}) }}">Activate User</a>
+		<a class="btn btn-outline-primary" href="{{ path('credentials-forgot-password') }}">Forgot Password</a>
+		<a class="btn btn-outline-primary" href="{{ path('credentials-password-change-with-token', {'passwordToken':user.passwordResetToken}) }}"
+		>Reset Password With Token User</a>
+		<a class="btn btn-outline-primary" href="{{ path('admin-users-list') }}">List Users</a>
+		<a class="btn btn-outline-primary" href="{{ path('bug-create', {'project_uuid':project.uuid}) }}">Bug Create</a>
+		<a class="btn btn-outline-primary" href="{{ path('bug-delete', {'project_uuid':project.uuid, 'bug_uuid':project.bugs.first.uuid}) }}">Bug Delete</a>
+		<a class="btn btn-outline-primary" href="{{ path('bug-edit', {'project_uuid':project.uuid, 'bug_uuid':project.bugs.first.uuid}) }}">Bug Edit</a>
+		<a class="btn btn-outline-primary" href="{{ path('bug-fix', {'project_uuid':project.uuid, 'bug_uuid':project.bugs.first.uuid}) }}">Bug Fix</a>
+		<a class="btn btn-outline-primary" href="{{ path('project-show-bugs', {'project_uuid':project.uuid}) }}">Bug List</a>
+		<a class="btn btn-outline-primary" href="{{ path('category-create') }}">Category Create</a>
+		<a class="btn btn-outline-primary" href="{{ path('category-delete', {'category_uuid':category.uuid}) }}">Category Delete</a>
+	</div>
+{% endblock %}
+

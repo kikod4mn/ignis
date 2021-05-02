@@ -1,0 +1,32 @@
+{% extends "base/app.html.twig" %}
+{% block title %}All Languages Used In Kikopolis{% endblock %}
+{% block body %}
+	
+	<div class="container mb-5 pb-3 px-0 mx-auto">
+		<div class="mt-5 pb-3 pt-4 bg__dark text__light">
+			<h1 class="text-center text-uppercase">Languages</h1>
+		</div>
+		
+		{# DISPLAY PAGINATION #}
+		{{ include('base/pagination/pagination.html.twig') }}
+		{# DISPLAY PAGINATION #}
+		
+		<div class="row">
+			{% for language in pagination %}
+				<div class="col-12 col-md-6 m-0 p-0 border bg__light border-dark px-2 shadow-3 my-3 mx-auto">
+					<div class="row m-0 p-0">
+						<div class="col-12 m-0 p-0">
+							{{ include('languages/language-parts/_general-public-short.html.twig') }}
+						</div>
+					</div>
+				</div>
+			{% endfor %}
+		</div>
+		
+		{# DISPLAY PAGINATION #}
+		{{ include('base/pagination/pagination.html.twig') }}
+		{# DISPLAY PAGINATION #}
+	</div>
+{% endblock %}
+
+

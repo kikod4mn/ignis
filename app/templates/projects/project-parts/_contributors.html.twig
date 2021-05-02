@@ -1,0 +1,8 @@
+<div class="m-0 pb-3 pt-4 text__light bg__info-accent">
+	<h5 class="text-center text-uppercase">Contributors</h5>
+</div>
+<div class="row mx-auto p-2 pb-0 m-0 border-3 shadow-3">
+	{% for user in project.canEdit %}
+		{{ include('account/cards/_tiny-user-card.html.twig') }}
+	{% endfor %}
+</div>

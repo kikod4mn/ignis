@@ -1,0 +1,10 @@
+<div class="card m-0 p-0">
+	<div class="card-body">
+		<h5 class="card-title">{{ bug.title }}</h5>
+		<h6 class="card-subtitle mb-2 text-muted">{{ bug.project.name }}</h6>
+		<p class="card-text">{{ bug.description }}</p>
+		{% if bug.author.id is same as app.user.id or app.user.hasRole('ROLE_ADMIN') %}
+			<a href="{{ path('bug-edit', {'project_uuid':bug.project.uuid, 'bug_uuid':bug.uuid}) }}" class="card-link">Edit</a>
+		{% endif %}
+	</div>
+</div>

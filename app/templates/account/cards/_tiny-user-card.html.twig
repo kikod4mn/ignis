@@ -1,0 +1,14 @@
+<div class="card col-4 col-md-2 col-lg-2 col-xl-1 my-1 mx-0 p-0">
+	<div class="card-body p-0">
+		<p class="card-text m-0 p-0">
+			<a href="{{ path('profile-show-public', {'user_uuid':user.uuid}) }}">
+				<img class="img-fluid bg__logo-black rounded-1" src="{{ asset(user.displayAvatar) }}" alt="user avatar">
+			</a>
+		</p>
+		<p class="card-title text-center m-0 p-0">
+			<a href="{{ path('profile-show-public', {'user_uuid':user.uuid}) }}">
+				{{ user.name }}
+			</a>
+		</p>
+	</div>
+</div>

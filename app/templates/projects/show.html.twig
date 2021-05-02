@@ -1,0 +1,25 @@
+{% extends 'base/app.html.twig' %}
+{% block title %}Project {{ project.name }} overview{% endblock %}
+{% block body %}
+	<div class="container mb-5 pb-3 px-0 mx-auto">
+		<div class="mt-5 pb-3 pt-4 bg__dark text__light">
+			<h1 class="text-center text-uppercase">{{ project.name }}</h1>
+			<h5 class="text-center text-uppercase">{{ project.name }}</h5>
+			<h6 class="text-center text-uppercase p-0 m-0">Created by: {{ project.author.name }}</h6>
+			<p class="text-center small p-0 m-0">UUID - {{ project.uuid }}</p>
+		</div>
+		{% if app.user.hasRole('ROLE_ADMIN') or project.canEdit.contains(app.user) %}
+			<div class="col-12 m-0 p-0">
+				{{ include('projects/project-parts/_admin-actions.html.twig') }}
+			</div>
+		{% endif %}
+		{{ include('projects/project-parts/_general-public-full.html.twig') }}
+		
+		{{ include('projects/project-parts/_features.html.twig') }}
+		
+		{{ include('projects/project-parts/_bugs.html.twig') }}
+		
+		{{ include('projects/project-parts/_contributors.html.twig') }}
+	</div>
+{% endblock %}
+

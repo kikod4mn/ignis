@@ -1,0 +1,58 @@
+{% extends "base/app.html.twig" %}
+{% block title %}Edit the bug{{ bug.title }}!{% endblock %}
+{% block body %}
+	{# FORM WRAPPER #}
+	<div class="col-12 col-lg-8 col-xl-6 mx-auto">
+		{# FORM START #}
+		{{ form_start(bugEditForm, {'attr':{'class':'bg-light rounded-1 shadow-3 my-5 mx-sm-4 mx-1 py-4 px-2 px-sm-4'}}) }}
+		{# FORM START #}
+		
+		{# FORM HEADER #}
+		<div class="form-row">
+			<h1 class="text-center w-100">Edit bug {{ bug.title }}</h1>
+		</div>
+		{# FORM HEADER #}
+		
+		{# GENERAL ERRORS #}
+		<div class="flash flash__error">
+			{{ form_errors(bugEditForm) }}
+		</div>
+		{# GENERAL ERRORS #}
+		
+		{# BUG TITLE #}
+		<div class="form-group py-1 px-md-1 p-lg-3">
+			{% if bugEditForm._title.vars.errors is not empty and bugEditForm._title.vars.errors.length > 0 %}
+				<div class="flash flash__danger">{{ form_errors(bugEditForm._title) }}</div>
+			{% endif %}
+			<div class="form-outline">
+				{{ form_widget(bugEditForm._title, {'attr':{'class':'form-control custom__form-input'}}) }}
+				{{ form_label(bugEditForm._title, null, {'label_attr':{'class':'form-label'}}) }}
+			</div>
+		</div>
+		{# BUG TITLE #}
+		
+		{# BUG DESCRIPTION #}
+		<div class="form-group py-1 px-md-1 p-lg-3">
+			{% if bugEditForm._description.vars.errors is not empty and bugEditForm._description.vars.errors.length > 0 %}
+				<div class="flash flash__danger">{{ form_errors(bugEditForm._description) }}</div>
+			{% endif %}
+			<div class="form-outline">
+				{{ form_widget(bugEditForm._description, {'attr':{'class':'form-control custom__form-input'}}) }}
+				{{ form_label(bugEditForm._description, null, {'label_attr':{'class':'form-label'}}) }}
+			</div>
+		</div>
+		{# BUG DESCRIPTION #}
+		
+		{# FORM SUBMIT #}
+		<div class="form-group py-1 px-md-1 p-lg-3 text-center">
+			{{ form_widget(bugEditForm.update, {'attr':{'class':'btn btn-primary'}}) }}
+		</div>
+		{# FORM SUBMIT #}
+		
+		{# FORM END #}
+		{{ form_rest(bugEditForm) }}
+		{{ form_end(bugEditForm) }}
+		{# FORM END #}
+	</div>
+	{# FORM WRAPPER #}
+{% endblock %}

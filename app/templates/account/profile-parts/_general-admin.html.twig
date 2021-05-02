@@ -1,0 +1,31 @@
+<div class="mt-5 pb-3 pt-4 bg__dark text__light">
+	<h2 class="text-center text-uppercase">Account Info</h2>
+</div>
+<div class="row mx-auto p-2 m-0 bg-white border-3 shadow-3">
+	<div class="col-4 col-md-2 p-2">
+		<img height="150px" width="150px" src="{{ asset(user.displayAvatar) }}" alt="{{ user.name }}'s avatar image"
+		     class="img-fluid bg__logo-black rounded-1">
+	</div>
+	<div class="col-8 col-md-4 p-2">
+		<h4 class="text-uppercase p-0 m-0">{{ user.name }}</h4>
+		<p class="p-0 m-0">Rank - {{ user|displayCombinedRoles }}</p>
+		<p class="small p-0 m-0">{{ user.email }}</p>
+		<p class="small p-0 m-0">ID - {{ user.id }}</p>
+		<p class="small p-0 m-0">UUID - {{ user.uuid }}</p>
+	</div>
+	<hr class="mt-2 mb-1 d-md-none p-0 m-0">
+	<div class="col-12 col-md-6 p-2">
+		<h5 class="text-uppercase p-0 m-0 text__dark-accent">Summary</h5>
+		<p class="p-0 m-0">
+			{{ user.projects.count }} projects created, {{ user.features.count }} features added and {{ user.bugs.count }} bugs found.
+		</p>
+		<p class="p-0 m-0">Contributor on {{ user.editableProjects.count }} projects.</p>
+		<p class="p-0 m-0">User has uploaded {{ user.images.count }} images.</p>
+		<p class="p-0 m-0">
+			Account was registered on {{ user.createdAt|date('l jS \\o\\f F Y H:i') }}.
+			{% if user.updatedAt is not null %}
+				<span> and edited their account last on {{ user.updatedAt|date('l jS \\o\\f F Y H:i') }}.</span>
+			{% endif %}
+		</p>
+	</div>
+</div>

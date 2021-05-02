@@ -1,0 +1,7 @@
+zenstruck_foundry:
+    instantiator:
+#        without_constructor: true # always instantiate objects without calling the constructor
+        allow_extra_attributes: true # always ignore extra attributes
+        always_force_properties: true # always "force set" properties
+        # or
+#        service: my_instantiator # your own invokable service for complete control

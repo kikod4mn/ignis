@@ -1,0 +1,8 @@
+run fresh db - php bin/console app:doctrine:fresh
+run phpunit - php bin/phpunit
+run phpunit bridge - vendor/bin/simple-phpunit
+run eslint - ./node_modules/.bin/eslint assets
+run php md - php vendor/bin/phpmd.bat /src /.phpmd-ruleset.xml ---- does not work for some reason.
+init psalm - ./vendor/bin/psalm --init
+run psalm - ./vendor/bin/psalm
+run phpstan - vendor/bin/phpstan analyse src tests

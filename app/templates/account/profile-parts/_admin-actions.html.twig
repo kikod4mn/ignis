@@ -1,0 +1,13 @@
+<div class="mt-5 pb-3 pt-4 bg__logo-red text__light">
+	<h2 class="text-center text-uppercase">Admin Tools</h2>
+</div>
+<div class="row">
+	<div class="col-auto mx-auto mt-3 p-3">
+		<a href="#" class="text-uppercase btn btn-outline-primary">Send Message</a>
+		<a href="#" class="text-uppercase btn btn-outline-secondary">Edit Profile</a>
+		<a href="#" class="text-uppercase btn btn-outline-danger">Delete User Account</a>
+		{% if not user.active %}
+			<a href="{{ path('admin-users-activate', {'user_uuid':user.uuid}) }}" class="text-uppercase btn btn-outline-info">Activate Account</a>
+		{% endif %}
+	</div>
+</div>

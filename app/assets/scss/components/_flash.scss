@@ -1,0 +1,39 @@
+.flash {
+	display        : flex;
+	flex-direction : column;
+	text-align     : left;
+	padding        : .8rem .8rem 0;
+	margin         : .8rem;
+	border         : 1px solid transparent;
+	border-radius  : 4px;
+	
+	h4 {
+		margin         : 0;
+		padding-top    : 0;
+		padding-bottom : 0;
+		}
+	
+	&__info {
+		border-color     : $info-accent;
+		color            : lighten($info, 55%);
+		background-color : $info;
+		}
+	
+	&__success {
+		border-color     : $success-accent;
+		color            : lighten($success, 55%);
+		background-color : $success;
+		}
+	
+	&__danger {
+		border-color     : $danger-accent;
+		color            : lighten($danger, 55%);
+		background-color : $danger;
+		}
+	
+	&__warning {
+		border-color     : $warning-accent;
+		color            : lighten($warning, 55%);
+		background-color : $warning;
+		}
+	}

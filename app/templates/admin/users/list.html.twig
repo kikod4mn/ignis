@@ -1,0 +1,33 @@
+{% extends "base/app.html.twig" %}
+{% block title %}List of all users{% endblock %}
+{% block body %}
+	{# DISPLAY PAGINATION #}
+	{{ include('base/pagination/pagination.html.twig') }}
+	{# DISPLAY PAGINATION #}
+	<div class="container-fluid d-flex justify-content-center px-5 mt-5 mb-3 py-3">
+		<div class="col-auto">
+			<table class="table align-middle table-hover table-responsive">
+				<thead>
+					<tr>
+						<th scope="col">ID</th>
+						<th scope="col">Avatar</th>
+						<th scope="col">Name</th>
+						<th scope="col">Email</th>
+						<th scope="col">Status</th>
+						<th scope="col">Email Confirmed</th>
+						<th scope="col">Password Reset Active</th>
+						<th scope="col">Last Login</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for user in pagination %}
+						{{ include('account/cards/_table-user-card.html.twig') }}
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
+	</div>
+{% endblock %}
+
+
+

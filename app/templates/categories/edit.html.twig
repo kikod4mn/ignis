@@ -1,0 +1,46 @@
+{% extends "base/app.html.twig" %}
+{% block title %}Edit project category {{ category.name }}{% endblock %}
+{% block body %}
+	{# FORM WRAPPER #}
+	<div class="col-12 col-lg-8 col-xl-6 mx-auto">
+		{# FORM START #}
+		{{ form_start(categoryEditForm, {'attr':{'class':'bg-light rounded-1 shadow-3 my-5 mx-sm-4 mx-1 py-4 px-2 px-sm-4'}}) }}
+		{# FORM START #}
+		
+		{# FORM HEADER #}
+		<div class="form-row">
+			<h1 class="text-center w-100">Edit project category {{ category.name }}</h1>
+		</div>
+		{# FORM HEADER #}
+		
+		{# GENERAL ERRORS #}
+		<div class="flash flash__error">
+			{{ form_errors(categoryEditForm) }}
+		</div>
+		{# GENERAL ERRORS #}
+		
+		{# CATEGORY TITLE #}
+		<div class="form-group py-1 px-md-1 p-lg-3">
+			{% if categoryEditForm._name.vars.errors is not empty and categoryEditForm._name.vars.errors.length > 0 %}
+				<div class="flash flash__danger">{{ form_errors(categoryEditForm._name) }}</div>
+			{% endif %}
+			<div class="form-outline">
+				{{ form_widget(categoryEditForm._name, {'attr':{'class':'form-control custom__form-input'}}) }}
+				{{ form_label(categoryEditForm._name, null, {'label_attr':{'class':'form-label'}}) }}
+			</div>
+		</div>
+		{# CATEGORY TITLE #}
+		
+		{# FORM SUBMIT #}
+		<div class="form-group py-1 px-md-1 p-lg-3 text-center">
+			{{ form_widget(categoryEditForm.save, {'attr':{'class':'btn btn-primary'}}) }}
+		</div>
+		{# FORM SUBMIT #}
+		
+		{# FORM END #}
+		{{ form_rest(categoryEditForm) }}
+		{{ form_end(categoryEditForm) }}
+		{# FORM END #}
+	</div>
+	{# FORM WRAPPER #}
+{% endblock %}

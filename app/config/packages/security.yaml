@@ -1,0 +1,45 @@
+security:
+    enable_authenticator_manager: true
+    encoders:
+        App\Entity\User:
+            algorithm: auto
+    providers:
+        app_user_provider:
+            entity:
+                class: App\Entity\User
+                property: email
+    firewalls:
+        dev:
+            pattern: ^/(_(profiler|wdt)|css|images|js)/
+            security: false
+        main:
+            lazy: true
+            provider: app_user_provider
+            user_checker: App\Security\UserChecker
+            custom_authenticators:
+                - App\Security\LoginFormAuthenticator
+            form_login: ~
+            #                check_path: security-login
+            #                login_path: security-login
+            #                csrf_token_generator: security.csrf.token_manager
+            #                default_target_path: home
+            #                always_use_default_target_path: false
+            #                use_referer: true
+            #                failure_path: security-login
+            logout:
+                path: security-logout
+                target: home
+            remember_me:
+                secret: '%kernel.secret%'
+                lifetime: 604800
+                path: /
+            entry_point: form_login
+    access_control:
+        - { path: ^/admin, roles: [ ROLE_ADMIN, ROLE_TEST_USER ] }
+        - { path: ^/account, roles: [ ROLE_USER ] }
+    #        - { path: ^/example/path, roles: [ PUBLIC_ACCESS ] }
+    role_hierarchy:
+        ROLE_ADMIN: [ ROLE_USER, ROLE_PROJECT_LEAD, ROLE_ADD_CATEGORY, ROLE_EDIT_CATEGORY, ROLE_DELETE_CATEGORY, ROLE_ADD_LANGUAGE, ROLE_EDIT_LANGUAGE, ROLE_DELETE_LANGUAGE ]
+        ROLE_PROJECT_LEAD: [ ROLE_USER, ROLE_ADD_PROJECT, ROLE_EDIT_PROJECT, ROLE_DELETE_PROJECT, ROLE_VIEW_PROJECT, ROLE_ADD_FEATURE, ROLE_EDIT_FEATURE, ROLE_DELETE_FEATURE, ROLE_IMPLEMENT_FEATURE, ROLE_FIX_BUG ]
+        ROLE_USER: [ ROLE_EDIT_BUG, ROLE_ADD_BUG, ROLE_DELETE_BUG ]
+        ROLE_TEST_USER: []

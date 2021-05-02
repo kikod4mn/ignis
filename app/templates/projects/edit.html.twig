@@ -1,0 +1,70 @@
+{% extends "base/app.html.twig" %}
+{% block title %}Edit project {{ project.name }}{% endblock %}
+{% block body %}
+	{# FORM WRAPPER #}
+	<div class="col-12 col-lg-8 col-xl-6 mx-auto">
+		{# FORM START #}
+		{{ form_start(projectEditForm, {'attr':{'class':'bg-light rounded-1 shadow-3 my-5 mx-sm-4 mx-1 py-4 px-2 px-sm-4'}}) }}
+		{# FORM START #}
+		
+		{# FORM HEADER #}
+		<div class="form-row">
+			<h1 class="text-center w-100">Create a new Project</h1>
+		</div>
+		{# FORM HEADER #}
+		
+		{# GENERAL ERRORS #}
+		<div class="flash flash__error">
+			{{ form_errors(projectEditForm) }}
+		</div>
+		{# GENERAL ERRORS #}
+		
+		{# PROJECT NAME #}
+		<div class="form-group py-1 px-md-1 p-lg-3">
+			{% if projectEditForm._name.vars.errors is not empty and projectEditForm._name.vars.errors.length > 0 %}
+				<div class="flash flash__danger">{{ form_errors(projectEditForm._name) }}</div>
+			{% endif %}
+			<div class="form-outline">
+				{{ form_widget(projectEditForm._name, {'attr':{'class':'form-control custom__form-input'}}) }}
+				{{ form_label(projectEditForm._name, null, {'label_attr':{'class':'form-label'}}) }}
+			</div>
+		</div>
+		{# PROJECT NAME #}
+		
+		{# PROJECT CATEGORY #}
+		<div class="form-group py-1 px-md-1 p-lg-3">
+			{% if projectEditForm._category.vars.errors is not empty and projectEditForm._category.vars.errors.length > 0 %}
+				<div class="flash flash__danger">{{ form_errors(projectEditForm._category) }}</div>
+			{% endif %}
+			<div class="form-group">
+				{{ form_label(projectEditForm._category, null, {'label_attr':{'class':'form-label'}}) }}
+				{{ form_widget(projectEditForm._category, {'attr':{'class':'form-select'}}) }}
+			</div>
+		</div>
+		{# PROJECT CATEGORY #}
+		
+		{# PROJECT DESCRIPTION #}
+		<div class="form-group py-1 px-md-1 p-lg-3">
+			{% if projectEditForm._description.vars.errors is not empty and projectEditForm._description.vars.errors.length > 0 %}
+				<div class="flash flash__danger">{{ form_errors(projectEditForm._description) }}</div>
+			{% endif %}
+			<div class="form-outline">
+				{{ form_widget(projectEditForm._description, {'attr':{'class':'form-control custom__form-input'}}) }}
+				{{ form_label(projectEditForm._description, null, {'label_attr':{'class':'form-label'}}) }}
+			</div>
+		</div>
+		{# PROJECT DESCRIPTION #}
+		
+		{# FORM SUBMIT #}
+		<div class="form-group py-1 px-md-1 p-lg-3 text-center">
+			{{ form_widget(projectEditForm.create, {'attr':{'class':'btn btn-primary'}}) }}
+		</div>
+		{# FORM SUBMIT #}
+		
+		{# FORM END #}
+		{{ form_rest(projectEditForm) }}
+		{{ form_end(projectEditForm) }}
+		{# FORM END #}
+	</div>
+	{# FORM WRAPPER #}
+{% endblock %}

@@ -1,0 +1,9 @@
+{% extends 'base/app.html.twig' %}
+{% block title %}User {{ user.name }} profile and activity stream{% endblock %}
+{% block body %}
+	<div class="container mb-5 pb-3 px-0 mx-auto">
+		{{ include('account/profile-parts/_general-public.html.twig') }}
+		
+		{{ include('account/profile-parts/_activity-stream.html.twig') }}
+	</div>
+{% endblock %}

@@ -1,0 +1,25 @@
+<tr class="align-middle">
+	<th scope="row">{{ user.id }}</th>
+	<td><img height="40px" width="50px" class="img-fluid bg__logo-black rounded-1" src="{{ asset(user.displayAvatar) }}" alt="avatar"></td>
+	<td><a href="{{ path('profile-show-admin', {'user_uuid':user.uuid}) }}">{{ user.name }}</a></td>
+	<td>{{ user.email }}</td>
+	{% if user.active %}
+		<td class="table-success">Activated</td>
+	{% else %}
+		<td class="table-warning">
+			<a class="btn btn-outline-primary" href="{{ path('admin-users-activate', {'user_uuid':user.uuid}) }}">Not Activated</a>
+		</td>
+	{% endif %}
+	{% if user.emailConfirmedAt %}
+		<td class="table-success">Confirmed</td>
+	{% else %}
+		<td class="table-warning">Not Confirmed</td>
+	{% endif %}
+	{% if user.passwordResetToken %}
+		<td class="table-warning">Request Active</td>
+	{% else %}
+		<td class="table-success">Not Active</td>
+	{% endif %}
+	<td>{{ user.lastLoginAt }}</td>
+	<td>Projects - {{ user.projects.count }}, features - {{ user.features.count }}, bugs - {{ user.bugs.count }}</td>
+</tr>
