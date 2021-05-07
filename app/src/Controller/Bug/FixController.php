@@ -35,6 +35,9 @@ class FixController extends AbstractController {
 			&& $this->isGranted(Role::ROLE_FIX_BUG, $bug)) {
 			return $this->fix($bug, $project);
 		}
+		if (! $this->isGranted(Role::ROLE_USER)) {
+			throw $this->createAccessDeniedException();
+		}
 		throw $this->createNotFoundException();
 	}
 	

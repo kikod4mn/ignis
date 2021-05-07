@@ -24,6 +24,9 @@ class ListController extends AbstractController {
 		if ($this->isGranted(Role::ROLE_PROJECT_LEAD)) {
 			return $this->showcaseList($page);
 		}
+		if (! $this->isGranted(Role::ROLE_USER)) {
+			throw $this->createAccessDeniedException();
+		}
 		throw $this->createNotFoundException();
 	}
 	

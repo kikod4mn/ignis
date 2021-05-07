@@ -36,6 +36,9 @@ class CreateController extends AbstractController {
 		if ($this->isGranted(Role::ROLE_VIEW_PROJECT, $project) && $this->isGranted(Role::ROLE_ADD_FEATURE)) {
 			return $this->create($request, $project);
 		}
+		if (! $this->isGranted(Role::ROLE_USER)) {
+			throw $this->createAccessDeniedException();
+		}
 		throw $this->createNotFoundException();
 	}
 	

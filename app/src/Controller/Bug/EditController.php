@@ -39,22 +39,26 @@ class EditController extends AbstractController {
 		if ($this->isGranted(Role::ROLE_VIEW_PROJECT, $project) && $this->isGranted(Role::ROLE_EDIT_BUG, $bug)) {
 			return $this->edit($request, $project, $bug);
 		}
+		if (! $this->isGranted(Role::ROLE_USER)) {
+			throw $this->createAccessDeniedException();
+		}
 		throw $this->createNotFoundException();
 		
 	}
 	
 	private function edit(Request $request, Project $project, Bug $bug): Response {
-		$oldBug = $bug;
-		$form   = $this->createForm(BugEditType::class, $bug);
+		$oldTitle       = $bug->getTitle();
+		$oldDescription = $bug->getDescription();
+		$form           = $this->createForm(BugEditType::class, $bug);
 		$form->handleRequest($request);
 		if ($form->isSubmitted() && $form->isValid()) {
 			$this->ed->dispatch(new EntityTimeStampableUpdatedEvent($bug));
 			// todo temporary edit, fix to have a more automated workflow
-			if ($bug->getTitle() !== $oldBug->getTitle()) {
-				$this->ed->dispatch(new CreateEntityHistoryEvent($bug, 'title', (string) $oldBug->getTitle()));
+			if ($bug->getTitle() !== $oldTitle) {
+				$this->ed->dispatch(new CreateEntityHistoryEvent($bug, 'title', (string) $oldTitle));
 			}
-			if ($bug->getDescription() !== $oldBug->getDescription()) {
-				$this->ed->dispatch(new CreateEntityHistoryEvent($bug, 'description', (string) $oldBug->getDescription()));
+			if ($bug->getDescription() !== $oldDescription) {
+				$this->ed->dispatch(new CreateEntityHistoryEvent($bug, 'description', (string) $oldDescription));
 			}
 			try {
 				$this->em->flush();

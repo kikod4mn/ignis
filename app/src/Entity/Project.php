@@ -164,7 +164,7 @@ class Project implements EntityIdContract, TimeStampableContract, EntityAuthorab
 	
 	public function displayCoverImage(): string {
 		if (! $this->coverImage) {
-			return 'build/images/_defaults/_default-cover-image.png';
+			return 'build/images/_defaults/_default-cover-image.jpg';
 		}
 		return (string) $this->coverImage->getPath();
 	}

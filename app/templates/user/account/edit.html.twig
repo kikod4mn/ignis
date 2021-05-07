@@ -1,0 +1,58 @@
+{% extends 'base/app.html.twig' %}
+{% block title %}Edit Account{% endblock %}
+{% block body %}
+	{# FORM WRAPPER #}
+	<div class="col-12 col-lg-8 col-xl-6 mx-auto">
+		{# FORM START #}
+		{{ form_start(accountEditForm, {'attr':{'class':'bg-light rounded-1 shadow-3 my-5 mx-sm-4 mx-1 py-4 px-2 px-sm-4'}}) }}
+		{# FORM START #}
+		
+		{# FORM HEADER #}
+		<div class="form-row">
+			<h1 class="text-center w-100">Edit Account</h1>
+		</div>
+		{# FORM HEADER #}
+		
+		{# GENERAL ERRORS #}
+		<div class="flash flash__error">
+			{{ form_errors(accountEditForm) }}
+		</div>
+		{# GENERAL ERRORS #}
+		
+		{# USER EMAIL #}
+		<div class="form-group py-1 px-md-1 p-lg-3">
+			{% if accountEditForm._email.vars.errors is not empty and accountEditForm._email.vars.errors.length > 0 %}
+				<div class="flash flash__danger">{{ form_errors(accountEditForm._email) }}</div>
+			{% endif %}
+			<div class="form-outline">
+				{{ form_widget(accountEditForm._email, {'attr':{'class':'form-control custom__form-input'}}) }}
+				{{ form_label(accountEditForm._email, null, {'label_attr':{'class':'form-label'}}) }}
+			</div>
+		</div>
+		{# USER EMAIL #}
+		
+		{# USER EMAIL #}
+		<div class="form-group py-1 px-md-1 p-lg-3">
+			{% if accountEditForm._plainPassword.vars.errors is not empty and accountEditForm._plainPassword.vars.errors.length > 0 %}
+				<div class="flash flash__danger">{{ form_errors(accountEditForm._plainPassword) }}</div>
+			{% endif %}
+			<div class="form-outline">
+				{{ form_widget(accountEditForm._plainPassword, {'attr':{'class':'form-control custom__form-input'}}) }}
+				{{ form_label(accountEditForm._plainPassword, null, {'label_attr':{'class':'form-label'}}) }}
+			</div>
+		</div>
+		{# USER EMAIL #}
+		
+		{# FORM SUBMIT #}
+		<div class="form-group py-1 px-md-1 p-lg-3 text-center">
+			{{ form_widget(accountEditForm._save, {'attr':{'class':'btn btn-primary'}}) }}
+		</div>
+		{# FORM SUBMIT #}
+		
+		{# FORM END #}
+		{{ form_rest(accountEditForm) }}
+		{{ form_end(accountEditForm) }}
+		{# FORM END #}
+	</div>
+	{# FORM WRAPPER #}
+{% endblock %}

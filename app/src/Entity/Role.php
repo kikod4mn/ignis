@@ -22,8 +22,12 @@ class Role implements EntityIdContract, Stringable {
 	
 	const ROLE_TEST_USER         = 'ROLE_TEST_USER';
 	const ROLE_USER              = 'ROLE_USER';
+	const ROLE_EDIT_ACCOUNT      = 'ROLE_EDIT_ACCOUNT';
+	const ROLE_EDIT_PROFILE      = 'ROLE_EDIT_PROFILE';
 	const ROLE_PROJECT_LEAD      = 'ROLE_PROJECT_LEAD';
 	const ROLE_ADMIN             = 'ROLE_ADMIN';
+	const ROLE_DELETE_USER       = 'ROLE_DELETE_USER';
+	const ROLE_MODIFY_ROLES      = 'ROLE_MODIFY_ROLES';
 	const ROLE_VIEW_PROJECT      = 'ROLE_VIEW_PROJECT';
 	const ROLE_ADD_PROJECT       = 'ROLE_ADD_PROJECT';
 	const ROLE_EDIT_PROJECT      = 'ROLE_EDIT_PROJECT';

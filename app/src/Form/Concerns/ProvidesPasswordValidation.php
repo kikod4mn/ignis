@@ -25,4 +25,18 @@ trait ProvidesPasswordValidation {
 			new Regex(pattern: '/[$&+,:;=?@#]+/', message: 'Password must contain at least one symbol $&+,:;=?@#'),
 		];
 	}
+	
+	protected function optionalPasswordValidations(): array {
+		return [
+			new Length(
+				min: 12,
+				max: 8096,
+				minMessage: 'Password must be at least {{ limit }} characters long.',
+				maxMessage: '{{ limit }} ought to be enough, friend...'
+			),
+			new Regex(pattern: '/[A-Z]+/', message: 'Password must contain at least 1 capital letter.'),
+			new Regex(pattern: '/[0-9]+/', message: 'Password must contain at least 1 number.'),
+			new Regex(pattern: '/[$&+,:;=?@#]+/', message: 'Password must contain at least one symbol $&+,:;=?@#'),
+		];
+	}
 }

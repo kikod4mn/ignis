@@ -35,17 +35,20 @@ class EditController extends AbstractController {
 		if ($this->isGranted(Role::ROLE_PROJECT_LEAD) && $this->isGranted(Role::ROLE_EDIT_CATEGORY, $category)) {
 			return $this->edit($request, $category);
 		}
+		if (! $this->isGranted(Role::ROLE_USER)) {
+			throw $this->createAccessDeniedException();
+		}
 		throw $this->createNotFoundException();
 	}
 	
 	private function edit(Request $request, Category $category): Response {
-		$oldCategory = $category;
-		$form        = $this->createForm(CategoryEditType::class, $category);
+		$oldName = $category->getName();
+		$form    = $this->createForm(CategoryEditType::class, $category);
 		$form->handleRequest($request);
 		if ($form->isSubmitted() && $form->isValid()) {
 			// todo temporary edit, fix to have a more automated workflow
-			if ($category->getName() !== $oldCategory->getName()) {
-				$this->ed->dispatch(new CreateEntityHistoryEvent($category, 'name', (string) $oldCategory->getName()));
+			if ($category->getName() !== $oldName) {
+				$this->ed->dispatch(new CreateEntityHistoryEvent($category, 'name', (string) $oldName));
 			}
 			try {
 				$this->em->flush();

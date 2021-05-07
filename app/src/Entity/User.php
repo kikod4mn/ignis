@@ -6,6 +6,7 @@ namespace App\Entity;
 
 use App\Entity\Concerns\EntityIdConcern;
 use App\Entity\Concerns\EntityTimestampsConcern;
+use App\Entity\Contracts\EntityHistoryContract;
 use App\Entity\Contracts\EntityIdContract;
 use App\Entity\Contracts\TimeStampableContract;
 use App\Repository\UserRepository;
@@ -24,7 +25,7 @@ use const PHP_EOL;
  * @ORM\Entity(repositoryClass=UserRepository::class)
  * @UniqueEntity(fields={"email"}, message="Email is already taken. Please use the forgot password link.")
  */
-class User implements EntityIdContract, UserInterface, TimeStampableContract, Stringable {
+class User implements EntityIdContract, UserInterface, TimeStampableContract, Stringable, EntityHistoryContract {
 	use EntityTimestampsConcern;
 	use EntityIdConcern;
 	
@@ -415,7 +416,7 @@ class User implements EntityIdContract, UserInterface, TimeStampableContract, St
 	
 	public function addProject(Project $project): self {
 		if (! $this->projects->contains($project)) {
-			$this->projects->add($project);;
+			$this->projects->add($project);
 			$project->setAuthor($this);
 		}
 		return $this;

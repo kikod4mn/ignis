@@ -12,7 +12,6 @@ use App\Event\Updators\EntityTimeStampableUpdatedEvent;
 use App\Form\Project\ProjectEditType;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -36,21 +35,25 @@ class EditController extends AbstractController {
 		if ($this->isGranted(Role::ROLE_EDIT_PROJECT, $project) && $this->isGranted(Role::ROLE_PROJECT_LEAD)) {
 			return $this->edit($request, $project);
 		}
+		if (! $this->isGranted(Role::ROLE_USER)) {
+			throw $this->createAccessDeniedException();
+		}
 		throw $this->createNotFoundException();
 	}
 	
 	private function edit(Request $request, Project $project): Response {
-		$oldProject = $project;
-		$form       = $this->createForm(ProjectEditType::class, $project);
+		$oldName        = $project->getName();
+		$oldDescription = $project->getDescription();
+		$form           = $this->createForm(ProjectEditType::class, $project);
 		$form->handleRequest($request);
 		if ($form->isSubmitted() && $form->isValid()) {
 			$this->ed->dispatch(new EntityTimeStampableUpdatedEvent($project));
 			// todo temporary edit, fix to have a more automated workflow
-			if ($project->getName() !== $oldProject->getName()) {
-				$this->ed->dispatch(new CreateEntityHistoryEvent($project, 'name', (string) $oldProject->getName()));
+			if ($project->getName() !== $oldName) {
+				$this->ed->dispatch(new CreateEntityHistoryEvent($project, 'name', (string) $oldName));
 			}
-			if ($project->getDescription() !== $oldProject->getDescription()) {
-				$this->ed->dispatch(new CreateEntityHistoryEvent($project, 'description', (string) $oldProject->getDescription()));
+			if ($project->getDescription() !== $oldDescription) {
+				$this->ed->dispatch(new CreateEntityHistoryEvent($project, 'description', (string) $oldDescription));
 			}
 			try {
 				$this->em->flush();

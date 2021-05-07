@@ -31,6 +31,9 @@ class CreateController extends AbstractController {
 		if ($this->isGranted(Role::ROLE_ADD_LANGUAGE)) {
 			return $this->create($request);
 		}
+		if (! $this->isGranted(Role::ROLE_USER)) {
+			throw $this->createAccessDeniedException();
+		}
 		throw $this->createNotFoundException();
 	}
 	

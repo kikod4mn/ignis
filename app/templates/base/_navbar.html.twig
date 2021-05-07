@@ -2,7 +2,7 @@
 	<div class="container">
 		<a href="{{ path('home') }}" class="navbar-brand">
 			<div class="logo__phantus">
-				<img src="{{ asset('build/images/_logo/logo_shape_only_no_bg.72d36205.png') }}" alt="Kikopolis Phantus logo" height="52">
+				<img src="{{ asset('build/images/_logo/logo_shape_only_no_bg.png') }}" alt="Kikopolis Phantus logo" height="52">
 			</div>
 			<span class="text__danger">IGNIS</span>
 		</a>
@@ -29,6 +29,8 @@
 						</a>
 						<ul class="dropdown-menu" id="account-dropdown">
 							<li><a href="{{ path('profile-show-self') }}" class="dropdown-item">Profile</a></li>
+							<li><a href="{{ path('account-edit') }}" class="dropdown-item">Edit Account</a></li>
+							<li><a href="{{ path('profile-edit') }}" class="dropdown-item">Edit Public Profile</a></li>
 							<li><a href="{{ path('security-logout') }}" class="dropdown-item">Logout</a></li>
 						</ul>
 					</li>

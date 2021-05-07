@@ -31,7 +31,10 @@ class DeleteController extends AbstractController {
 		if ($this->isGranted(Role::ROLE_PROJECT_LEAD) && $this->isGranted(Role::ROLE_DELETE_CATEGORY, $category)) {
 			return $this->delete($category);
 		}
-		throw $this->createAccessDeniedException();
+		if (! $this->isGranted(Role::ROLE_USER)) {
+			throw $this->createAccessDeniedException();
+		}
+		throw $this->createNotFoundException();
 	}
 	
 	private function delete(Category $category): Response {

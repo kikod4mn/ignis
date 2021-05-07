@@ -38,21 +38,25 @@ class EditController extends AbstractController {
 		if ($this->isGranted(Role::ROLE_VIEW_PROJECT, $project) && $this->isGranted(Role::ROLE_EDIT_FEATURE, $feature)) {
 			return $this->edit($request, $project, $feature);
 		}
+		if (! $this->isGranted(Role::ROLE_USER)) {
+			throw $this->createAccessDeniedException();
+		}
 		throw $this->createNotFoundException();
 	}
 	
 	public function edit(Request $request, Project $project, Feature $feature): Response {
-		$oldFeature = $feature;
-		$form       = $this->createForm(FeatureEditType::class, $feature);
+		$oldTitle       = $feature->getTitle();
+		$oldDescription = $feature->getDescription();
+		$form           = $this->createForm(FeatureEditType::class, $feature);
 		$form->handleRequest($request);
 		if ($form->isSubmitted() && $form->isValid()) {
 			$this->ed->dispatch(new EntityTimeStampableUpdatedEvent($feature));
 			// todo temporary edit, fix to have a more automated workflow
-			if ($feature->getTitle() !== $oldFeature->getTitle()) {
-				$this->ed->dispatch(new CreateEntityHistoryEvent($feature, 'title', (string) $oldFeature->getTitle()));
+			if ($feature->getTitle() !== $oldTitle) {
+				$this->ed->dispatch(new CreateEntityHistoryEvent($feature, 'title', (string) $oldTitle));
 			}
-			if ($feature->getDescription() !== $oldFeature->getDescription()) {
-				$this->ed->dispatch(new CreateEntityHistoryEvent($feature, 'description', (string) $oldFeature->getDescription()));
+			if ($feature->getDescription() !== $oldDescription) {
+				$this->ed->dispatch(new CreateEntityHistoryEvent($feature, 'description', (string) $oldDescription));
 			}
 			try {
 				$this->em->flush();

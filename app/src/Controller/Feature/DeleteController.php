@@ -35,6 +35,9 @@ class DeleteController extends AbstractController {
 			&& $this->isGranted(Role::ROLE_DELETE_FEATURE, $feature)) {
 			return $this->delete($feature, $project);
 		}
+		if (! $this->isGranted(Role::ROLE_USER)) {
+			throw $this->createAccessDeniedException();
+		}
 		throw $this->createNotFoundException();
 	}
 	

@@ -23,6 +23,9 @@ class ShowController extends AbstractController {
 		if ($this->isGranted(Role::ROLE_PROJECT_LEAD)) {
 			return $this->showcaseShow($language);
 		}
+		if (! $this->isGranted(Role::ROLE_USER)) {
+			throw $this->createAccessDeniedException();
+		}
 		throw $this->createNotFoundException();
 	}
 	

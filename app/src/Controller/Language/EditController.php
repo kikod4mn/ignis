@@ -28,8 +28,6 @@ class EditController extends AbstractController {
 	/**
 	 * @Route("/languages/{language_uuid}/edit", name="language-edit", methods={"GET", "POST"})
 	 * @ParamConverter("language", class="App\Entity\Language", options={"mapping": {"language_uuid": "uuid"}})
-	 * @IsGranted("ROLE_PROJECT_LEAD")
-	 * @IsGranted("ROLE_EDIT_LANGUAGE", subject="language")
 	 */
 	public function __invoke(Request $request, Language $language): Response {
 		if ($this->isGranted(Role::ROLE_TEST_USER)) {
@@ -38,20 +36,24 @@ class EditController extends AbstractController {
 		if ($this->isGranted(Role::ROLE_EDIT_LANGUAGE, $language) && $this->isGranted(Role::ROLE_PROJECT_LEAD)) {
 			return $this->edit($request, $language);
 		}
+		if (! $this->isGranted(Role::ROLE_USER)) {
+			throw $this->createAccessDeniedException();
+		}
 		throw $this->createNotFoundException();
 	}
 	
 	private function edit(Request $request, Language $language): Response {
-		$oldLanguage = $language;
-		$form        = $this->createForm(LanguageEditType::class, $language);
+		$oldName        = $language->getName();
+		$oldDescription = $language->getDescription();
+		$form           = $this->createForm(LanguageEditType::class, $language);
 		$form->handleRequest($request);
 		if ($form->isSubmitted() && $form->isValid()) {
 			// todo temporary edit, fix to have a more automated workflow
-			if ($language->getName() !== $oldLanguage->getName()) {
-				$this->ed->dispatch(new CreateEntityHistoryEvent($language, 'name', (string) $oldLanguage->getName()));
+			if ($language->getName() !== $oldName) {
+				$this->ed->dispatch(new CreateEntityHistoryEvent($language, 'name', (string) $oldName));
 			}
-			if ($language->getDescription() !== $oldLanguage->getDescription()) {
-				$this->ed->dispatch(new CreateEntityHistoryEvent($language, 'description', (string) $oldLanguage->getDescription()));
+			if ($language->getDescription() !== $oldDescription) {
+				$this->ed->dispatch(new CreateEntityHistoryEvent($language, 'description', (string) $oldDescription));
 			}
 			try {
 				$this->em->flush();

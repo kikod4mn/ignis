@@ -8,17 +8,18 @@ use App\Event\Security\UserPasswordNeedsHashingEvent;
 use LogicException;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
-use function dump;
 use function is_string;
 
 class UserPasswordNeedsHashingSubscriber implements EventSubscriberInterface {
 	public function __construct(private UserPasswordEncoderInterface $encoder) { }
 	
-	/**
-	 * @return array<string, array<int, string>>
-	 */
 	public static function getSubscribedEvents(): array {
-		return [UserPasswordNeedsHashingEvent::class => ['hashIt']];
+		return [
+			UserPasswordNeedsHashingEvent::class => [
+				['hashIt', 9999],
+				['checkOldHashes', 9998],
+			],
+		];
 	}
 	
 	public function hashIt(UserPasswordNeedsHashingEvent $event): void {
@@ -33,5 +34,9 @@ class UserPasswordNeedsHashingSubscriber implements EventSubscriberInterface {
 		$user->setPassword(
 			$this->encoder->encodePassword($user, $user->getPlainPassword())
 		);
+	}
+	
+	public function checkOldHashes(UserPasswordNeedsHashingEvent $event): void {
+		//todo validate old password hashes so the new password is not one used previously
 	}
 }

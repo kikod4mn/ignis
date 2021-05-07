@@ -10,30 +10,21 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Component\Form\FormBuilder;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Email;
 use Symfony\Component\Validator\Constraints\Length;
-use Symfony\Component\Validator\Constraints\NotBlank;
-use Symfony\Component\Validator\Constraints\NotNull;
 
 class AccountEditType extends AbstractType {
 	use ProvidesPasswordValidation;
 	
-	/**
-	 * @param   FormBuilderInterface<FormBuilder>   $builder
-	 * @param   array<mixed, mixed>                 $options
-	 */
 	public function buildForm(FormBuilderInterface $builder, array $options): void {
 		$builder
 			->add(
 				'_email', EmailType::class,
 				[
-					'required'    => true,
+					'required'    => false,
 					'constraints' => [
-						new NotBlank(message: 'Email is required.'),
-						new NotNull(),
 						new Length(
 							min: 3,
 							max: 255,
@@ -47,9 +38,9 @@ class AccountEditType extends AbstractType {
 			->add(
 				'_plainPassword', PasswordType::class,
 				[
-					'required'    => true,
+					'required'    => false,
 					'constraints' => [
-						...$this->passwordValidations(),
+						...$this->optionalPasswordValidations(),
 					],
 				]
 			)
@@ -58,12 +49,6 @@ class AccountEditType extends AbstractType {
 	}
 	
 	public function configureOptions(OptionsResolver $resolver): void {
-		$resolver->setDefaults(
-			[
-				'data_class'      => User::class,
-				'csrf_field_name' => '_token',
-				'csrf_token_id'   => '_account_edit[_csrf_token]',
-			]
-		);
+		$resolver->setDefaults(['data_class' => User::class]);
 	}
 }
