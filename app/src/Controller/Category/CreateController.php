@@ -6,7 +6,7 @@ namespace App\Controller\Category;
 
 use App\Entity\Category;
 use App\Entity\Role;
-use App\Event\Creators\EntityIdCreatedEvent;
+use App\Event\Creators\IdCreateEvent;
 use App\Form\Category\CategoryCreateType;
 use App\Service\Contracts\Flashes;
 use Doctrine\ORM\EntityManagerInterface;
@@ -42,7 +42,7 @@ class CreateController extends AbstractController {
 		$form     = $this->createForm(CategoryCreateType::class, $category);
 		$form->handleRequest($request);
 		if ($form->isSubmitted() && $form->isValid()) {
-			$this->ed->dispatch(new EntityIdCreatedEvent($category));
+			$this->ed->dispatch(new IdCreateEvent($category));
 			try {
 				$this->em->persist($category);
 				$this->em->flush();
@@ -61,7 +61,7 @@ class CreateController extends AbstractController {
 		$form     = $this->createForm(CategoryCreateType::class, $category);
 		$form->handleRequest($request);
 		if ($form->isSubmitted() && $form->isValid()) {
-			$this->ed->dispatch(new EntityIdCreatedEvent($category));
+			$this->ed->dispatch(new IdCreateEvent($category));
 			$this->addFlash(Flashes::SUCCESS_MESSAGE, 'Created a new category successfully.');
 			$this->addFlash(Flashes::INFO_MESSAGE, 'Actually nothing changed. Just a test user doing test user things!');
 			return $this->redirectToRoute('categories-list');

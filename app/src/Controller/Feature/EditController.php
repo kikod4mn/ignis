@@ -8,8 +8,8 @@ use App\Entity\Feature;
 use App\Entity\Project;
 use App\Entity\Role;
 use App\Entity\User;
-use App\Event\Creators\CreateEntityHistoryEvent;
-use App\Event\Updators\EntityTimeStampableUpdatedEvent;
+use App\Event\Creators\VersionCreateEvent;
+use App\Event\Updators\TimeStampableUpdateEvent;
 use App\Form\Feature\FeatureEditType;
 use App\Service\Contracts\Flashes;
 use Doctrine\ORM\EntityManagerInterface;
@@ -50,13 +50,13 @@ class EditController extends AbstractController {
 		$form           = $this->createForm(FeatureEditType::class, $feature);
 		$form->handleRequest($request);
 		if ($form->isSubmitted() && $form->isValid()) {
-			$this->ed->dispatch(new EntityTimeStampableUpdatedEvent($feature));
+			$this->ed->dispatch(new TimeStampableUpdateEvent($feature));
 			// todo temporary edit, fix to have a more automated workflow
 			if ($feature->getTitle() !== $oldTitle) {
-				$this->ed->dispatch(new CreateEntityHistoryEvent($feature, 'title', (string) $oldTitle));
+				$this->ed->dispatch(new VersionCreateEvent($feature, 'title', (string) $oldTitle));
 			}
 			if ($feature->getDescription() !== $oldDescription) {
-				$this->ed->dispatch(new CreateEntityHistoryEvent($feature, 'description', (string) $oldDescription));
+				$this->ed->dispatch(new VersionCreateEvent($feature, 'description', (string) $oldDescription));
 			}
 			try {
 				$this->em->flush();
@@ -84,7 +84,7 @@ class EditController extends AbstractController {
 		$form         = $this->createForm(FeatureEditType::class, $featureClone);
 		$form->handleRequest($request);
 		if ($form->isSubmitted() && $form->isValid()) {
-			$this->ed->dispatch(new EntityTimeStampableUpdatedEvent($featureClone));
+			$this->ed->dispatch(new TimeStampableUpdateEvent($featureClone));
 			$this->addFlash(Flashes::SUCCESS_MESSAGE, 'Feature edited! Your changes were saved successfully.');
 			$this->addFlash(Flashes::INFO_MESSAGE, 'Actually nothing changed. Just a test user doing test user things!');
 			return $this->render('features/test-show.html.twig', ['feature' => $feature]);

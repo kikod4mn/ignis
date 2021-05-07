@@ -7,9 +7,9 @@ namespace App\Controller\Feature;
 use App\Entity\Feature;
 use App\Entity\Project;
 use App\Entity\Role;
-use App\Event\Creators\EntityAuthorableCreatedEvent;
-use App\Event\Creators\EntityIdCreatedEvent;
-use App\Event\Creators\EntityTimeStampableCreatedEvent;
+use App\Event\Creators\AuthorableCreateEvent;
+use App\Event\Creators\IdCreateEvent;
+use App\Event\Creators\TimeStampableCreatedEvent;
 use App\Form\Feature\FeatureCreateType;
 use App\Service\Contracts\Flashes;
 use Doctrine\ORM\EntityManagerInterface;
@@ -48,9 +48,9 @@ class CreateController extends AbstractController {
 		$form->handleRequest($request);
 		if ($form->isSubmitted() && $form->isValid()) {
 			$feature->setProject($project);
-			$this->ed->dispatch(new EntityIdCreatedEvent($feature));
-			$this->ed->dispatch(new EntityTimeStampableCreatedEvent($feature));
-			$this->ed->dispatch(new EntityAuthorableCreatedEvent($feature));
+			$this->ed->dispatch(new IdCreateEvent($feature));
+			$this->ed->dispatch(new TimeStampableCreatedEvent($feature));
+			$this->ed->dispatch(new AuthorableCreateEvent($feature));
 			try {
 				$this->em->persist($feature);
 				$this->em->flush();
@@ -70,9 +70,9 @@ class CreateController extends AbstractController {
 		$form->handleRequest($request);
 		if ($form->isSubmitted() && $form->isValid()) {
 			$feature->setProject($project);
-			$this->ed->dispatch(new EntityIdCreatedEvent($feature));
-			$this->ed->dispatch(new EntityTimeStampableCreatedEvent($feature));
-			$this->ed->dispatch(new EntityAuthorableCreatedEvent($feature));
+			$this->ed->dispatch(new IdCreateEvent($feature));
+			$this->ed->dispatch(new TimeStampableCreatedEvent($feature));
+			$this->ed->dispatch(new AuthorableCreateEvent($feature));
 			$this->addFlash(Flashes::SUCCESS_MESSAGE, 'Added a new feature for the project successfully.');
 			$this->addFlash(Flashes::INFO_MESSAGE, 'Actually nothing changed. Just a test user doing test user things!');
 			return $this->redirectToRoute('project-show-features', ['project_uuid' => $project->getUuid()]);

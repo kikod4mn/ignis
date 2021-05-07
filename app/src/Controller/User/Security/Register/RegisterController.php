@@ -7,9 +7,9 @@ namespace App\Controller\User\Security\Register;
 use App\Controller\Concerns\FlashFormErrors;
 use App\Entity\Role;
 use App\Entity\User;
-use App\Event\Creators\EntityIdCreatedEvent;
-use App\Event\Creators\EntityTimeStampableCreatedEvent;
-use App\Event\Security\UserPasswordNeedsHashingEvent;
+use App\Event\Creators\IdCreateEvent;
+use App\Event\Creators\TimeStampableCreatedEvent;
+use App\Event\Security\PasswordHashEvent;
 use App\Form\User\RegisterType;
 use App\Repository\RoleRepository;
 use App\Repository\UserRepository;
@@ -46,9 +46,9 @@ class RegisterController extends AbstractController {
 		if ($form->isSubmitted() && $form->isValid()) {
 			$user->setEmailConfirmToken($this->tokenGenerator->alphanumericToken(64));
 			$user->setAgreedToTermsAt(TimeCreator::now());
-			$this->ed->dispatch(new EntityIdCreatedEvent($user));
-			$this->ed->dispatch(new EntityTimeStampableCreatedEvent($user));
-			$this->ed->dispatch(new UserPasswordNeedsHashingEvent($user));
+			$this->ed->dispatch(new IdCreateEvent($user));
+			$this->ed->dispatch(new TimeStampableCreatedEvent($user));
+			$this->ed->dispatch(new PasswordHashEvent($user));
 			// todo maybe extract an event and subscriber for roles
 			$roles = new ArrayCollection();
 			$roles->add($this->roleRepository->findOneBy(['name' => Role::ROLE_USER]));

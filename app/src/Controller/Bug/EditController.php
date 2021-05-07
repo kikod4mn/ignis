@@ -8,8 +8,8 @@ use App\Entity\Bug;
 use App\Entity\Project;
 use App\Entity\Role;
 use App\Entity\User;
-use App\Event\Creators\CreateEntityHistoryEvent;
-use App\Event\Updators\EntityTimeStampableUpdatedEvent;
+use App\Event\Creators\VersionCreateEvent;
+use App\Event\Updators\TimeStampableUpdateEvent;
 use App\Form\Bug\BugEditType;
 use App\Service\Contracts\Flashes;
 use Doctrine\ORM\EntityManagerInterface;
@@ -52,13 +52,13 @@ class EditController extends AbstractController {
 		$form           = $this->createForm(BugEditType::class, $bug);
 		$form->handleRequest($request);
 		if ($form->isSubmitted() && $form->isValid()) {
-			$this->ed->dispatch(new EntityTimeStampableUpdatedEvent($bug));
+			$this->ed->dispatch(new TimeStampableUpdateEvent($bug));
 			// todo temporary edit, fix to have a more automated workflow
 			if ($bug->getTitle() !== $oldTitle) {
-				$this->ed->dispatch(new CreateEntityHistoryEvent($bug, 'title', (string) $oldTitle));
+				$this->ed->dispatch(new VersionCreateEvent($bug, 'title', (string) $oldTitle));
 			}
 			if ($bug->getDescription() !== $oldDescription) {
-				$this->ed->dispatch(new CreateEntityHistoryEvent($bug, 'description', (string) $oldDescription));
+				$this->ed->dispatch(new VersionCreateEvent($bug, 'description', (string) $oldDescription));
 			}
 			try {
 				$this->em->flush();

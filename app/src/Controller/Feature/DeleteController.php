@@ -8,7 +8,7 @@ use App\Entity\Feature;
 use App\Entity\Project;
 use App\Entity\Role;
 use App\Entity\User;
-use App\Event\Creators\CreateEntityBackupEvent;
+use App\Event\Updators\DeleteEvent;
 use App\Service\Contracts\Flashes;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
@@ -42,8 +42,7 @@ class DeleteController extends AbstractController {
 	}
 	
 	private function delete(Feature $feature, Project $project): Response {
-		$this->ed->dispatch(new CreateEntityBackupEvent($feature));
-		$this->em->remove($feature);
+		$this->ed->dispatch(new DeleteEvent($feature));
 		$this->em->flush();
 		/** @var User $user */
 		$user = $this->getUser();
@@ -53,8 +52,11 @@ class DeleteController extends AbstractController {
 				$user->getName(), $user->getId(), $feature->getTitle(), $feature->getId()
 			)
 		);
-		$this->addFlash(Flashes::SUCCESS_MESSAGE, 'Deleted the feature! It is now gone and forgotten!');
-		// todo implement backup
+		if ($feature->isHardDelete()) {
+			$this->addFlash(Flashes::SUCCESS_MESSAGE, 'Deleted the feature! It is now gone and forgotten!');
+		} else {
+			$this->addFlash(Flashes::SUCCESS_MESSAGE, 'The feature is now soft deleted to trash! Only admins and feature author can see it.');
+		}
 		return $this->redirectToRoute('project-show-features', ['project_uuid' => $project->getUuid()]);
 	}
 	

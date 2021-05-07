@@ -7,8 +7,8 @@ namespace App\Controller\Project;
 use App\Entity\Project;
 use App\Entity\Role;
 use App\Entity\User;
-use App\Event\Creators\CreateEntityHistoryEvent;
-use App\Event\Updators\EntityTimeStampableUpdatedEvent;
+use App\Event\Creators\VersionCreateEvent;
+use App\Event\Updators\TimeStampableUpdateEvent;
 use App\Form\Project\ProjectEditType;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
@@ -47,13 +47,13 @@ class EditController extends AbstractController {
 		$form           = $this->createForm(ProjectEditType::class, $project);
 		$form->handleRequest($request);
 		if ($form->isSubmitted() && $form->isValid()) {
-			$this->ed->dispatch(new EntityTimeStampableUpdatedEvent($project));
+			$this->ed->dispatch(new TimeStampableUpdateEvent($project));
 			// todo temporary edit, fix to have a more automated workflow
 			if ($project->getName() !== $oldName) {
-				$this->ed->dispatch(new CreateEntityHistoryEvent($project, 'name', (string) $oldName));
+				$this->ed->dispatch(new VersionCreateEvent($project, 'name', (string) $oldName));
 			}
 			if ($project->getDescription() !== $oldDescription) {
-				$this->ed->dispatch(new CreateEntityHistoryEvent($project, 'description', (string) $oldDescription));
+				$this->ed->dispatch(new VersionCreateEvent($project, 'description', (string) $oldDescription));
 			}
 			try {
 				$this->em->flush();
@@ -79,7 +79,7 @@ class EditController extends AbstractController {
 		$form         = $this->createForm(ProjectEditType::class, $projectClone);
 		$form->handleRequest($request);
 		if ($form->isSubmitted() && $form->isValid()) {
-			$this->ed->dispatch(new EntityTimeStampableUpdatedEvent($projectClone));
+			$this->ed->dispatch(new TimeStampableUpdateEvent($projectClone));
 			return $this->render('projects/test-show.html.twig', ['project' => $projectClone]);
 		}
 		return $this->render('projects/edit.html.twig', ['projectEditForm' => $form->createView(), 'project' => $projectClone]);

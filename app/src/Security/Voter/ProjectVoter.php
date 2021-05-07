@@ -32,6 +32,7 @@ class ProjectVoter extends Voter {
 		if (! $user instanceof User) {
 			return false;
 		}
+		// This also accounts for soft delete functionality where only admin and owner should see a trashed entity.
 		if ($this->security->isGranted(Role::ROLE_ADMIN, $user) || $subject->getAuthor()?->getId() === $user->getId()) {
 			return true;
 		}

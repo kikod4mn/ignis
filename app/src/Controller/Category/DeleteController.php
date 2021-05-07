@@ -7,6 +7,7 @@ namespace App\Controller\Category;
 use App\Entity\Category;
 use App\Entity\Role;
 use App\Entity\User;
+use App\Event\Updators\DeleteEvent;
 use App\Service\Contracts\Flashes;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
@@ -14,11 +15,12 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Throwable;
 use function sprintf;
 
 class DeleteController extends AbstractController {
-	public function __construct(private EntityManagerInterface $em, private LoggerInterface $logger) { }
+	public function __construct(private EntityManagerInterface $em, private LoggerInterface $logger, private EventDispatcherInterface $ed) { }
 	
 	/**
 	 * @Route("/categories/{category_uuid}/delete", name="category-delete", methods={"GET", "DELETE"})
@@ -38,13 +40,8 @@ class DeleteController extends AbstractController {
 	}
 	
 	private function delete(Category $category): Response {
-		try {
-			$this->em->remove($category);
-			$this->em->flush();
-		} catch (Throwable $e) {
-			$this->logger->critical($e->getMessage());
-			throw $this->createNotFoundException();
-		}
+		$this->ed->dispatch(new DeleteEvent($category));
+		$this->em->flush();
 		/** @var User $user */
 		$user = $this->getUser();
 		$this->logger->info(
@@ -53,8 +50,11 @@ class DeleteController extends AbstractController {
 				$user->getName(), $user->getId(), $category->getName(), $category->getId()
 			)
 		);
-		$this->addFlash(Flashes::SUCCESS_MESSAGE, 'Deleted the category! It is now gone and forgotten!');
-		// todo implement backup
+		if ($category->isHardDelete()) {
+			$this->addFlash(Flashes::SUCCESS_MESSAGE, 'Deleted the category! It is now gone and forgotten!');
+		} else {
+			$this->addFlash(Flashes::SUCCESS_MESSAGE, 'The category is now soft deleted to trash! Only admins and category author can see it.');
+		}
 		return $this->redirectToRoute('categories-list');
 	}
 	

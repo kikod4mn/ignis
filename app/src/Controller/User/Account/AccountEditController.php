@@ -6,8 +6,8 @@ namespace App\Controller\User\Account;
 
 use App\Entity\Role;
 use App\Entity\User;
-use App\Event\Security\UserEmailModifiedEvent;
-use App\Event\Security\UserPasswordNeedsHashingEvent;
+use App\Event\Security\EmailModifiedEvent;
+use App\Event\Security\PasswordHashEvent;
 use App\Form\User\AccountEditType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -36,10 +36,10 @@ class AccountEditController extends AbstractController {
 		$form->handleRequest($request);
 		if ($form->isSubmitted() && $form->isValid()) {
 			if ($user->getPlainPassword()) {
-				$this->ed->dispatch(new UserPasswordNeedsHashingEvent($user));
+				$this->ed->dispatch(new PasswordHashEvent($user));
 			}
 			if ($oldEmail !== $user->getEmail()) {
-				$this->ed->dispatch(new UserEmailModifiedEvent($oldEmail, $user));
+				$this->ed->dispatch(new EmailModifiedEvent($oldEmail, $user));
 			}
 			$this->em->flush();
 			return $this->redirectToRoute('profile-show-self');

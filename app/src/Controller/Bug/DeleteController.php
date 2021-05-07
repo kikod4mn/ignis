@@ -8,7 +8,7 @@ use App\Entity\Bug;
 use App\Entity\Project;
 use App\Entity\Role;
 use App\Entity\User;
-use App\Event\Creators\CreateEntityBackupEvent;
+use App\Event\Updators\DeleteEvent;
 use App\Service\Contracts\Flashes;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
@@ -41,8 +41,7 @@ class DeleteController extends AbstractController {
 	}
 	
 	private function delete(Project $project, Bug $bug): Response {
-		$this->ed->dispatch(new CreateEntityBackupEvent($bug));
-		$this->em->remove($bug);
+		$this->ed->dispatch(new DeleteEvent($bug));
 		$this->em->flush();
 		/** @var User $user */
 		$user = $this->getUser();
@@ -52,8 +51,11 @@ class DeleteController extends AbstractController {
 				$user->getName(), $user->getId(), $bug->getTitle(), $bug->getId()
 			)
 		);
-		$this->addFlash(Flashes::SUCCESS_MESSAGE, 'Deleted the bug! It is now gone and forgotten!');
-		// todo implement backup
+		if ($bug->isHardDelete()) {
+			$this->addFlash(Flashes::SUCCESS_MESSAGE, 'Deleted the bug! It is now gone and forgotten!');
+		} else {
+			$this->addFlash(Flashes::SUCCESS_MESSAGE, 'The bug is now soft deleted to trash! Only admins and bug author can see it.');
+		}
 		return $this->redirectToRoute('project-show-bugs', ['project_uuid' => $project->getUuid()]);
 	}
 	

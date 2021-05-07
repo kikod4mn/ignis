@@ -7,7 +7,7 @@ namespace App\Controller\Language;
 use App\Entity\Language;
 use App\Entity\Role;
 use App\Entity\User;
-use App\Event\Creators\CreateEntityHistoryEvent;
+use App\Event\Creators\VersionCreateEvent;
 use App\Form\Language\LanguageEditType;
 use App\Service\Contracts\Flashes;
 use Doctrine\ORM\EntityManagerInterface;
@@ -50,10 +50,10 @@ class EditController extends AbstractController {
 		if ($form->isSubmitted() && $form->isValid()) {
 			// todo temporary edit, fix to have a more automated workflow
 			if ($language->getName() !== $oldName) {
-				$this->ed->dispatch(new CreateEntityHistoryEvent($language, 'name', (string) $oldName));
+				$this->ed->dispatch(new VersionCreateEvent($language, 'name', (string) $oldName));
 			}
 			if ($language->getDescription() !== $oldDescription) {
-				$this->ed->dispatch(new CreateEntityHistoryEvent($language, 'description', (string) $oldDescription));
+				$this->ed->dispatch(new VersionCreateEvent($language, 'description', (string) $oldDescription));
 			}
 			try {
 				$this->em->flush();

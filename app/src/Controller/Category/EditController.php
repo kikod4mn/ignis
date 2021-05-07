@@ -7,7 +7,7 @@ namespace App\Controller\Category;
 use App\Entity\Category;
 use App\Entity\Role;
 use App\Entity\User;
-use App\Event\Creators\CreateEntityHistoryEvent;
+use App\Event\Creators\VersionCreateEvent;
 use App\Form\Category\CategoryEditType;
 use App\Service\Contracts\Flashes;
 use Doctrine\ORM\EntityManagerInterface;
@@ -48,7 +48,7 @@ class EditController extends AbstractController {
 		if ($form->isSubmitted() && $form->isValid()) {
 			// todo temporary edit, fix to have a more automated workflow
 			if ($category->getName() !== $oldName) {
-				$this->ed->dispatch(new CreateEntityHistoryEvent($category, 'name', (string) $oldName));
+				$this->ed->dispatch(new VersionCreateEvent($category, 'name', (string) $oldName));
 			}
 			try {
 				$this->em->flush();

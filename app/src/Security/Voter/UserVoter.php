@@ -25,7 +25,8 @@ class UserVoter extends Voter {
 		if (! $user instanceof User) {
 			return false;
 		}
-		if ($this->security->isGranted(Role::ROLE_ADMIN, $user) || $subject->getAuthor()?->getId() === $user->getId()) {
+		// This also accounts for soft delete functionality where only admin and owner should see a trashed entity.
+		if ($this->security->isGranted(Role::ROLE_ADMIN, $user) || $subject->getId() === $user->getId()) {
 			return true;
 		}
 		switch ($attribute) {

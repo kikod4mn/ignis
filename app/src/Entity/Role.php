@@ -4,8 +4,8 @@ declare(strict_types = 1);
 
 namespace App\Entity;
 
-use App\Entity\Concerns\EntityIdConcern;
-use App\Entity\Contracts\EntityIdContract;
+use App\Entity\Concerns\IdConcern;
+use App\Entity\Contracts\IdContract;
 use App\Repository\RoleRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -17,8 +17,8 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  * @ORM\Entity(repositoryClass=RoleRepository::class)
  * @UniqueEntity("name")
  */
-class Role implements EntityIdContract, Stringable {
-	use EntityIdConcern;
+class Role implements IdContract, Stringable {
+	use IdConcern;
 	
 	const ROLE_TEST_USER         = 'ROLE_TEST_USER';
 	const ROLE_USER              = 'ROLE_USER';

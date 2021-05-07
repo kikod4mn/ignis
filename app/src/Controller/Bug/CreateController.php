@@ -7,9 +7,9 @@ namespace App\Controller\Bug;
 use App\Entity\Bug;
 use App\Entity\Project;
 use App\Entity\Role;
-use App\Event\Creators\EntityAuthorableCreatedEvent;
-use App\Event\Creators\EntityIdCreatedEvent;
-use App\Event\Creators\EntityTimeStampableCreatedEvent;
+use App\Event\Creators\AuthorableCreateEvent;
+use App\Event\Creators\IdCreateEvent;
+use App\Event\Creators\TimeStampableCreatedEvent;
 use App\Form\Bug\BugCreateType;
 use App\Service\Contracts\Flashes;
 use Doctrine\ORM\EntityManagerInterface;
@@ -48,9 +48,9 @@ class CreateController extends AbstractController {
 		$form->handleRequest($request);
 		if ($form->isSubmitted() && $form->isValid()) {
 			$bug->setProject($project);
-			$this->ed->dispatch(new EntityIdCreatedEvent($bug));
-			$this->ed->dispatch(new EntityAuthorableCreatedEvent($bug));
-			$this->ed->dispatch(new EntityTimeStampableCreatedEvent($bug));
+			$this->ed->dispatch(new IdCreateEvent($bug));
+			$this->ed->dispatch(new AuthorableCreateEvent($bug));
+			$this->ed->dispatch(new TimeStampableCreatedEvent($bug));
 			try {
 				$this->em->persist($bug);
 				$this->em->flush();
@@ -70,9 +70,9 @@ class CreateController extends AbstractController {
 		$form->handleRequest($request);
 		if ($form->isSubmitted() && $form->isValid()) {
 			$bug->setProject($project);
-			$this->ed->dispatch(new EntityIdCreatedEvent($bug));
-			$this->ed->dispatch(new EntityAuthorableCreatedEvent($bug));
-			$this->ed->dispatch(new EntityTimeStampableCreatedEvent($bug));
+			$this->ed->dispatch(new IdCreateEvent($bug));
+			$this->ed->dispatch(new AuthorableCreateEvent($bug));
+			$this->ed->dispatch(new TimeStampableCreatedEvent($bug));
 			$this->addFlash(Flashes::SUCCESS_MESSAGE, 'Created a new bug report for this project! Thank you!');
 			$this->addFlash(Flashes::INFO_MESSAGE, 'Actually nothing changed. Just a test user doing test user things!');
 			return $this->render('bugs/test-show.html.twig', ['bug' => $bug]);

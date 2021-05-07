@@ -4,10 +4,12 @@ declare(strict_types = 1);
 
 namespace App\Entity;
 
-use App\Entity\Concerns\EntityIdConcern;
-use App\Entity\Concerns\EntityTimestampsConcern;
-use App\Entity\Contracts\EntityHistoryContract;
-use App\Entity\Contracts\EntityIdContract;
+use App\Entity\Concerns\IdConcern;
+use App\Entity\Concerns\SoftDeleteConcern;
+use App\Entity\Concerns\TimestampsConcern;
+use App\Entity\Contracts\SoftDeleteContract;
+use App\Entity\Contracts\VersionableContract;
+use App\Entity\Contracts\IdContract;
 use App\Entity\Contracts\TimeStampableContract;
 use App\Repository\UserRepository;
 use DateTimeInterface;
@@ -25,9 +27,10 @@ use const PHP_EOL;
  * @ORM\Entity(repositoryClass=UserRepository::class)
  * @UniqueEntity(fields={"email"}, message="Email is already taken. Please use the forgot password link.")
  */
-class User implements EntityIdContract, UserInterface, TimeStampableContract, Stringable, EntityHistoryContract {
-	use EntityTimestampsConcern;
-	use EntityIdConcern;
+class User implements IdContract, UserInterface, TimeStampableContract, Stringable, VersionableContract, SoftDeleteContract {
+	use SoftDeleteConcern;
+	use TimestampsConcern;
+	use IdConcern;
 	
 	/**
 	 * @ORM\Column(type="string", length=255, nullable=false)
@@ -134,16 +137,16 @@ class User implements EntityIdContract, UserInterface, TimeStampableContract, St
 	private Collection $projects;
 	
 	/**
-	 * @ORM\ManyToMany(targetEntity="App\Entity\Project", mappedBy="canView")
-	 * @var Collection<int, Project>
-	 */
-	private Collection $viewableProjects;
-	
-	/**
 	 * @ORM\ManyToMany(targetEntity="Project", mappedBy="canEdit")
 	 * @var Collection<int, Project>
 	 */
 	private Collection $editableProjects;
+	
+	/**
+	 * @ORM\ManyToMany(targetEntity="App\Entity\Project", mappedBy="canView")
+	 * @var Collection<int, Project>
+	 */
+	private Collection $viewableProjects;
 	
 	/**
 	 * @ORM\OneToMany(targetEntity="Bug", mappedBy="author")

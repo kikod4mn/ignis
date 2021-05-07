@@ -4,11 +4,11 @@ declare(strict_types = 1);
 
 namespace App\Entity;
 
-use App\Entity\Concerns\EntityAuthorConcern;
-use App\Entity\Concerns\EntityIdConcern;
-use App\Entity\Concerns\EntityTimestampsConcern;
-use App\Entity\Contracts\EntityAuthorableContract;
-use App\Entity\Contracts\EntityIdContract;
+use App\Entity\Concerns\AuthorConcern;
+use App\Entity\Concerns\IdConcern;
+use App\Entity\Concerns\TimestampsConcern;
+use App\Entity\Contracts\AuthorableContract;
+use App\Entity\Contracts\IdContract;
 use App\Entity\Contracts\TimeStampableContract;
 use App\Repository\ImageRepository;
 use Doctrine\ORM\Mapping as ORM;
@@ -16,10 +16,10 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @ORM\Entity(repositoryClass=ImageRepository::class)
  */
-class Image implements EntityIdContract, EntityAuthorableContract, TimeStampableContract {
-	use EntityIdConcern;
-	use EntityAuthorConcern;
-	use EntityTimestampsConcern;
+class Image implements IdContract, AuthorableContract, TimeStampableContract {
+	use IdConcern;
+	use AuthorConcern;
+	use TimestampsConcern;
 	
 	/**
 	 * @ORM\ManyToOne(targetEntity="User", inversedBy="images")

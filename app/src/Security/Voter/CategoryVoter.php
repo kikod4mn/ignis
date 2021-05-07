@@ -14,7 +14,7 @@ use Symfony\Component\Security\Core\Security;
 class CategoryVoter extends Voter {
 	/** @var array<int, string> */
 	private array $attributes = [Role::ROLE_ADD_CATEGORY, Role::ROLE_EDIT_CATEGORY, Role::ROLE_DELETE_CATEGORY];
-	
+	// This also accounts for soft delete functionality where only admin and owner should see a trashed entity.
 	public function __construct(private Security $security) { }
 	
 	protected function supports($attribute, $subject): bool {
@@ -33,6 +33,7 @@ class CategoryVoter extends Voter {
 		if (! $user instanceof User) {
 			return false;
 		}
+		// This also accounts for soft delete functionality where only admin and owner should see a trashed entity.
 		if ($this->security->isGranted(Role::ROLE_ADMIN, $user)) {
 			return true;
 		}

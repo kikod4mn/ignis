@@ -16,6 +16,14 @@ services:
     App\Controller\:
         resource: '../src/Controller/'
         tags: [ 'controller.service_arguments' ]
+    App\EventSubscriber\Entity\SoftDeleteSubscriber:
+        tags:
+            - { name: doctrine.event_subscriber, connection: default }
+    App\EventSubscriber\Doctrine\EnableFilterListener:
+        arguments:
+            $em: '@doctrine.orm.entity_manager'
+        tags:
+            - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest }
     App\Service\TokenGenerator: ~
     App\Service\FileHandler\FileUploader:
         arguments:

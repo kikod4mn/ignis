@@ -4,9 +4,11 @@ declare(strict_types = 1);
 
 namespace App\Entity;
 
-use App\Entity\Concerns\EntityIdConcern;
-use App\Entity\Contracts\EntityHistoryContract;
-use App\Entity\Contracts\EntityIdContract;
+use App\Entity\Concerns\IdConcern;
+use App\Entity\Concerns\SoftDeleteConcern;
+use App\Entity\Contracts\SoftDeleteContract;
+use App\Entity\Contracts\VersionableContract;
+use App\Entity\Contracts\IdContract;
 use App\Repository\CategoryRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -17,8 +19,9 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  * @ORM\Entity(repositoryClass=CategoryRepository::class)
  * @UniqueEntity("name")
  */
-class Category implements EntityIdContract, EntityHistoryContract {
-	use EntityIdConcern;
+class Category implements IdContract, VersionableContract, SoftDeleteContract {
+	use IdConcern;
+	use SoftDeleteConcern;
 	
 	/**
 	 * @ORM\Column(type="string", length=255, nullable=false, unique=true)

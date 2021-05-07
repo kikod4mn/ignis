@@ -6,7 +6,7 @@ namespace App\Controller\Language;
 
 use App\Entity\Language;
 use App\Entity\Role;
-use App\Event\Creators\EntityIdCreatedEvent;
+use App\Event\Creators\IdCreateEvent;
 use App\Form\Language\LanguageCreateType;
 use App\Service\Contracts\Flashes;
 use Doctrine\ORM\EntityManagerInterface;
@@ -42,7 +42,7 @@ class CreateController extends AbstractController {
 		$form     = $this->createForm(LanguageCreateType::class, $language);
 		$form->handleRequest($request);
 		if ($form->isSubmitted() && $form->isValid()) {
-			$this->ed->dispatch(new EntityIdCreatedEvent($language));
+			$this->ed->dispatch(new IdCreateEvent($language));
 			try {
 				$this->em->persist($language);
 				$this->em->flush();
@@ -61,7 +61,7 @@ class CreateController extends AbstractController {
 		$form     = $this->createForm(LanguageCreateType::class, $language);
 		$form->handleRequest($request);
 		if ($form->isSubmitted() && $form->isValid()) {
-			$this->ed->dispatch(new EntityIdCreatedEvent($language));
+			$this->ed->dispatch(new IdCreateEvent($language));
 			$this->addFlash(Flashes::SUCCESS_MESSAGE, 'Created a new language successfully.');
 			$this->addFlash(Flashes::INFO_MESSAGE, 'Actually nothing changed. Just a test user doing test user things!');
 			return $this->redirectToRoute('languages-list');

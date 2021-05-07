@@ -7,7 +7,7 @@ namespace App\Controller\Project;
 use App\Entity\Project;
 use App\Entity\Role;
 use App\Entity\User;
-use App\Event\Creators\CreateEntityBackupEvent;
+use App\Event\Updators\DeleteEvent;
 use App\Service\Contracts\Flashes;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
@@ -27,7 +27,7 @@ class DeleteController extends AbstractController {
 	 */
 	public function __invoke(Project $project): Response {
 		if ($this->isGranted(Role::ROLE_TEST_USER)) {
-			return $this->showcaseDelete($project);
+			return $this->showcaseDelete();
 		}
 		if ($this->isGranted(Role::ROLE_DELETE_PROJECT, $project)) {
 			return $this->delete($project);
@@ -39,8 +39,7 @@ class DeleteController extends AbstractController {
 	}
 	
 	private function delete(Project $project): Response {
-		$this->ed->dispatch(new CreateEntityBackupEvent($project));
-		$this->em->remove($project);
+		$this->ed->dispatch(new DeleteEvent($project));
 		$this->em->flush();
 		/** @var User $user */
 		$user = $this->getUser();
@@ -50,12 +49,15 @@ class DeleteController extends AbstractController {
 				$user->getName(), $user->getId(), $project->getName(), $project->getId()
 			)
 		);
-		$this->addFlash(Flashes::SUCCESS_MESSAGE, 'Deleted the project! It is now gone and forgotten!');
-		// todo implement backup
+		if ($project->isHardDelete()) {
+			$this->addFlash(Flashes::SUCCESS_MESSAGE, 'Deleted the project! It is now gone and forgotten!');
+		} else {
+			$this->addFlash(Flashes::SUCCESS_MESSAGE, 'The project is now soft deleted to trash! Only admins and project author can see it.');
+		}
 		return $this->redirectToRoute('home');
 	}
 	
-	private function showcaseDelete(Project $project): Response {
+	private function showcaseDelete(): Response {
 		$this->addFlash(Flashes::SUCCESS_MESSAGE, 'Deleted the project! It is now gone and forgotten!');
 		$this->addFlash(Flashes::INFO_MESSAGE, 'Actually nothing changed. Just a test user doing test user things!');
 		return $this->redirectToRoute('home');

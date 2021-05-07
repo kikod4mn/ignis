@@ -6,7 +6,7 @@ namespace App\Controller\User\Profile;
 
 use App\Entity\Role;
 use App\Entity\User;
-use App\Event\Creators\CreateEntityHistoryEvent;
+use App\Event\Creators\VersionCreateEvent;
 use App\Form\User\ProfileEditType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -35,7 +35,7 @@ class ProfileEditController extends AbstractController {
 		$form->handleRequest($request);
 		if ($form->isSubmitted() && $form->isValid()) {
 			if ($oldName !== $user->getName()) {
-				$this->ed->dispatch(new CreateEntityHistoryEvent($user, 'name', $oldName));
+				$this->ed->dispatch(new VersionCreateEvent($user, 'name', $oldName));
 			}
 			$this->em->flush();
 			return $this->redirectToRoute('profile-show-self');

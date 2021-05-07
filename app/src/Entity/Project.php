@@ -4,13 +4,14 @@ declare(strict_types = 1);
 
 namespace App\Entity;
 
-use App\Entity\Concerns\EntityAuthorConcern;
-use App\Entity\Concerns\EntityIdConcern;
-use App\Entity\Concerns\EntityTimestampsConcern;
-use App\Entity\Contracts\EntityAuthorableContract;
-use App\Entity\Contracts\EntityBackupContract;
-use App\Entity\Contracts\EntityHistoryContract;
-use App\Entity\Contracts\EntityIdContract;
+use App\Entity\Concerns\AuthorConcern;
+use App\Entity\Concerns\IdConcern;
+use App\Entity\Concerns\SoftDeleteConcern;
+use App\Entity\Concerns\TimestampsConcern;
+use App\Entity\Contracts\AuthorableContract;
+use App\Entity\Contracts\SoftDeleteContract;
+use App\Entity\Contracts\VersionableContract;
+use App\Entity\Contracts\IdContract;
 use App\Entity\Contracts\TimeStampableContract;
 use App\Repository\ProjectRepository;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -20,10 +21,11 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @ORM\Entity(repositoryClass=ProjectRepository::class)
  */
-class Project implements EntityIdContract, TimeStampableContract, EntityAuthorableContract, EntityHistoryContract, EntityBackupContract {
-	use EntityTimestampsConcern;
-	use EntityAuthorConcern;
-	use EntityIdConcern;
+class Project implements IdContract, TimeStampableContract, AuthorableContract, VersionableContract, SoftDeleteContract {
+	use TimestampsConcern;
+	use AuthorConcern;
+	use IdConcern;
+	use SoftDeleteConcern;
 	
 	/**
 	 * @ORM\Column(type="string", length=255, nullable=false)

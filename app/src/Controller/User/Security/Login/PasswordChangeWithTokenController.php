@@ -6,7 +6,7 @@ namespace App\Controller\User\Security\Login;
 
 use App\Controller\Concerns\FlashFormErrors;
 use App\Controller\Concerns\FlashHome;
-use App\Event\Security\UserPasswordNeedsHashingEvent;
+use App\Event\Security\PasswordHashEvent;
 use App\Form\User\PasswordChangeWithTokenType;
 use App\Repository\UserRepository;
 use App\Service\Contracts\Flashes;
@@ -45,7 +45,7 @@ class PasswordChangeWithTokenController extends AbstractController {
 		if ($form->isSubmitted() && $form->isValid()) {
 			$user->setPasswordResetToken(null);
 			$user->setPlainPassword($form->get('_password')->getData());
-			$this->ed->dispatch(new UserPasswordNeedsHashingEvent($user));
+			$this->ed->dispatch(new PasswordHashEvent($user));
 			$this->em->flush();
 			$this->mailer->htmlMessage(
 				(string) $user->getEmail(),

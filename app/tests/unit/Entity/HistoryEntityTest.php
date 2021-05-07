@@ -4,12 +4,12 @@ declare(strict_types = 1);
 
 namespace App\Tests\unit\Entity;
 
-use App\Entity\HistoryEntity;
+use App\Entity\Version;
 use PHPUnit\Framework\TestCase;
 
 class HistoryEntityTest extends TestCase {
 	public function testHistory():void {
-		$entity = new HistoryEntity();
+		$entity = new Version();
 		static::assertNull($entity->getId());
 		static::assertNull($entity->getUuid());
 		static::assertNull($entity->getCreatedAt());
