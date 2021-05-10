@@ -16,10 +16,11 @@ class PublicProfileControllerTest extends BaseWebTestCase {
 		$this->client->loginUser($user);
 		$route = sprintf('/%s/profile', $userToView->getUuid());
 		$this->client->request(Request::METHOD_GET, $route);
+		static::assertResponseIsSuccessful();
 		$responseText = (string) $this->client->getResponse()->getContent();
 		static::assertStringContainsStringIgnoringCase('PROFILE', $responseText);
 		static::assertStringContainsStringIgnoringCase('ACTIVITY', $responseText);
-		static::assertStringContainsStringIgnoringCase(htmlentities($userToView->getName()), $responseText);
+		static::assertStringContainsStringIgnoringCase(htmlentities((string) $userToView->getName()), $responseText);
 	}
 	
 	public function testTheTestUserCanNotSeeOtherUsers(): void {
@@ -28,9 +29,10 @@ class PublicProfileControllerTest extends BaseWebTestCase {
 		$this->client->loginUser($user);
 		$route = sprintf('/%s/profile', $userToView->getUuid());
 		$this->client->request(Request::METHOD_GET, $route);
+		static::assertResponseIsSuccessful();
 		$responseText = (string) $this->client->getResponse()->getContent();
 		static::assertStringContainsStringIgnoringCase('PROFILE', $responseText);
 		static::assertStringContainsStringIgnoringCase('ACTIVITY', $responseText);
-		static::assertStringContainsStringIgnoringCase(htmlentities($user->getName()), $responseText);
+		static::assertStringContainsStringIgnoringCase(htmlentities((string) $user->getName()), $responseText);
 	}
 }

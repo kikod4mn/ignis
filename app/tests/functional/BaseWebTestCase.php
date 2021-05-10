@@ -4,14 +4,13 @@ declare(strict_types = 1);
 
 namespace App\Tests;
 
-use App\Tests\Contracts\DBAccessContract;
 use App\Tests\functional\Concerns\BaseWebTestCaseConcern;
 use Faker\Factory;
 use Faker\Generator;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
-abstract class BaseWebTestCase extends WebTestCase implements DBAccessContract {
+abstract class BaseWebTestCase extends WebTestCase {
 	use BaseWebTestCaseConcern;
 	
 	private static Generator $faker;

@@ -7,6 +7,7 @@ namespace App\DataFixtures;
 use App\Entity\Bug;
 use App\Service\TimeCreator;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
+use Doctrine\Common\DataFixtures\FixtureInterface;
 use function mt_rand;
 
 class BugFixtures extends BaseFixture implements DependentFixtureInterface {
@@ -30,7 +31,7 @@ class BugFixtures extends BaseFixture implements DependentFixtureInterface {
 	}
 	
 	/**
-	 * @return array<int, string>
+	 * @return array<class-string<FixtureInterface>>
 	 */
 	public function getDependencies(): array {
 		return [UserFixtures::class, CategoryFixtures::class, ProjectFixtures::class];

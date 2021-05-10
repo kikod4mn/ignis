@@ -196,8 +196,8 @@ class User implements IdContract, UserInterface, TimeStampableContract, Stringab
 		return $this;
 	}
 	
-	public function getUsername(): ?string {
-		return $this->email;
+	public function getUsername(): string {
+		return (string) $this->email;
 	}
 	
 	public function getEmail(): ?string {
@@ -231,7 +231,7 @@ class User implements IdContract, UserInterface, TimeStampableContract, Stringab
 	}
 	
 	public function displayAvatar(): string {
-		if (! $this->avatar) {
+		if ($this->avatar === null) {
 			return 'build/images/_defaults/_default_avatar.png';
 		}
 		return (string) $this->avatar->getPath();
@@ -339,7 +339,7 @@ class User implements IdContract, UserInterface, TimeStampableContract, Stringab
 		return $this;
 	}
 	
-	public function getActive(): ?bool {
+	public function getActive(): bool {
 		return $this->active;
 	}
 	
@@ -426,10 +426,8 @@ class User implements IdContract, UserInterface, TimeStampableContract, Stringab
 	}
 	
 	public function removeProject(Project $project): self {
-		if ($this->projects->removeElement($project)) {
-			if ($project->getAuthor() === $this) {
-				$project->setAuthor(null);
-			}
+		if ($this->projects->removeElement($project) && $project->getAuthor() === $this) {
+			$project->setAuthor(null);
 		}
 		return $this;
 	}
@@ -513,10 +511,8 @@ class User implements IdContract, UserInterface, TimeStampableContract, Stringab
 	}
 	
 	public function removeBug(Bug $bug): self {
-		if ($this->bugs->removeElement($bug)) {
-			if ($bug->getAuthor() === $this) {
-				$bug->setAuthor(null);
-			}
+		if ($this->bugs->removeElement($bug) && $bug->getAuthor() === $this) {
+			$bug->setAuthor(null);
 		}
 		return $this;
 	}
@@ -546,10 +542,8 @@ class User implements IdContract, UserInterface, TimeStampableContract, Stringab
 	}
 	
 	public function removeFeature(Feature $feature): self {
-		if ($this->features->removeElement($feature)) {
-			if ($feature->getAuthor() === $this) {
-				$feature->setAuthor(null);
-			}
+		if ($this->features->removeElement($feature) && $feature->getAuthor() === $this) {
+			$feature->setAuthor(null);
 		}
 		return $this;
 	}
@@ -579,10 +573,8 @@ class User implements IdContract, UserInterface, TimeStampableContract, Stringab
 	}
 	
 	public function removeImage(Image $image): self {
-		if ($this->images->removeElement($image)) {
-			if ($image->getAuthor() === $this) {
-				$image->setAuthor(null);
-			}
+		if ($this->images->removeElement($image) && $image->getAuthor() === $this) {
+			$image->setAuthor(null);
 		}
 		return $this;
 	}
@@ -603,7 +595,7 @@ class User implements IdContract, UserInterface, TimeStampableContract, Stringab
 	}
 	
 	public function hasRole(string $roleToTest): bool {
-		if ($this->roles->count() === 0 && $roleToTest === Role::ROLE_USER) {
+		if ($roleToTest === Role::ROLE_USER) {
 			return true;
 		}
 		return $this->roles->exists(

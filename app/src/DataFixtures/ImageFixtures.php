@@ -10,6 +10,7 @@ use App\Entity\User;
 use App\Service\TimeCreator;
 use DirectoryIterator;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
+use Doctrine\Common\DataFixtures\FixtureInterface;
 use Exception;
 use JetBrains\PhpStorm\ArrayShape;
 use Kikopolis\Str;
@@ -66,7 +67,7 @@ final class ImageFixtures extends BaseFixture implements DependentFixtureInterfa
 	}
 	
 	/**
-	 * @return array<int, string>
+	 * @return array<class-string<FixtureInterface>>
 	 */
 	public function getDependencies(): array {
 		return [UserFixtures::class, ProjectFixtures::class];

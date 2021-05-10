@@ -53,9 +53,9 @@ final class CanEditAddUserController extends AbstractController {
 			$lead = $this->getUser();
 			foreach ($chooseUserForm->get('_canEdit')->getData() as $user) {
 				$project->addCanEdit($user)->addCanView($user);
-				$this->em->flush();
 				$this->logger->info(sprintf('User %s has been added to project %s as an editor and viewer by %s', $user->getId(), $project->getId(), $lead->getId()));
 			}
+			$this->em->flush();
 			return $this->redirectToRoute('project-show', ['project_uuid' => $project->getUuid()]);
 		}
 		return $this->render('projects/choose-editor.html.twig', ['project' => $project, 'chooseUserForm' => $chooseUserForm->createView()]);

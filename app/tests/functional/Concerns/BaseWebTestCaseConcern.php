@@ -14,38 +14,35 @@ use App\Repository\RoleRepository;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityRepository;
 use LogicException;
-use function array_key_exists;
-use function count;
-use function mt_rand;
-use function shuffle;
-use function sprintf;
 
 trait BaseWebTestCaseConcern {
-	/**
-	 * @var array<string, EntityRepository>
-	 */
-	private array $repoCache = [];
+	/** @var array<string, EntityRepository> */
+	private static array $repoCache = [];
+	
+	/** @var array<int, User> */
+	private static array $activeUsers = [];
 	
 	public function getRepository(string $repoClass): EntityRepository {
-		if (! array_key_exists($repoClass, $this->repoCache)) {
+		if (! array_key_exists($repoClass, static::$repoCache)) {
 			$svc = static::$container->get($repoClass);
 			if (! $svc instanceof $repoClass) {
 				throw new LogicException(sprintf('Cannot find service "%s"', $repoClass));
 			}
-			$this->repoCache[$repoClass] = $svc;
+			static::$repoCache[$repoClass] = $svc;
 		}
-		return $this->repoCache[$repoClass];
+		return static::$repoCache[$repoClass];
 	}
 	
 	protected function getOneAdmin(): User {
 		/** @var UserRepository $userRepository */
 		$userRepository = $this->getRepository(UserRepository::class);
-		$projectLeads   = $userRepository->findByRoles([$this->getAdminRole()]);
-		$count          = count($projectLeads) - 1;
+		$admins   = $userRepository->findByRoles([$this->getAdminRole()]);
+		$count          = count($admins) - 1;
 		if ($count === 0) {
 			throw new LogicException('No project leads were found!');
 		}
-		$user = $projectLeads[mt_rand(0, $count)];
+		/** @noinspection RandomApiMigrationInspection */
+		$user = $admins[mt_rand(0, $count)];
 		if (! $user instanceof User) {
 			throw new LogicException(
 				sprintf(
@@ -65,6 +62,7 @@ trait BaseWebTestCaseConcern {
 		if ($count === 0) {
 			throw new LogicException('No project leads were found!');
 		}
+		/** @noinspection RandomApiMigrationInspection */
 		$user = $projectLeads[mt_rand(0, $count)];
 		if (! $user instanceof User) {
 			throw new LogicException(
@@ -81,14 +79,19 @@ trait BaseWebTestCaseConcern {
 	}
 	
 	protected function getOneActiveUser(): User {
-		/** @var UserRepository $userRepository */
-		$userRepository = $this->getRepository(UserRepository::class);
-		$users          = $userRepository->findByRoles([$this->getUserRole()]);
-		$count          = count($users) - 1;
-		if ($count === 0) {
-			throw new LogicException('No project leads were found!');
+		if (count(static::$activeUsers) === 0) {
+			/** @var UserRepository $userRepository */
+			$userRepository = $this->getRepository(UserRepository::class);
+			$users          = $userRepository->findByRoles([$this->getUserRole()]);
+			$count          = count($users) - 1;
+			if ($count === 0) {
+				throw new LogicException('No active users were found!');
+			}
+			static::$activeUsers = array_filter(
+				$users, static fn (User $user) => $user->getActive()
+			);
 		}
-		$user = $users[mt_rand(0, $count)];
+		$user = static::$activeUsers[array_rand(static::$activeUsers)];
 		if (! $user instanceof User) {
 			throw new LogicException(
 				sprintf(
@@ -205,7 +208,6 @@ trait BaseWebTestCaseConcern {
 	
 	/**
 	 * @param   array<int, Category>   $categories
-	 * @return Category
 	 */
 	private function categoryNot(array $categories, Category $category): Category {
 		shuffle($categories);

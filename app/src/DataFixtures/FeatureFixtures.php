@@ -4,9 +4,12 @@ declare(strict_types = 1);
 
 namespace App\DataFixtures;
 
-use App\Entity\Feature;
+use App\Entity\Feature;	/**
+	 * @return array<int, string>
+	 */
 use App\Service\TimeCreator;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
+use Doctrine\Common\DataFixtures\FixtureInterface;
 use function mt_rand;
 
 class FeatureFixtures extends BaseFixture implements DependentFixtureInterface {
@@ -29,6 +32,9 @@ class FeatureFixtures extends BaseFixture implements DependentFixtureInterface {
 		);
 	}
 	
+	/**
+	 * @return array<class-string<FixtureInterface>>
+	 */
 	public function getDependencies(): array {
 		return [UserFixtures::class, ProjectFixtures::class, CategoryFixtures::class];
 	}

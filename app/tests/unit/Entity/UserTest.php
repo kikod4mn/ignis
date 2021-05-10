@@ -41,7 +41,7 @@ class UserTest extends TestCase {
 		static::assertNull($user->getAgreedToTermsAt());
 		static::assertNull($user->getUpdatedAt());
 		static::assertNull($user->getCreatedAt());
-		static::assertNull($user->getUsername());
+		static::assertEquals('', $user->getUsername());
 		static::assertFalse($user->getDisabled());
 		static::assertFalse($user->getActive());
 		static::assertNull($user->getLastLoginFromIp());
@@ -137,8 +137,8 @@ class UserTest extends TestCase {
 		static::assertCount(2, $user->getProjects());
 		static::assertInstanceOf(Project::class, $user->getProjects()[0]);
 		static::assertInstanceOf(Project::class, $user->getProjects()[1]);
-		static::assertEquals($projectOneName, $user->getProjects()[0]?->getName());
-		static::assertEquals($projectTwoName, $user->getProjects()[1]?->getName());
+		static::assertEquals($projectOneName, $user->getProjects()[0]->getName());
+		static::assertEquals($projectTwoName, $user->getProjects()[1]->getName());
 	}
 	
 	public function testUserViewableProjects(): void {
@@ -154,8 +154,8 @@ class UserTest extends TestCase {
 		static::assertCount(2, $user->getViewableProjects());
 		static::assertInstanceOf(Project::class, $user->getViewableProjects()[0]);
 		static::assertInstanceOf(Project::class, $user->getViewableProjects()[1]);
-		static::assertEquals($projectOneName, $user->getViewableProjects()[0]?->getName());
-		static::assertEquals($projectTwoName, $user->getViewableProjects()[1]?->getName());
+		static::assertEquals($projectOneName, $user->getViewableProjects()[0]->getName());
+		static::assertEquals($projectTwoName, $user->getViewableProjects()[1]->getName());
 	}
 	
 	public function testUserEditableProjects(): void {
@@ -171,8 +171,8 @@ class UserTest extends TestCase {
 		static::assertCount(2, $user->getEditableProjects());
 		static::assertInstanceOf(Project::class, $user->getEditableProjects()[0]);
 		static::assertInstanceOf(Project::class, $user->getEditableProjects()[1]);
-		static::assertEquals($projectOneName, $user->getEditableProjects()[0]?->getName());
-		static::assertEquals($projectTwoName, $user->getEditableProjects()[1]?->getName());
+		static::assertEquals($projectOneName, $user->getEditableProjects()[0]->getName());
+		static::assertEquals($projectTwoName, $user->getEditableProjects()[1]->getName());
 	}
 	
 	public function testUserBugs(): void {
@@ -188,8 +188,8 @@ class UserTest extends TestCase {
 		static::assertCount(2, $user->getBugs());
 		static::assertInstanceOf(Bug::class, $user->getBugs()[0]);
 		static::assertInstanceOf(Bug::class, $user->getBugs()[1]);
-		static::assertEquals($bugOneName, $user->getBugs()[0]?->getTitle());
-		static::assertEquals($bugTwoName, $user->getBugs()[1]?->getTitle());
+		static::assertEquals($bugOneName, $user->getBugs()[0]->getTitle());
+		static::assertEquals($bugTwoName, $user->getBugs()[1]->getTitle());
 	}
 	
 	public function testUserFeatures(): void {
@@ -205,8 +205,8 @@ class UserTest extends TestCase {
 		static::assertCount(2, $user->getFeatures());
 		static::assertInstanceOf(Feature::class, $user->getFeatures()[0]);
 		static::assertInstanceOf(Feature::class, $user->getFeatures()[1]);
-		static::assertEquals($featureOneName, $user->getFeatures()[0]?->getTitle());
-		static::assertEquals($featureTwoName, $user->getFeatures()[1]?->getTitle());
+		static::assertEquals($featureOneName, $user->getFeatures()[0]->getTitle());
+		static::assertEquals($featureTwoName, $user->getFeatures()[1]->getTitle());
 	}
 	
 	public function testUserImages(): void {
@@ -222,7 +222,7 @@ class UserTest extends TestCase {
 		static::assertCount(2, $user->getImages());
 		static::assertInstanceOf(Image::class, $user->getImages()[0]);
 		static::assertInstanceOf(Image::class, $user->getImages()[1]);
-		static::assertEquals($imageOneName, $user->getImages()[0]?->getPath());
-		static::assertEquals($imageTwoName, $user->getImages()[1]?->getPath());
+		static::assertEquals($imageOneName, $user->getImages()[0]->getPath());
+		static::assertEquals($imageTwoName, $user->getImages()[1]->getPath());
 	}
 }

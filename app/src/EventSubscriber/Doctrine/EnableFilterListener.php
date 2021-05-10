@@ -18,6 +18,6 @@ class EnableFilterListener {
 			return;
 		}
 		$filter = $this->em->getFilters()->enable('soft_deleted_filter');
-		$filter->setParameter('soft_deleted', true);
+		$filter->setParameter('soft_deleted', 'false');
 	}
 }

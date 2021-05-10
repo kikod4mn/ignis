@@ -15,7 +15,6 @@ class PublicProfileController extends AbstractController {
 	/**
 	 * @Route("/{user_uuid}/profile", name="profile-show-public", methods={"GET"})
 	 * @ParamConverter("user", class="App\Entity\User", options={"mapping": {"user_uuid": "uuid"}})
-	 * @return array<string, object|null>
 	 */
 	public function __invoke(User $user): Response {
 		if ($this->isGranted(Role::ROLE_TEST_USER)) {

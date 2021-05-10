@@ -17,7 +17,7 @@ class PrivateProfileControllerTest extends BaseWebTestCase {
 		$responseText = (string) $this->client->getResponse()->getContent();
 		static::assertStringContainsStringIgnoringCase('PROFILE', $responseText);
 		static::assertStringContainsStringIgnoringCase('ACTIVITY', $responseText);
-		static::assertStringContainsStringIgnoringCase(htmlentities($user->getName()), $responseText);
+		static::assertStringContainsStringIgnoringCase(htmlentities((string) $user->getName()), $responseText);
 	}
 	
 	public function testAccountPageExampleWorksForTestUser(): void {
@@ -28,6 +28,6 @@ class PrivateProfileControllerTest extends BaseWebTestCase {
 		$responseText = (string) $this->client->getResponse()->getContent();
 		static::assertStringContainsStringIgnoringCase('PROFILE', $responseText);
 		static::assertStringContainsStringIgnoringCase('ACTIVITY', $responseText);
-		static::assertStringContainsStringIgnoringCase(htmlentities($user->getName()), $responseText);
+		static::assertStringContainsStringIgnoringCase(htmlentities((string) $user->getName()), $responseText);
 	}
 }

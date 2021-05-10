@@ -27,7 +27,7 @@ class ListController extends AbstractController {
 		throw $this->createNotFoundException();
 	}
 	
-	private function showcaseList($page): Response {
+	private function showcaseList(int $page): Response {
 		return $this->render(
 			'projects/list.html.twig',
 			[

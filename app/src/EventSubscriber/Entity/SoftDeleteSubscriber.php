@@ -31,7 +31,7 @@ class SoftDeleteSubscriber implements EventSubscriber {
 				return;
 			}
 			// Make sure entity is first soft deleted, if it isnt, soft delete it and schedule extra update
-			if (! $entity->getSoftDeleted() || $entity->getSoftDeletedAt() === null && !$entity->isHardDelete()) {
+			if ((! $entity->getSoftDeleted() || $entity->getSoftDeletedAt() === null) && !$entity->isHardDelete()) {
 				$oldSoftDeleted   = $entity->getSoftDeleted();
 				$oldSoftDeletedAt = $entity->getSoftDeletedAt();
 				$this->ed->dispatch(new DeleteEvent($entity));

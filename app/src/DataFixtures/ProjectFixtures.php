@@ -7,6 +7,7 @@ namespace App\DataFixtures;
 use App\Entity\Project;
 use App\Entity\Role;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
+use Doctrine\Common\DataFixtures\FixtureInterface;
 use function mt_rand;
 
 class ProjectFixtures extends BaseFixture implements DependentFixtureInterface {
@@ -37,6 +38,9 @@ class ProjectFixtures extends BaseFixture implements DependentFixtureInterface {
 		);
 	}
 	
+	/**
+	 * @return array<class-string<FixtureInterface>>
+	 */
 	public function getDependencies(): array {
 		return [UserFixtures::class, CategoryFixtures::class, LanguageFixtures::class];
 	}

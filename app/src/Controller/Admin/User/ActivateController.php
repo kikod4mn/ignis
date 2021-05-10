@@ -6,6 +6,7 @@ namespace App\Controller\Admin\User;
 
 use App\Entity\Role;
 use App\Entity\User;
+use App\Event\Security\ActivateEvent;
 use App\Service\Contracts\Flashes;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
@@ -33,8 +34,11 @@ class ActivateController extends AbstractController {
 		throw $this->createNotFoundException();
 	}
 	
-	private function activate(User $user):Response {
+	private function activate(User $user): Response {
 		$user->setActive(true);
+		// todo implement email on activation
+		$this->ed->dispatch(new ActivateEvent($user));
+		$this->em->flush();
 		/** @var User $admin */
 		$admin = $this->getUser();
 		$this->logger->info(
@@ -43,12 +47,11 @@ class ActivateController extends AbstractController {
 				$admin->getName(), $admin->getId(), $user->getName(), $user->getId()
 			)
 		);
-		$this->em->flush();
 		$this->addFlash(Flashes::SUCCESS_MESSAGE, 'User has been activated. This user can now login.');
 		return $this->redirectToRoute('admin-users-list');
 	}
 	
-	private function showcaseActivate():Response {
+	private function showcaseActivate(): Response {
 		$this->addFlash(Flashes::SUCCESS_MESSAGE, 'User has been activated. This user can now login.');
 		$this->addFlash(Flashes::INFO_MESSAGE, 'Actually nothing changed. Just a test user doing test user things!');
 		return $this->redirectToRoute('admin-users-list');

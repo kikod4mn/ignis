@@ -51,7 +51,7 @@ class UserRepository extends ServiceEntityRepository {
 	 */
 	public function findOneByRoles(array $roles): ?User {
 		$users = $this->findByRoles($roles);
-		return count($users) ? $users[0] : null;
+		return $users[array_rand($users)];
 	}
 	
 	/**

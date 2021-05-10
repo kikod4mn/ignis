@@ -12,6 +12,7 @@ use App\Service\TokenGenerator;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
+use Doctrine\Common\DataFixtures\FixtureInterface;
 use Faker\Factory;
 use Faker\Generator;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
@@ -27,28 +28,39 @@ class UserFixtures extends BaseFixture implements DependentFixtureInterface {
 	}
 	
 	public function loadData(): void {
-		// Not yet activated with no emails verified
+		// Not yet activated with emails not verified
 		$this->createMany(
-			User::class, 4, function (User $user) {
+			User::class, 4, function (User $user): void {
 			$this->setBasicUserRoles($user);
 			$this->setBasicUserProps($user);
 			$user->setActive(false);
 			$user->setEmailConfirmToken($this->tokenGenerator->alphanumericToken(64));
 		}
 		);
+		// Not yet activated with emails verified
+		$this->createMany(
+			User::class, 4, function (User $user): void {
+			$this->setBasicUserRoles($user);
+			$this->setBasicUserProps($user);
+			$user->setActive(false);
+			$user->setEmailConfirmedAt(TimeCreator::randomPast());
+			$user->setEmailConfirmToken(null);
+		}
+		);
 		// Active users with emails verified
 		$this->createMany(
-			User::class, 65, function (User $user) {
+			User::class, 65, function (User $user): void {
 			$this->setBasicUserRoles($user);
 			$this->setBasicUserProps($user);
 			$this->setUserActive($user);
 			$this->setUserLastLogin($user);
+			/** @noinspection RandomApiMigrationInspection */
 			$user->setUpdatedAt(mt_rand(0, 1) > 0 ? TimeCreator::randomPast() : null);
 		}
 		);
 		// Active and password reset requested
 		$this->createMany(
-			User::class, 7, function (User $user) {
+			User::class, 4, function (User $user): void {
 			$this->setBasicUserRoles($user);
 			$this->setBasicUserProps($user);
 			$this->setUserActive($user);
@@ -57,7 +69,7 @@ class UserFixtures extends BaseFixture implements DependentFixtureInterface {
 		);
 		// Admins
 		$this->createMany(
-			User::class, 5, function (User $user) {
+			User::class, 5, function (User $user): void {
 			$this->setAdminUserRoles($user);
 			$this->setBasicUserProps($user);
 			$this->setUserActive($user);
@@ -65,7 +77,7 @@ class UserFixtures extends BaseFixture implements DependentFixtureInterface {
 		);
 		// Project leads
 		$this->createMany(
-			User::class, 5, function (User $user) {
+			User::class, 5, function (User $user): void {
 			$this->setProjectLeadRoles($user);
 			$this->setBasicUserProps($user);
 			$this->setUserActive($user);
@@ -73,13 +85,13 @@ class UserFixtures extends BaseFixture implements DependentFixtureInterface {
 		);
 		// Test User
 		$this->createMany(
-			User::class, 1, function (User $user) {
+			User::class, 1, function (User $user): void {
 			$user->generateUuid();
 			$user->setName('Test User');
 			$user->setEmail('not@test.com');
 			$user->setPassword($this->encoder->encodePassword($user, 'test123'));
 			$user->setAgreedToTermsAt(TimeCreator::now());
-			$user->setCreatedAt($user->getAgreedToTermsAt());
+			$user->setCreatedAt(TimeCreator::now());
 			/** @var Collection<int, Role> $roles */
 			$roles = new ArrayCollection(
 				[
@@ -92,10 +104,31 @@ class UserFixtures extends BaseFixture implements DependentFixtureInterface {
 			$user->setEmailConfirmToken(null);
 		}
 		);
+		// Special Admin User
+		$this->createMany(
+			User::class, 1, function (User $user): void {
+			$user->generateUuid();
+			$user->setName('Kristo Leas');
+			$user->setEmail('kristo@ignis.ee');
+			$user->setPassword($this->encoder->encodePassword($user, 'secret'));
+			$user->setAgreedToTermsAt(TimeCreator::now());
+			$user->setCreatedAt(TimeCreator::now());
+			/** @var Collection<int, Role> $roles */
+			$roles = new ArrayCollection(
+				[
+					$this->roleRepository->findOneBy(['name' => Role::ROLE_ADMIN]),
+				]
+			);
+			$user->setRoles($roles);
+			$user->setActive(true);
+			$user->setEmailConfirmedAt(TimeCreator::now());
+			$user->setEmailConfirmToken(null);
+		}
+		);
 	}
 	
 	/**
-	 * @return array<int, string>
+	 * @return array<class-string<FixtureInterface>>
 	 */
 	public function getDependencies(): array {
 		return [RoleFixtures::class];
