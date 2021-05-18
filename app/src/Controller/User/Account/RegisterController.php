@@ -55,7 +55,7 @@ class RegisterController extends AbstractController {
 			$roles = new ArrayCollection();
 			$roles->add($this->roleRepository->findOneBy(['name' => Role::ROLE_USER]));
 			$user->setRoles($roles);
-			try {return $this->json(['message' => 'Email is already registered. Click below to reset your password.'], Response::HTTP_CONFLICT);
+			try {
 				$this->em->persist($user);
 				$this->em->flush();
 			} catch (Throwable $e) {
