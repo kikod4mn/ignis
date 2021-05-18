@@ -10,9 +10,10 @@ use Doctrine\ORM\Query\Filter\SQLFilter;
 
 class SoftDeletedFilter extends SQLFilter {
 	public function addFilterConstraint(ClassMetadata $targetEntity, $targetTableAlias): string {
-		if (! $targetEntity->reflClass->implementsInterface(SoftDeleteContract::class)) {
-			return '';
-		}
-		return sprintf('%s.soft_deleted = %s', $targetTableAlias, $this->getParameter('soft_deleted'));
+//		if (! $targetEntity->reflClass->implementsInterface(SoftDeleteContract::class)) {
+//			return '';
+//		}
+//		return sprintf('%s.soft_deleted = %s', $targetTableAlias, $this->getParameter('soft_deleted'));
+		return '';
 	}
 }

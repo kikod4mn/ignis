@@ -4,6 +4,7 @@ declare(strict_types = 1);
 
 namespace App\Controller\Language;
 
+use App\Controller\Concerns\FlashFormErrors;
 use App\Entity\Language;
 use App\Entity\Role;
 use App\Event\Creators\IdCreateEvent;
@@ -19,6 +20,8 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Throwable;
 
 class CreateController extends AbstractController {
+	use FlashFormErrors;
+	
 	public function __construct(private EntityManagerInterface $em, private LoggerInterface $logger, private EventDispatcherInterface $ed) { }
 	
 	/**
@@ -53,6 +56,7 @@ class CreateController extends AbstractController {
 			$this->addFlash(Flashes::SUCCESS_MESSAGE, 'Created a new language successfully.');
 			return $this->redirectToRoute('languages-list');
 		}
+		$this->flashFormErrors($form);
 		return $this->render('languages/create.html.twig', ['languageCreateForm' => $form->createView()]);
 	}
 	
@@ -66,6 +70,7 @@ class CreateController extends AbstractController {
 			$this->addFlash(Flashes::INFO_MESSAGE, 'Actually nothing changed. Just a test user doing test user things!');
 			return $this->redirectToRoute('languages-list');
 		}
+		$this->flashFormErrors($form);
 		return $this->render('languages/create.html.twig', ['languageCreateForm' => $form->createView()]);
 	}
 }

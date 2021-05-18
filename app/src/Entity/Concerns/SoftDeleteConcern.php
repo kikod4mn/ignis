@@ -44,7 +44,7 @@ trait SoftDeleteConcern {
 		return $this;
 	}
 	
-	public function isHardDelete(): bool {
+	public function getHardDeleted(): bool {
 		return $this->deleteType === SoftDeleteContract::HARD_DELETE;
 	}
 	
@@ -53,7 +53,7 @@ trait SoftDeleteConcern {
 	 *                                 This functionality allows for removal from the database after soft delete is done.
 	 * @return SoftDeleteContract|$this
 	 */
-	public function setHardDelete(string $deleteType): SoftDeleteContract {
+	public function setHardDeleted(string $deleteType): SoftDeleteContract {
 		$this->deleteType = $deleteType;
 		return $this;
 	}

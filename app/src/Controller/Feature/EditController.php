@@ -4,6 +4,7 @@ declare(strict_types = 1);
 
 namespace App\Controller\Feature;
 
+use App\Controller\Concerns\FlashFormErrors;
 use App\Entity\Feature;
 use App\Entity\Project;
 use App\Entity\Role;
@@ -24,6 +25,8 @@ use Throwable;
 use function sprintf;
 
 class EditController extends AbstractController {
+	use FlashFormErrors;
+	
 	public function __construct(private EntityManagerInterface $em, private LoggerInterface $logger, private EventDispatcherInterface $ed) { }
 	
 	/**
@@ -35,7 +38,8 @@ class EditController extends AbstractController {
 		if ($this->isGranted(Role::ROLE_TEST_USER)) {
 			return $this->showcaseEdit($request, $project, $feature);
 		}
-		if ($this->isGranted(Role::ROLE_VIEW_PROJECT, $project) && $this->isGranted(Role::ROLE_EDIT_FEATURE, $feature)) {
+		if ($this->isGranted(Role::ROLE_VIEW_PROJECT, $project)
+			&& $this->isGranted(Role::ROLE_EDIT_FEATURE, $feature)) {
 			return $this->edit($request, $project, $feature);
 		}
 		if (! $this->isGranted(Role::ROLE_USER)) {
@@ -76,6 +80,7 @@ class EditController extends AbstractController {
 			$this->addFlash(Flashes::SUCCESS_MESSAGE, 'Feature edited! Your changes were saved successfully.');
 			return $this->redirectToRoute('project-show-features', ['project_uuid' => $project->getUuid()]);
 		}
+		$this->flashFormErrors($form);
 		return $this->render('features/edit.html.twig', ['feature' => $feature, 'project' => $project, 'featureEditForm' => $form->createView()]);
 	}
 	
@@ -89,6 +94,7 @@ class EditController extends AbstractController {
 			$this->addFlash(Flashes::INFO_MESSAGE, 'Actually nothing changed. Just a test user doing test user things!');
 			return $this->render('features/test-show.html.twig', ['feature' => $feature]);
 		}
+		$this->flashFormErrors($form);
 		return $this->render('features/edit.html.twig', ['feature' => $featureClone, 'project' => $project, 'featureEditForm' => $form->createView()]);
 	}
 }

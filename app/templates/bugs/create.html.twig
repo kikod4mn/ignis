@@ -21,7 +21,7 @@
 		
 		{# BUG TITLE #}
 		<div class="form-group py-1 px-md-1 p-lg-3">
-			{% if bugCreateForm._title.vars.errors is not empty and bugCreateForm._title.vars.errors.length > 0 %}
+			{% if bugCreateForm._title.vars.errors is not empty and bugCreateForm._title.vars.errors|length > 0 %}
 				<div class="flash flash__danger">{{ form_errors(bugCreateForm._title) }}</div>
 			{% endif %}
 			<div class="form-outline">
@@ -33,7 +33,7 @@
 		
 		{# BUG DESCRIPTION #}
 		<div class="form-group py-1 px-md-1 p-lg-3">
-			{% if bugCreateForm._description.vars.errors is not empty and bugCreateForm._description.vars.errors.length > 0 %}
+			{% if bugCreateForm._description.vars.errors is not empty and bugCreateForm._description.vars.errors|length > 0 %}
 				<div class="flash flash__danger">{{ form_errors(bugCreateForm._description) }}</div>
 			{% endif %}
 			<div class="form-outline">

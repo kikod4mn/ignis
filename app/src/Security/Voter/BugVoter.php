@@ -41,12 +41,11 @@ class BugVoter extends Voter {
 			case Role::ROLE_ADD_BUG:
 				return $this->security->isGranted(Role::ROLE_ADD_BUG, $user);
 			case Role::ROLE_FIX_BUG:
-				return $this->security->isGranted(Role::ROLE_FIX_BUG, $user)
-					   && $this->security->isGranted(Role::ROLE_PROJECT_LEAD, $user);
+				return $this->security->isGranted(Role::ROLE_FIX_BUG, $user);
 			case Role::ROLE_EDIT_BUG:
-				return $this->security->isGranted(Role::ROLE_EDIT_BUG, $user) && $subject->getAuthor()?->getId() === $user->getId();
+				return $subject->getAuthor()?->getId() === $user->getId();
 			case Role::ROLE_DELETE_BUG:
-				return $this->security->isGranted(Role::ROLE_DELETE_BUG, $user) && $subject->getAuthor()?->getId() === $user->getId();
+				return $subject->getAuthor()?->getId() === $user->getId();
 		}
 		
 		return false;

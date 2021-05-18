@@ -4,6 +4,7 @@ declare(strict_types = 1);
 
 namespace App\Controller\Project;
 
+use App\Controller\Concerns\FlashFormErrors;
 use App\Entity\Project;
 use App\Entity\Role;
 use App\Event\Creators\AuthorableCreateEvent;
@@ -21,8 +22,9 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Throwable;
 
 final class CreateController extends AbstractController {
-	public function __construct(private EntityManagerInterface $em, private LoggerInterface $logger, private EventDispatcherInterface $ed) {
-	}
+	use FlashFormErrors;
+	
+	public function __construct(private EntityManagerInterface $em, private LoggerInterface $logger, private EventDispatcherInterface $ed) { }
 	
 	/**
 	 * @Route("/projects/create", name="projects-create", methods={"GET", "POST"})
@@ -31,7 +33,7 @@ final class CreateController extends AbstractController {
 		if ($this->isGranted(Role::ROLE_TEST_USER)) {
 			return $this->createShowcase($request);
 		}
-		if ($this->isGranted(Role::ROLE_ADD_PROJECT)) {
+		if ($this->isGranted(Role::ROLE_ADD_PROJECT) && $this->isGranted(Role::ROLE_PROJECT_LEAD)) {
 			return $this->create($request);
 		}
 		if (! $this->isGranted(Role::ROLE_USER)) {
@@ -58,6 +60,7 @@ final class CreateController extends AbstractController {
 			$this->addFlash(Flashes::SUCCESS_MESSAGE, 'Created a new project successfully.');
 			return $this->redirectToRoute('projects-list');
 		}
+		$this->flashFormErrors($form);
 		return $this->render('projects/create.html.twig', ['projectCreateForm' => $form->createView()]);
 	}
 	
@@ -73,6 +76,7 @@ final class CreateController extends AbstractController {
 			$this->addFlash(Flashes::INFO_MESSAGE, 'Actually nothing changed. Just a test user doing test user things!');
 			return $this->redirectToRoute('projects-list');
 		}
+		$this->flashFormErrors($form);
 		return $this->render('projects/create.html.twig', ['projectCreateForm' => $form->createView()]);
 	}
 }

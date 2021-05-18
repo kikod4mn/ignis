@@ -28,7 +28,7 @@ class DeleteSubscriber implements EventSubscriberInterface {
 			return;
 		}
 		// By this point, the entity should only be an entity already soft deleted, thus we set the hard delete and remove it finally.
-		$entity->setHardDelete(SoftDeleteContract::HARD_DELETE);
+		$entity->setHardDeleted(SoftDeleteContract::HARD_DELETE);
 		$this->em->remove($entity);
 	}
 }

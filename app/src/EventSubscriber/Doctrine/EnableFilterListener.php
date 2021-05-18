@@ -13,11 +13,14 @@ class EnableFilterListener {
 	public function __construct(private EntityManagerInterface $em, private Security $security) { }
 	
 	public function onKernelRequest(RequestEvent $request): void {
-		// disable relevant filters for admins and project leads
-		if ($this->security->isGranted(Role::ROLE_ADMIN) || $this->security->isGranted(Role::ROLE_PROJECT_LEAD)) {
-			return;
-		}
-		$filter = $this->em->getFilters()->enable('soft_deleted_filter');
-		$filter->setParameter('soft_deleted', 'false');
+//		if (! $request->isMasterRequest()) {
+//			return;
+//		}
+		// disable relevant filters for admins
+//		if ($this->security->isGranted(Role::ROLE_ADMIN)) {
+//			return;
+//		}
+//		$filter = $this->em->getFilters()->enable('soft_deleted_filter');
+//		$filter->setParameter('soft_deleted', 'false');
 	}
 }

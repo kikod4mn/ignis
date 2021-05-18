@@ -20,33 +20,33 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 class Role implements IdContract, Stringable {
 	use IdConcern;
 	
-	const ROLE_TEST_USER         = 'ROLE_TEST_USER';
-	const ROLE_USER              = 'ROLE_USER';
-	const ROLE_EDIT_ACCOUNT      = 'ROLE_EDIT_ACCOUNT';
-	const ROLE_EDIT_PROFILE      = 'ROLE_EDIT_PROFILE';
-	const ROLE_PROJECT_LEAD      = 'ROLE_PROJECT_LEAD';
-	const ROLE_ADMIN             = 'ROLE_ADMIN';
-	const ROLE_DELETE_USER       = 'ROLE_DELETE_USER';
-	const ROLE_MODIFY_ROLES      = 'ROLE_MODIFY_ROLES';
-	const ROLE_VIEW_PROJECT      = 'ROLE_VIEW_PROJECT';
-	const ROLE_ADD_PROJECT       = 'ROLE_ADD_PROJECT';
-	const ROLE_EDIT_PROJECT      = 'ROLE_EDIT_PROJECT';
-	const ROLE_DELETE_PROJECT    = 'ROLE_DELETE_PROJECT';
-	const ROLE_ADD_FEATURE       = 'ROLE_ADD_FEATURE';
-	const ROLE_IMPLEMENT_FEATURE = 'ROLE_IMPLEMENT_FEATURE';
-	const ROLE_EDIT_FEATURE      = 'ROLE_EDIT_FEATURE';
-	const ROLE_DELETE_FEATURE    = 'ROLE_DELETE_FEATURE';
-	const ROLE_ADD_CATEGORY      = 'ROLE_ADD_CATEGORY';
-	const ROLE_EDIT_CATEGORY     = 'ROLE_EDIT_CATEGORY';
-	const ROLE_DELETE_CATEGORY   = 'ROLE_DELETE_CATEGORY';
-	const ROLE_ADD_LANGUAGE      = 'ROLE_ADD_LANGUAGE';
-	const ROLE_EDIT_LANGUAGE     = 'ROLE_EDIT_LANGUAGE';
-	const ROLE_DELETE_LANGUAGE   = 'ROLE_DELETE_LANGUAGE';
-	const ROLE_ADD_BUG           = 'ROLE_ADD_BUG';
-	const ROLE_EDIT_BUG          = 'ROLE_EDIT_BUG';
-	const ROLE_FIX_BUG           = 'ROLE_FIX_BUG';
-	const ROLE_DELETE_BUG        = 'ROLE_DELETE_BUG';
-	const ROLES                  = [
+	public const ROLE_TEST_USER         = 'ROLE_TEST_USER';
+	public const ROLE_USER              = 'ROLE_USER';
+	public const ROLE_EDIT_ACCOUNT      = 'ROLE_EDIT_ACCOUNT';
+	public const ROLE_EDIT_PROFILE      = 'ROLE_EDIT_PROFILE';
+	public const ROLE_PROJECT_LEAD      = 'ROLE_PROJECT_LEAD';
+	public const ROLE_ADMIN             = 'ROLE_ADMIN';
+	public const ROLE_DELETE_USER       = 'ROLE_DELETE_USER';
+	public const ROLE_MODIFY_ROLES      = 'ROLE_MODIFY_ROLES';
+	public const ROLE_VIEW_PROJECT      = 'ROLE_VIEW_PROJECT';
+	public const ROLE_ADD_PROJECT       = 'ROLE_ADD_PROJECT';
+	public const ROLE_EDIT_PROJECT      = 'ROLE_EDIT_PROJECT';
+	public const ROLE_DELETE_PROJECT    = 'ROLE_DELETE_PROJECT';
+	public const ROLE_ADD_FEATURE       = 'ROLE_ADD_FEATURE';
+	public const ROLE_IMPLEMENT_FEATURE = 'ROLE_IMPLEMENT_FEATURE';
+	public const ROLE_EDIT_FEATURE      = 'ROLE_EDIT_FEATURE';
+	public const ROLE_DELETE_FEATURE    = 'ROLE_DELETE_FEATURE';
+	public const ROLE_ADD_CATEGORY      = 'ROLE_ADD_CATEGORY';
+	public const ROLE_EDIT_CATEGORY     = 'ROLE_EDIT_CATEGORY';
+	public const ROLE_DELETE_CATEGORY   = 'ROLE_DELETE_CATEGORY';
+	public const ROLE_ADD_LANGUAGE      = 'ROLE_ADD_LANGUAGE';
+	public const ROLE_EDIT_LANGUAGE     = 'ROLE_EDIT_LANGUAGE';
+	public const ROLE_DELETE_LANGUAGE   = 'ROLE_DELETE_LANGUAGE';
+	public const ROLE_ADD_BUG           = 'ROLE_ADD_BUG';
+	public const ROLE_EDIT_BUG          = 'ROLE_EDIT_BUG';
+	public const ROLE_FIX_BUG           = 'ROLE_FIX_BUG';
+	public const ROLE_DELETE_BUG        = 'ROLE_DELETE_BUG';
+	public const ROLES                  = [
 		self::ROLE_TEST_USER,
 		self::ROLE_USER, self::ROLE_ADMIN, self::ROLE_PROJECT_LEAD,
 		self::ROLE_VIEW_PROJECT, self::ROLE_ADD_PROJECT, self::ROLE_EDIT_PROJECT, self::ROLE_DELETE_PROJECT,

@@ -33,13 +33,16 @@ class UserRepository extends ServiceEntityRepository {
 	
 	/**
 	 * @param   array<int, Role>   $roles
+	 * @param   bool               $active
 	 * @return array<int, User>
 	 */
-	public function findByRoles(array $roles): array {
+	public function findByRoles(array $roles, bool $active = true): array {
 		$qb = $this->createQueryBuilder('u');
 		foreach ($roles as $role) {
 			$qb->where(':role MEMBER OF u.roles')
 			   ->setParameter('role', $role)
+			   ->andWhere('u.active = :active')
+			   ->setParameter('active', $active)
 			;
 		}
 		return $qb->getQuery()->getResult();
@@ -47,9 +50,10 @@ class UserRepository extends ServiceEntityRepository {
 	
 	/**
 	 * @param   array<int, Role>   $roles
+	 * @param   bool               $active
 	 * @return null|User
 	 */
-	public function findOneByRoles(array $roles): ?User {
+	public function findOneByRoles(array $roles, bool $active = true): ?User {
 		$users = $this->findByRoles($roles);
 		return $users[array_rand($users)];
 	}

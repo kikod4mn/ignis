@@ -8,7 +8,6 @@ use App\Event\Security\PasswordHashEvent;
 use LogicException;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
-use function is_string;
 
 class PasswordHashSubscriber implements EventSubscriberInterface {
 	public function __construct(private UserPasswordEncoderInterface $encoder) { }
@@ -27,13 +26,13 @@ class PasswordHashSubscriber implements EventSubscriberInterface {
 		if ($user->getPlainPassword() === null) {
 			throw new LogicException('User must have a plain password in order to save.');
 		}
-		$oldPwdHash = is_string($user->getPassword()) ? $user->getPassword() : null;
-		if ($oldPwdHash) {
-			$user->addOldPasswordHash($oldPwdHash);
+		if ($user->getPassword() !== null) {
+			$user->addOldPasswordHash($user->getPassword());
 		}
-		$user->setPassword(
-			$this->encoder->encodePassword($user, $user->getPlainPassword())
-		);
+		$user
+			->setPassword($this->encoder->encodePassword($user, $user->getPlainPassword()))
+			->eraseCredentials()
+		;
 	}
 	
 	public function checkOldHashes(PasswordHashEvent $event): void {

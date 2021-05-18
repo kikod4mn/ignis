@@ -17,7 +17,7 @@ interface SoftDeleteContract {
 	
 	public function setSoftDeletedAt(DateTimeInterface $softDeletedAt): SoftDeleteContract;
 	
-	public function isHardDelete(): bool;
+	public function getHardDeleted(): bool;
 	
-	public function setHardDelete(string $deleteType): SoftDeleteContract;
+	public function setHardDeleted(string $deleteType): SoftDeleteContract;
 }

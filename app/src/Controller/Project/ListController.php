@@ -22,7 +22,7 @@ class ListController extends AbstractController {
 		if ($this->isGranted(Role::ROLE_TEST_USER)) {
 			return $this->showcaseList($page);
 		}
-		if ($this->isGranted(Role::ROLE_VIEW_PROJECT)) {
+		if ($this->isGranted(Role::ROLE_USER)) {
 			return $this->showcaseList($page);
 		}
 		if (! $this->isGranted(Role::ROLE_USER)) {
@@ -31,7 +31,7 @@ class ListController extends AbstractController {
 		throw $this->createNotFoundException();
 	}
 	
-	private function showcaseList($page): Response {
+	private function showcaseList(int $page): Response {
 		/** @var User $user */
 		$user = $this->getUser();
 		return $this->render(

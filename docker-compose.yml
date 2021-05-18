@@ -2,9 +2,21 @@ version: '3'
 
 networks:
     
-    nginx-php8-sql-node-redis:
+    nginx-php-node-mariadb-redis:
 
 services:
+#    jenkins-service:
+#        build:
+#            context: .
+#            dockerfile: ./jenkins/Dockerfile
+#        container_name: jenkins-container
+#        ports:
+#            - "8080:8080"
+#        #            - "50000:50000"
+#        volumes:
+#            - ./jenkins/jenkins_home:/var/jenkins_home
+#        networks:
+#            - nginx-php-node-mariadb-redis
     
     # nginx
     nginx-service:
@@ -16,25 +28,25 @@ services:
             - ./app:/var/www/project
             - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
         depends_on:
-            - php8-service
+            - php-service
             - mariadb-service
         networks:
-            - nginx-php8-sql-node-redis
+            - nginx-php-node-mariadb-redis
     
     # php
-    php8-service:
+    php-service:
         build:
             context: .
             dockerfile: ./php/Dockerfile
-        container_name: php8-container
-#        ports:
-#            - "9000:9000"
+        container_name: php-container
+        #        ports:
+        #            - "9000:9000"
         volumes:
             - ./app:/var/www/project
             - ./cache/symfony:/var/www/project/var/cache
             - ./logs/symfony:/var/www/project/var/log
         networks:
-            - nginx-php8-sql-node-redis
+            - nginx-php-node-mariadb-redis
     
     # mariadb
     mariadb-service:
@@ -47,15 +59,15 @@ services:
             - "3306:3306"
         volumes:
             - ./db-data/mariadb:/var/lib/mysql
-#            - ./mariadb/conf.d:/etc/mysql/conf.d
+        #            - ./mariadb/conf.d:/etc/mysql/conf.d
         networks:
-            - nginx-php8-sql-node-redis
+            - nginx-php-node-mariadb-redis
         restart: on-failure
-#        command: --read-buffer-size=16M --innodb-buffer-pool-size=16G --innodb_log_file_size=2G --net-read-timeout=90 --net-write-timeout=90 --key-buffer=128M --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --max-allowed-packet=500M --wait-timeout=2147483 --interactive-timeout=2147483 --log-warnings=4 --open-files-limit=100000 --connect-timeout=30 --slave-net-timeout=3600
+        #        command: --read-buffer-size=16M --innodb-buffer-pool-size=16G --innodb_log_file_size=2G --net-read-timeout=90 --net-write-timeout=90 --key-buffer=128M --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --max-allowed-packet=500M --wait-timeout=2147483 --interactive-timeout=2147483 --log-warnings=4 --open-files-limit=100000 --connect-timeout=30 --slave-net-timeout=3600
         environment:
-            MYSQL_ROOT_PASSWORD: zTSmmUEnpAJ0oInDBPul
-            MYSQL_USER: mysql_user
-            MYSQL_PASSWORD: 58yOfKBx3mkS4pdWLpN
+            MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+            MYSQL_USER: ${MYSQL_USER}
+            MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     
     # node
     node-service:
@@ -65,14 +77,14 @@ services:
             - ./app:/var/www/project
         working_dir: /var/www/project
         networks:
-            - nginx-php8-sql-node-redis
+            - nginx-php-node-mariadb-redis
     
     # redis
-#    redis-service:
-#        image: redis:6.2.2
-#        container_name: redis-container
-#        ports:
-#            - "6379:6379"
-#        restart: on-failure
-#        networks:
-#            - nginx-php8-sql-node-redis
+    redis-service:
+        image: redis:6.2.2
+        container_name: redis-container
+        #        ports:
+        #            - "6379:6379"
+        restart: on-failure
+        networks:
+            - nginx-php-node-mariadb-redis

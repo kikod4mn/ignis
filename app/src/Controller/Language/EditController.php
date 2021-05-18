@@ -4,6 +4,7 @@ declare(strict_types = 1);
 
 namespace App\Controller\Language;
 
+use App\Controller\Concerns\FlashFormErrors;
 use App\Entity\Language;
 use App\Entity\Role;
 use App\Entity\User;
@@ -12,7 +13,6 @@ use App\Form\Language\LanguageEditType;
 use App\Service\Contracts\Flashes;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -23,6 +23,8 @@ use Throwable;
 use function sprintf;
 
 class EditController extends AbstractController {
+	use FlashFormErrors;
+	
 	public function __construct(private EntityManagerInterface $em, private LoggerInterface $logger, private EventDispatcherInterface $ed) { }
 	
 	/**
@@ -72,6 +74,7 @@ class EditController extends AbstractController {
 			$this->addFlash(Flashes::SUCCESS_MESSAGE, 'Language edited! Your changes were saved successfully.');
 			return $this->redirectToRoute('languages-list');
 		}
+		$this->flashFormErrors($form);
 		return $this->render('languages/edit.html.twig', ['language' => $language, 'languageEditForm' => $form->createView()]);
 	}
 	
@@ -84,6 +87,7 @@ class EditController extends AbstractController {
 			$this->addFlash(Flashes::INFO_MESSAGE, 'Actually nothing changed. Just a test user doing test user things!');
 			return $this->render('languages/test-show.html.twig', ['language' => $languageClone]);
 		}
+		$this->flashFormErrors($form);
 		return $this->render('languages/edit.html.twig', ['language' => $languageClone, 'languageEditForm' => $form->createView()]);
 	}
 }

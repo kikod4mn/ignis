@@ -77,7 +77,7 @@ class UserFixtures extends BaseFixture implements DependentFixtureInterface {
 		);
 		// Project leads
 		$this->createMany(
-			User::class, 5, function (User $user): void {
+			User::class, 15, function (User $user): void {
 			$this->setProjectLeadRoles($user);
 			$this->setBasicUserProps($user);
 			$this->setUserActive($user);

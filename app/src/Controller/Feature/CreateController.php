@@ -4,6 +4,7 @@ declare(strict_types = 1);
 
 namespace App\Controller\Feature;
 
+use App\Controller\Concerns\FlashFormErrors;
 use App\Entity\Feature;
 use App\Entity\Project;
 use App\Entity\Role;
@@ -23,6 +24,8 @@ use Symfony\Component\Routing\Annotation\Route;
 use Throwable;
 
 class CreateController extends AbstractController {
+	use FlashFormErrors;
+	
 	public function __construct(private EntityManagerInterface $em, private EventDispatcherInterface $ed, private LoggerInterface $logger) { }
 	
 	/**
@@ -33,7 +36,10 @@ class CreateController extends AbstractController {
 		if ($this->isGranted(Role::ROLE_TEST_USER)) {
 			return $this->showcaseCreate($request, $project);
 		}
-		if ($this->isGranted(Role::ROLE_VIEW_PROJECT, $project) && $this->isGranted(Role::ROLE_ADD_FEATURE)) {
+		if ($this->isGranted(Role::ROLE_VIEW_PROJECT, $project)
+			&& $this->isGranted(Role::ROLE_ADD_FEATURE)
+			&& $this->isGranted(Role::ROLE_PROJECT_LEAD)
+		) {
 			return $this->create($request, $project);
 		}
 		if (! $this->isGranted(Role::ROLE_USER)) {
@@ -61,6 +67,7 @@ class CreateController extends AbstractController {
 			$this->addFlash(Flashes::SUCCESS_MESSAGE, 'Added a new feature for the project successfully.');
 			return $this->redirectToRoute('project-show-features', ['project_uuid' => $project->getUuid()]);
 		}
+		$this->flashFormErrors($form);
 		return $this->render('features/create.html.twig', ['featureCreateForm' => $form->createView(), 'project' => $project]);
 	}
 	
@@ -77,6 +84,7 @@ class CreateController extends AbstractController {
 			$this->addFlash(Flashes::INFO_MESSAGE, 'Actually nothing changed. Just a test user doing test user things!');
 			return $this->redirectToRoute('project-show-features', ['project_uuid' => $project->getUuid()]);
 		}
+		$this->flashFormErrors($form);
 		return $this->render('features/create.html.twig', ['featureCreateForm' => $form->createView(), 'project' => $project]);
 	}
 }

@@ -16,7 +16,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
-use function sprintf;
 
 class DeleteController extends AbstractController {
 	public function __construct(private EntityManagerInterface $em, private LoggerInterface $logger, private EventDispatcherInterface $ed) { }
@@ -49,7 +48,7 @@ class DeleteController extends AbstractController {
 				$user->getName(), $user->getId(), $project->getName(), $project->getId()
 			)
 		);
-		if ($project->isHardDelete()) {
+		if ($project->getHardDeleted()) {
 			$this->addFlash(Flashes::SUCCESS_MESSAGE, 'Deleted the project! It is now gone and forgotten!');
 		} else {
 			$this->addFlash(Flashes::SUCCESS_MESSAGE, 'The project is now soft deleted to trash! Only admins and project author can see it.');

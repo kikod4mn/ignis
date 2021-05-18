@@ -41,13 +41,12 @@ class FeatureVoter extends Voter {
 			case Role::ROLE_ADD_FEATURE:
 				return $this->security->isGranted(Role::ROLE_ADD_FEATURE, $user);
 			case Role::ROLE_EDIT_FEATURE:
-				return $this->security->isGranted(Role::ROLE_EDIT_FEATURE, $user) && $subject->getAuthor()?->getId() === $user->getId();
+				return $this->security->isGranted(Role::ROLE_EDIT_FEATURE, $user) && $subject->getProject()?->getCanEdit()->contains($user);
 			case Role::ROLE_IMPLEMENT_FEATURE:
-				return $this->security->isGranted(Role::ROLE_IMPLEMENT_FEATURE, $user);
+				return $this->security->isGranted(Role::ROLE_IMPLEMENT_FEATURE, $user) && $subject->getProject()?->getCanEdit()->contains($user);
 			case Role::ROLE_DELETE_FEATURE:
-				return $this->security->isGranted(Role::ROLE_DELETE_FEATURE, $user) && $subject->getAuthor()?->getId() === $user->getId();
+				return $this->security->isGranted(Role::ROLE_DELETE_FEATURE, $user) && $subject->getProject()?->getCanEdit()->contains($user);
 		}
-		
 		return false;
 	}
 }

@@ -21,7 +21,7 @@
 		
 		{# PROJECT NAME #}
 		<div class="form-group py-1 px-md-1 p-lg-3">
-			{% if projectEditForm._name.vars.errors is not empty and projectEditForm._name.vars.errors.length > 0 %}
+			{% if projectEditForm._name.vars.errors is not empty and projectEditForm._name.vars.errors|length > 0 %}
 				<div class="flash flash__danger">{{ form_errors(projectEditForm._name) }}</div>
 			{% endif %}
 			<div class="form-outline">
@@ -33,7 +33,7 @@
 		
 		{# PROJECT CATEGORY #}
 		<div class="form-group py-1 px-md-1 p-lg-3">
-			{% if projectEditForm._category.vars.errors is not empty and projectEditForm._category.vars.errors.length > 0 %}
+			{% if projectEditForm._category.vars.errors is not empty and projectEditForm._category.vars.errors|length > 0 %}
 				<div class="flash flash__danger">{{ form_errors(projectEditForm._category) }}</div>
 			{% endif %}
 			<div class="form-group">
@@ -45,7 +45,7 @@
 		
 		{# PROJECT DESCRIPTION #}
 		<div class="form-group py-1 px-md-1 p-lg-3">
-			{% if projectEditForm._description.vars.errors is not empty and projectEditForm._description.vars.errors.length > 0 %}
+			{% if projectEditForm._description.vars.errors is not empty and projectEditForm._description.vars.errors|length > 0 %}
 				<div class="flash flash__danger">{{ form_errors(projectEditForm._description) }}</div>
 			{% endif %}
 			<div class="form-outline">

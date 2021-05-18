@@ -31,7 +31,7 @@ class SoftDeleteSubscriber implements EventSubscriber {
 				return;
 			}
 			// Make sure entity is first soft deleted, if it isnt, soft delete it and schedule extra update
-			if ((! $entity->getSoftDeleted() || $entity->getSoftDeletedAt() === null) && !$entity->isHardDelete()) {
+			if ((! $entity->getSoftDeleted() || $entity->getSoftDeletedAt() === null) && !$entity->getHardDeleted()) {
 				$oldSoftDeleted   = $entity->getSoftDeleted();
 				$oldSoftDeletedAt = $entity->getSoftDeletedAt();
 				$this->ed->dispatch(new DeleteEvent($entity));
@@ -44,7 +44,7 @@ class SoftDeleteSubscriber implements EventSubscriber {
 			}
 			$this->log($entity);
 			// By now entity has soft delete fields, so just enable the final piece
-			$entity->setHardDelete(SoftDeleteContract::HARD_DELETE);
+			$entity->setHardDeleted(SoftDeleteContract::HARD_DELETE);
 			// todo add backup functionality in here instead of in controllers if dealing with a backup entity
 		}
 	}

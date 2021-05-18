@@ -20,7 +20,12 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use function sprintf;
 
 class DeleteController extends AbstractController {
-	public function __construct(private EntityManagerInterface $em, private LoggerInterface $logger, private EventDispatcherInterface $ed) { }
+	public function __construct(private EntityManagerInterface $em, private LoggerInterface $logger, private EventDispatcherInterface $ed) {
+		$filters = $this->em->getFilters();
+		if ($filters->isEnabled('soft_deleted_filter')) {
+			$filters->disable('soft_deleted_filter');
+		}
+	}
 	
 	/**
 	 * @Route("/projects/{project_uuid}/bugs/{bug_uuid}/delete", name="bug-delete", methods={"DELETE", "GET"})
@@ -51,7 +56,7 @@ class DeleteController extends AbstractController {
 				$user->getName(), $user->getId(), $bug->getTitle(), $bug->getId()
 			)
 		);
-		if ($bug->isHardDelete()) {
+		if ($bug->getHardDeleted()) {
 			$this->addFlash(Flashes::SUCCESS_MESSAGE, 'Deleted the bug! It is now gone and forgotten!');
 		} else {
 			$this->addFlash(Flashes::SUCCESS_MESSAGE, 'The bug is now soft deleted to trash! Only admins and bug author can see it.');

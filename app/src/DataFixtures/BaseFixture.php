@@ -87,7 +87,7 @@ abstract class BaseFixture extends Fixture implements FixtureInterface {
 		/** @var User $user */
 		$user = $this->getRandomRef(User::class);
 		if (! $user->hasRole(Role::ROLE_PROJECT_LEAD)) {
-			return $this->getUser();
+			return $this->getProjectLead();
 		}
 		return $user;
 	}

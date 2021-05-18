@@ -16,8 +16,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
-use Throwable;
-use function sprintf;
 
 class DeleteController extends AbstractController {
 	public function __construct(private EntityManagerInterface $em, private LoggerInterface $logger, private EventDispatcherInterface $ed) { }
@@ -30,7 +28,7 @@ class DeleteController extends AbstractController {
 		if ($this->isGranted(Role::ROLE_TEST_USER)) {
 			return $this->showcaseDelete();
 		}
-		if ($this->isGranted(Role::ROLE_PROJECT_LEAD) && $this->isGranted(Role::ROLE_DELETE_CATEGORY, $category)) {
+		if ($this->isGranted(Role::ROLE_DELETE_CATEGORY, $category)) {
 			return $this->delete($category);
 		}
 		if (! $this->isGranted(Role::ROLE_USER)) {
@@ -50,7 +48,7 @@ class DeleteController extends AbstractController {
 				$user->getName(), $user->getId(), $category->getName(), $category->getId()
 			)
 		);
-		if ($category->isHardDelete()) {
+		if ($category->getHardDeleted()) {
 			$this->addFlash(Flashes::SUCCESS_MESSAGE, 'Deleted the category! It is now gone and forgotten!');
 		} else {
 			$this->addFlash(Flashes::SUCCESS_MESSAGE, 'The category is now soft deleted to trash! Only admins and category author can see it.');

@@ -12,12 +12,15 @@ use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 use Symfony\Component\Security\Core\Security;
 
 class ProjectVoter extends Voter {
-	private array $attributes = [Role::ROLE_VIEW_PROJECT, Role::ROLE_ADD_PROJECT, Role::ROLE_EDIT_PROJECT, Role::ROLE_DELETE_PROJECT];
+	/**
+	 * @var array<int, string>
+	 */
+	private array $attributes = [Role::ROLE_PROJECT_LEAD, Role::ROLE_VIEW_PROJECT, Role::ROLE_ADD_PROJECT, Role::ROLE_EDIT_PROJECT, Role::ROLE_DELETE_PROJECT];
 	
 	public function __construct(private Security $security) { }
 	
 	public function supports(string $attribute, mixed $subject): bool {
-		return in_array($attribute, $this->attributes)
+		return in_array($attribute, $this->attributes, true)
 			   && $subject instanceof Project;
 	}
 	
@@ -32,22 +35,19 @@ class ProjectVoter extends Voter {
 		if (! $user instanceof User) {
 			return false;
 		}
-		// This also accounts for soft delete functionality where only admin and owner should see a trashed entity.
-		if ($this->security->isGranted(Role::ROLE_ADMIN, $user) || $subject->getAuthor()?->getId() === $user->getId()) {
+		if ($this->security->isGranted(Role::ROLE_ADMIN, $user)
+			|| $subject->getAuthor()?->getId() === $user->getId()) {
 			return true;
 		}
 		switch ($attribute) {
 			case Role::ROLE_ADD_PROJECT:
 				return $this->security->isGranted(Role::ROLE_ADD_PROJECT, $user);
 			case Role::ROLE_EDIT_PROJECT:
-				return $this->security->isGranted(Role::ROLE_EDIT_PROJECT, $user)
-					   && $subject->getCanEdit()->contains($user);
+				return $subject->getCanEdit()->contains($user);
 			case Role::ROLE_VIEW_PROJECT:
-				return $this->security->isGranted(Role::ROLE_VIEW_PROJECT, $user)
-					   && $subject->getCanView()->contains($user) || $subject->getCanEdit()->contains($user);
+				return $subject->getCanView()->contains($user) || $subject->getCanEdit()->contains($user);
 			case Role::ROLE_DELETE_PROJECT:
-				return $this->security->isGranted(Role::ROLE_DELETE_PROJECT, $user)
-					   && $subject->getAuthor()?->getId() === $user->getId();
+				return $subject->getAuthor()?->getId() === $user->getId();
 		}
 		
 		return false;

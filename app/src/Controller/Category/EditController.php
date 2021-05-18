@@ -4,6 +4,7 @@ declare(strict_types = 1);
 
 namespace App\Controller\Category;
 
+use App\Controller\Concerns\FlashFormErrors;
 use App\Entity\Category;
 use App\Entity\Role;
 use App\Entity\User;
@@ -22,6 +23,8 @@ use Throwable;
 use function sprintf;
 
 class EditController extends AbstractController {
+	use FlashFormErrors;
+	
 	public function __construct(private EntityManagerInterface $em, private LoggerInterface $logger, private EventDispatcherInterface $ed) { }
 	
 	/**
@@ -32,7 +35,7 @@ class EditController extends AbstractController {
 		if ($this->isGranted(Role::ROLE_TEST_USER)) {
 			return $this->showcaseEdit($request, $category);
 		}
-		if ($this->isGranted(Role::ROLE_PROJECT_LEAD) && $this->isGranted(Role::ROLE_EDIT_CATEGORY, $category)) {
+		if ($this->isGranted(Role::ROLE_EDIT_CATEGORY, $category)) {
 			return $this->edit($request, $category);
 		}
 		if (! $this->isGranted(Role::ROLE_USER)) {
@@ -67,6 +70,7 @@ class EditController extends AbstractController {
 			$this->addFlash(Flashes::SUCCESS_MESSAGE, 'Category edited! Your changes were saved successfully.');
 			return $this->redirectToRoute('category-show', ['category_uuid' => $category->getUuid()]);
 		}
+		$this->flashFormErrors($form);
 		return $this->render('categories/edit.html.twig', ['category' => $category, 'categoryEditForm' => $form->createView()]);
 	}
 	
@@ -79,6 +83,7 @@ class EditController extends AbstractController {
 			$this->addFlash(Flashes::INFO_MESSAGE, 'Actually nothing changed. Just a test user doing test user things!');
 			return $this->render('categories/test-show.html.twig', ['category' => $categoryTemp]);
 		}
+		$this->flashFormErrors($form);
 		return $this->render('categories/edit.html.twig', ['category' => $categoryTemp, 'categoryEditForm' => $form->createView()]);
 	}
 }

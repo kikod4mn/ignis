@@ -50,7 +50,7 @@ class DeleteController extends AbstractController {
 				$user->getName(), $user->getId(), $language->getName(), $language->getId()
 			)
 		);
-		if ($language->isHardDelete()) {
+		if ($language->getHardDeleted()) {
 			$this->addFlash(Flashes::SUCCESS_MESSAGE, 'Deleted the language! It is now gone and forgotten!');
 		} else {
 			$this->addFlash(Flashes::SUCCESS_MESSAGE, 'The language is now soft deleted to trash! Only admins and feature author can see it.');

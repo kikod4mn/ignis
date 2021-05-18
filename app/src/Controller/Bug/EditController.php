@@ -4,6 +4,7 @@ declare(strict_types = 1);
 
 namespace App\Controller\Bug;
 
+use App\Controller\Concerns\FlashFormErrors;
 use App\Entity\Bug;
 use App\Entity\Project;
 use App\Entity\Role;
@@ -21,14 +22,14 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Throwable;
-use function dd;
-use function sprintf;
 
 class EditController extends AbstractController {
+	use FlashFormErrors;
+	
 	public function __construct(private EntityManagerInterface $em, private LoggerInterface $logger, private EventDispatcherInterface $ed) { }
 	
 	/**
-	 * @Route("/projects/{project_uuid}/bugs/{bug_uuid}/edit", name="bug-edit", methods={"GET", "POST", "PUT"})
+	 * @Route("/projects/{project_uuid}/bugs/{bug_uuid}/edit", name="bug-edit", methods={"GET", "POST"})
 	 * @ParamConverter("project", class="App\Entity\Project", options={"mapping": {"project_uuid" = "uuid"}})
 	 * @ParamConverter("bug", class="App\Entity\Bug", options={"mapping":{"bug_uuid" = "uuid"}})
 	 */
@@ -78,6 +79,7 @@ class EditController extends AbstractController {
 			// todo implement backup
 			return $this->redirectToRoute('project-show-bugs', ['project_uuid' => $project->getUuid()]);
 		}
+		$this->flashFormErrors($form);
 		return $this->render('bugs/edit.html.twig', ['project' => $project, 'bug' => $bug, 'bugEditForm' => $form->createView()]);
 	}
 	
@@ -90,6 +92,7 @@ class EditController extends AbstractController {
 			$this->addFlash(Flashes::INFO_MESSAGE, 'Actually nothing changed. Just a test user doing test user things!');
 			return $this->render('bugs/test-show.html.twig', ['bug' => $bugTemp]);
 		}
+		$this->flashFormErrors($form);
 		return $this->render('bugs/edit.html.twig', ['project' => $project, 'bug' => $bugTemp, 'bugEditForm' => $form->createView()]);
 	}
 }

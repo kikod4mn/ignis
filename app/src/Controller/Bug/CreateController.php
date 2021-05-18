@@ -4,6 +4,7 @@ declare(strict_types = 1);
 
 namespace App\Controller\Bug;
 
+use App\Controller\Concerns\FlashFormErrors;
 use App\Entity\Bug;
 use App\Entity\Project;
 use App\Entity\Role;
@@ -23,6 +24,8 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Throwable;
 
 class CreateController extends AbstractController {
+	use FlashFormErrors;
+	
 	public function __construct(private EntityManagerInterface $em, private EventDispatcherInterface $ed, private LoggerInterface $logger) { }
 	
 	/**
@@ -61,6 +64,7 @@ class CreateController extends AbstractController {
 			$this->addFlash(Flashes::SUCCESS_MESSAGE, 'Created a new bug report for this project! Thank you!');
 			return $this->redirectToRoute('project-show-bugs', ['project_uuid' => $project->getUuid()]);
 		}
+		$this->flashFormErrors($form);
 		return $this->render('bugs/create.html.twig', ['bugCreateForm' => $form->createView(), 'project' => $project]);
 	}
 	
@@ -77,6 +81,7 @@ class CreateController extends AbstractController {
 			$this->addFlash(Flashes::INFO_MESSAGE, 'Actually nothing changed. Just a test user doing test user things!');
 			return $this->render('bugs/test-show.html.twig', ['bug' => $bug]);
 		}
+		$this->flashFormErrors($form);
 		return $this->render('bugs/create.html.twig', ['bugCreateForm' => $form->createView(), 'project' => $project]);
 	}
 }

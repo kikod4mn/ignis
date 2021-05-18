@@ -52,7 +52,7 @@ class DeleteController extends AbstractController {
 				$user->getName(), $user->getId(), $feature->getTitle(), $feature->getId()
 			)
 		);
-		if ($feature->isHardDelete()) {
+		if ($feature->getHardDeleted()) {
 			$this->addFlash(Flashes::SUCCESS_MESSAGE, 'Deleted the feature! It is now gone and forgotten!');
 		} else {
 			$this->addFlash(Flashes::SUCCESS_MESSAGE, 'The feature is now soft deleted to trash! Only admins and feature author can see it.');

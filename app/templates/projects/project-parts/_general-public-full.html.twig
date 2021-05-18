@@ -16,7 +16,7 @@
 		<p class="p-0 m-0">{{ project.features.count }} features added, {{ project.bugs.count }} bugs tracked.</p>
 		<p class="p-0 m-0">{{ project.canEdit.count }} contributors on the project.</p>
 		<p class="p-0 m-0">
-			Project was created on {{ project.createdAt|date('l jS \\o\\f F Y H:i') }}.
+			Project was created on {{ project.createdAt|date('l jS \\o\\f F Y H:i') }}, {{ project.createdAt|ago }}.
 			{% if project.updatedAt is not null %}
 				<span> and edited last on {{ project.updatedAt|date('l jS \\o\\f F Y H:i') }}.</span>
 			{% endif %}

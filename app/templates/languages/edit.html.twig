@@ -21,7 +21,7 @@
 		
 		{# LANGUAGE TITLE #}
 		<div class="form-group py-1 px-md-1 p-lg-3">
-			{% if languageEditForm._name.vars.errors is not empty and languageEditForm._name.vars.errors.length > 0 %}
+			{% if languageEditForm._name.vars.errors is not empty and languageEditForm._name.vars.errors|length > 0 %}
 				<div class="flash flash__danger">{{ form_errors(languageEditForm._name) }}</div>
 			{% endif %}
 			<div class="form-outline">
@@ -33,7 +33,7 @@
 		
 		{# LANGUAGE DESCRIPTION #}
 		<div class="form-group py-1 px-md-1 p-lg-3">
-			{% if languageEditForm._description.vars.errors is not empty and languageEditForm._description.vars.errors.length > 0 %}
+			{% if languageEditForm._description.vars.errors is not empty and languageEditForm._description.vars.errors|length > 0 %}
 				<div class="flash flash__danger">{{ form_errors(languageEditForm._description) }}</div>
 			{% endif %}
 			<div class="form-outline">

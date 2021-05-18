@@ -1,4 +1,7 @@
 .env
+/jenkins/jenkins_home
+!/jenkins/jenkins_home/.gitkeep
+
 
 ###> symfony/framework-bundle ###
 /app/.env.local

@@ -4,6 +4,7 @@ declare(strict_types = 1);
 
 namespace App\Controller\Project;
 
+use App\Controller\Concerns\FlashFormErrors;
 use App\Entity\Project;
 use App\Entity\Role;
 use App\Entity\User;
@@ -22,6 +23,8 @@ use Throwable;
 use function sprintf;
 
 class EditController extends AbstractController {
+	use FlashFormErrors;
+	
 	public function __construct(private EntityManagerInterface $em, private LoggerInterface $logger, private EventDispatcherInterface $ed) { }
 	
 	/**
@@ -71,6 +74,7 @@ class EditController extends AbstractController {
 			);
 			return $this->redirectToRoute('project-show', ['project_uuid' => $project->getUuid()]);
 		}
+		$this->flashFormErrors($form);
 		return $this->render('projects/edit.html.twig', ['projectEditForm' => $form->createView(), 'project' => $project]);
 	}
 	
@@ -82,6 +86,7 @@ class EditController extends AbstractController {
 			$this->ed->dispatch(new TimeStampableUpdateEvent($projectClone));
 			return $this->render('projects/test-show.html.twig', ['project' => $projectClone]);
 		}
+		$this->flashFormErrors($form);
 		return $this->render('projects/edit.html.twig', ['projectEditForm' => $form->createView(), 'project' => $projectClone]);
 	}
 }

@@ -1,72 +1,81 @@
 <!doctype html>
 <html lang="en">
 <head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-	<meta http-equiv="X-UA-Compatible" content="ie=edge">
-	{# meta tags #}
-	<!-- Search Engine -->
-	<meta name="description" content="Lightweight and streamlined small app for project management and kikopolis showcase.">
-	<meta name="image" content="{{ asset('build/images/_logo/color_with_bg.png') }}">
-	<!-- Schema.org for Google -->
-	<meta itemprop="name" content="Ignis Project Management - A Kikopolis project">
-	<meta itemprop="description" content="Lightweight and streamlined small app for project management and kikopolis showcase.">
-	<meta itemprop="image" content="{{ asset('build/images/_logo/color_with_bg.png') }}">
-	<!-- Open Graph general (Facebook, Pinterest & LinkedIn) -->
-	<meta property="og:title" content="Ignis Project Management - A Kikopolis project">
-	<meta property="og:description" content="Lightweight and streamlined small app for project management.">
-	<meta property="og:image" content="{{ asset('build/images/_logo/color_with_bg.png') }}">
-	<meta property="og:url" content="https://ignis.ee">
-	<meta property="og:site_name" content="Ignis by kikopolis">
-	<meta property="og:locale" content="en_US">
-	<meta property="og:type" content="website">
-	<!-- Twitter -->
-	<meta property="twitter:card" content="summary">
-	<meta property="twitter:title" content="Ignis Project Management - A Kikopolis project">
-	<meta property="twitter:description" content="Lightweight and streamlined small app for project management and kikopolis showcase.">
-	<meta property="twitter:image:src" content="{{ asset('build/images/_logo/color_with_bg.png') }}">
-	{# meta tags #}
-	{# favicons #}
-	<link rel="apple-touch-icon" sizes="180x180" href="{{ asset('favicons/apple-touch-icon.png') }}">
-	<link rel="icon" type="image/png" sizes="32x32" href="{{ asset('favicons/favicon-32x32.png') }}">
-	<link rel="icon" type="image/png" sizes="16x16" href="{{ asset('favicons/favicon-16x16.png') }}">
-	<link rel="manifest" href="{{ asset('favicons/site.webmanifest') }}">
-	<link rel="mask-icon" href="{{ asset('favicons/safari-pinned-tab.svg') }}" color="#333333">
-	<link rel="shortcut icon" href="{{ asset('favicons/favicon.ico') }}">
-	<meta name="msapplication-TileColor" content="#2b5797">
-	<meta name="msapplication-config" content="{{ asset('favicons/browserconfig.xml') }}">
-	<meta name="theme-color" content="#333333">
-	{# favicons #}
-	<meta name="csrf-token" content="{{ csrf_token('_token') }}">
-	<title>{% block title %}Ignis Project Management - A Kikopolis project{% endblock %}</title>
-	{% block stylesheets %}
-		<link href="{{ asset('vendor/fontawesome-free/css/all.min.css') }}" rel="stylesheet" type="text/css">
-		<link href="{{ asset('vendor/simple-line-icons/css/simple-line-icons.css') }}" rel="stylesheet">
-		<link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet" />
-		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
-		      integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-		<link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/3.3.0/mdb.min.css" rel="stylesheet" />
-		{{ encore_entry_link_tags('kikopolis') }}
-	{% endblock %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta http-equiv="Content-Security-Policy"
+          content="
+          default-src 'self';
+          object-src 'none';
+          img-src 'self';
+          style-src 'self' 'unsafe-inline' fonts.googleapis.com fonts.gstatic.com;
+          script-src 'self' 'unsafe-inline';
+          font-src 'self' fonts.googleapis.com fonts.gstatic.com;
+          require-trusted-types-for 'script';">
+    {# meta tags #}
+    <!-- Search Engine -->
+    <meta name="description" content="Lightweight and streamlined small app for project management and kikopolis showcase.">
+    <meta name="image" content="{{ asset('build/images/_logo/color_with_bg.png') }}">
+    <!-- Schema.org for Google -->
+    <meta itemprop="name" content="Ignis Project Management - A Kikopolis project">
+    <meta itemprop="description" content="Lightweight and streamlined small app for project management and kikopolis showcase.">
+    <meta itemprop="image" content="{{ asset('build/images/_logo/color_with_bg.png') }}">
+    <!-- Open Graph general (Facebook, Pinterest & LinkedIn) -->
+    <meta property="og:title" content="Ignis Project Management - A Kikopolis project">
+    <meta property="og:description" content="Lightweight and streamlined small app for project management.">
+    <meta property="og:image" content="{{ asset('build/images/_logo/color_with_bg.png') }}">
+    <meta property="og:url" content="https://ignis.ee">
+    <meta property="og:site_name" content="Ignis by kikopolis">
+    <meta property="og:locale" content="en_US">
+    <meta property="og:type" content="website">
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary">
+    <meta property="twitter:title" content="Ignis Project Management - A Kikopolis project">
+    <meta property="twitter:description" content="Lightweight and streamlined small app for project management and kikopolis showcase.">
+    <meta property="twitter:image:src" content="{{ asset('build/images/_logo/color_with_bg.png') }}">
+    {# meta tags #}
+    {# favicons #}
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('favicons/apple-touch-icon.png') }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('favicons/favicon-32x32.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('favicons/favicon-16x16.png') }}">
+    <link rel="manifest" href="{{ asset('favicons/site.webmanifest') }}">
+    <link rel="mask-icon" href="{{ asset('favicons/safari-pinned-tab.svg') }}" color="#333333">
+    <link rel="shortcut icon" href="{{ asset('favicons/favicon.ico') }}">
+    <meta name="msapplication-TileColor" content="#2b5797">
+    <meta name="msapplication-config" content="{{ asset('favicons/browserconfig.xml') }}">
+    <meta name="theme-color" content="#333333">
+    {# favicons #}
+    <meta name="csrf-token" content="{{ csrf_token('_token') }}">
+    <title>{% block title %}Ignis Project Management - A Kikopolis project{% endblock %}</title>
+    {% block stylesheets %}
+        <link href="{{ asset('vendor/fontawesome-free/css/all.min.css') }}" rel="stylesheet" type="text/css">
+        <link href="{{ asset('vendor/simple-line-icons/css/simple-line-icons.css') }}" rel="stylesheet">
+        <link href="{{ asset('vendor/bootstrap/bootstrap.min.css') }}" rel="stylesheet">
+        <link href="{{ asset('vendor/mdb/mdb.min.css') }}" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet" />
+        {{ encore_entry_link_tags('kikopolis') }}
+    {% endblock %}
 </head>
 <body id="page-top" class="bg__light">
-	<div id="">
-		{% block navigation %}{{ include('base/_navbar.html.twig') }}{% endblock %}
-		{% if app.session.flashBag.peekAll|length > 0 %}
-			{{ include('base/_flash-messages.html.twig') }}
-		{% endif %}
-		<main>
-			{% block body %}{% endblock %}
-		</main>
-		{% include 'base/_footer.html.twig' %}
-		<a class="button__back-to-top" id="back-to-top-button" href="#page-top">
-			<i class="fas fa-angle-up"></i>
-		</a>
-	</div>
-	{% block javascripts %}
-		<script type="text/javascript" src="{{ asset('vendor/jquery/jquery.min.js') }}"></script>
-		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/3.3.0/mdb.min.js"></script>
-		{{ encore_entry_script_tags('kikopolis') }}
-	{% endblock %}
+    <div id="">
+        {% block navigation %}{{ include('base/_navbar.html.twig') }}{% endblock %}
+        {% if app.session.flashBag.peekAll|length > 0 %}
+            {{ include('base/_flash-messages.html.twig') }}
+        {% endif %}
+        <main>
+            {% block body %}{% endblock %}
+        </main>
+        {% include 'base/_footer.html.twig' %}
+        <a class="button__back-to-top" id="back-to-top-button" href="#page-top">
+            <i class="fas fa-angle-up"></i>
+        </a>
+    </div>
+    {% block javascripts %}
+        <script type="text/javascript" src="{{ asset('vendor/jquery/jquery.min.js') }}"></script>
+        <script type="text/javascript" src="{{ asset('vendor/bootstrap/bootstrap.bundle.min.js') }}"></script>
+        <script type="text/javascript" src="{{ asset('vendor/mdb/mdb.min.js') }}"></script>
+        {{ encore_entry_script_tags('kikopolis') }}
+    {% endblock %}
 </body>
 </html>

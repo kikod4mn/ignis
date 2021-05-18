@@ -21,7 +21,7 @@
 		
 		{# PROJECT CATEGORY #}
 		<div class="form-group py-1 px-md-1 p-lg-3">
-			{% if chooseUserForm._canEdit.vars.errors is not empty and chooseUserForm._canEdit.vars.errors.length > 0 %}
+			{% if chooseUserForm._canEdit.vars.errors is not empty and chooseUserForm._canEdit.vars.errors|length > 0 %}
 				<div class="flash flash__danger">{{ form_errors(chooseUserForm._canEdit) }}</div>
 			{% endif %}
 			<div class="form-group">

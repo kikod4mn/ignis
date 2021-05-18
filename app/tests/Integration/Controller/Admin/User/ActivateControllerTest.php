@@ -4,22 +4,39 @@ declare(strict_types = 1);
 
 namespace App\Tests\Integration\Controller\Admin\User;
 
+use App\Entity\Role;
 use App\Entity\User;
+use App\Repository\RoleRepository;
 use App\Repository\UserRepository;
 use App\Tests\Integration\BaseWebTestCase;
-use App\Tests\Integration\IntegrationHelp;
+use App\Tests\Integration\IH;
 use Symfony\Component\HttpFoundation\Request;
 
+/**
+ * @covers \App\Controller\Admin\User\ActivateController
+ */
 class ActivateControllerTest extends BaseWebTestCase {
 	public function testActivate(): void {
-		$this->client->loginUser(IntegrationHelp::getAdministrator(static::$container));
-		$user  = IntegrationHelp::getInActiveUserWithEmailConfirmed(static::$container);
-		$route = sprintf('/admin/users/%s/activate', $user->getUuid());
-		$this->client->request(Request::METHOD_GET, $route);
+		/** @var Role $role */
+		$role = IH::getRepository(static::$container, RoleRepository::class)->findOneBy(['name' => Role::ROLE_ADMIN]);
+		/** @var userRepository $userRepository */
+		$userRepository = IH::getRepository(static::$container, UserRepository::class);
+		/** @var User $user */
+		$user = $userRepository->findOneByRoles([$role]);
+		$this->getClient()->loginUser($user);
+		$users = array_filter(
+			$userRepository->findAll(),
+			static fn (User $user): bool => ! $user->getActive()
+											&& $user->getEmailConfirmToken() === null
+											&& $user->getEmailConfirmedAt() !== null
+		);
+		$user  = $users[array_rand($users)];
+		$route = sprintf('/admin/users/%s/activate', $user->getUuid()?->toString());
+		$this->getClient()->request(Request::METHOD_GET, $route);
 		static::assertResponseStatusCodeSame(302);
-		$this->client->followRedirect();
+		$this->getClient()->followRedirect();
 		static::assertResponseIsSuccessful();
-		$userRepository = IntegrationHelp::getRepository(static::$container, UserRepository::class);
+		$userRepository = IH::getRepository(static::$container, UserRepository::class);
 		/** @var User $activeUser */
 		$activeUser = $userRepository->find($user->getId());
 		static::assertSame($user->getUuid()?->toString(), $activeUser->getUuid()?->toString());
@@ -27,15 +44,27 @@ class ActivateControllerTest extends BaseWebTestCase {
 	}
 	
 	public function testActivateDoesNotWorkForTestUser(): void {
-		$this->client->loginUser(IntegrationHelp::getTestUser(static::$container));
-		$user  = IntegrationHelp::getInActiveUserWithEmailConfirmed(static::$container);
-		$route = sprintf('/admin/users/%s/activate', $user->getUuid());
-		$this->client->request(Request::METHOD_GET, $route);
+		/** @var Role $role */
+		$role = IH::getRepository(static::$container, RoleRepository::class)->findOneBy(['name' => Role::ROLE_TEST_USER]);
+		/** @var userRepository $userRepository */
+		$userRepository = IH::getRepository(static::$container, UserRepository::class);
+		/** @var User $user */
+		$user = $userRepository->findOneByRoles([$role]);
+		$this->getClient()->loginUser($user);
+		$users = array_filter(
+			$userRepository->findAll(),
+			static fn (User $user): bool => ! $user->getActive()
+											&& $user->getEmailConfirmToken() === null
+											&& $user->getEmailConfirmedAt() !== null
+		);
+		$user  = $users[array_rand($users)];
+		$route = sprintf('/admin/users/%s/activate', $user->getUuid()?->toString());
+		$this->getClient()->request(Request::METHOD_GET, $route);
 		static::assertResponseStatusCodeSame(302);
-		$this->client->followRedirect();
+		$this->getClient()->followRedirect();
 		static::assertResponseIsSuccessful();
-		static::assertStringContainsStringIgnoringCase('Login', (string) $this->client->getResponse()->getContent());
-		$userRepository = IntegrationHelp::getRepository(static::$container, UserRepository::class);
+		static::assertStringContainsStringIgnoringCase('Login', (string) $this->getClient()->getResponse()->getContent());
+		$userRepository = IH::getRepository(static::$container, UserRepository::class);
 		/** @var User $activeUser */
 		$activeUser = $userRepository->find($user->getId());
 		static::assertSame($user->getUuid()?->toString(), $activeUser->getUuid()?->toString());
@@ -43,12 +72,24 @@ class ActivateControllerTest extends BaseWebTestCase {
 	}
 	
 	public function testActivateDoesNotWorkForProjectLead(): void {
-		$this->client->loginUser(IntegrationHelp::getProjectLeader(static::$container));
-		$user  = IntegrationHelp::getInActiveUserWithEmailConfirmed(static::$container);
-		$route = sprintf('/admin/users/%s/activate', $user->getUuid());
-		$this->client->request(Request::METHOD_GET, $route);
+		/** @var Role $role */
+		$role = IH::getRepository(static::$container, RoleRepository::class)->findOneBy(['name' => Role::ROLE_PROJECT_LEAD]);
+		/** @var userRepository $userRepository */
+		$userRepository = IH::getRepository(static::$container, UserRepository::class);
+		/** @var User $user */
+		$user = $userRepository->findOneByRoles([$role]);
+		$this->getClient()->loginUser($user);
+		$users = array_filter(
+			$userRepository->findAll(),
+			static fn (User $user): bool => ! $user->getActive()
+											&& $user->getEmailConfirmToken() === null
+											&& $user->getEmailConfirmedAt() !== null
+		);
+		$user  = $users[array_rand($users)];
+		$route = sprintf('/admin/users/%s/activate', $user->getUuid()?->toString());
+		$this->getClient()->request(Request::METHOD_GET, $route);
 		static::assertResponseStatusCodeSame(404);
-		$userRepository = IntegrationHelp::getRepository(static::$container, UserRepository::class);
+		$userRepository = IH::getRepository(static::$container, UserRepository::class);
 		/** @var User $activeUser */
 		$activeUser = $userRepository->find($user->getId());
 		static::assertSame($user->getUuid()?->toString(), $activeUser->getUuid()?->toString());
@@ -56,12 +97,24 @@ class ActivateControllerTest extends BaseWebTestCase {
 	}
 	
 	public function testActivateDoesNotWorkForUser(): void {
-		$this->client->loginUser(IntegrationHelp::getActiveUser(static::$container));
-		$user  = IntegrationHelp::getInActiveUserWithEmailConfirmed(static::$container);
-		$route = sprintf('/admin/users/%s/activate', $user->getUuid());
-		$this->client->request(Request::METHOD_GET, $route);
+		/** @var Role $role */
+		$role = IH::getRepository(static::$container, RoleRepository::class)->findOneBy(['name' => Role::ROLE_USER]);
+		/** @var userRepository $userRepository */
+		$userRepository = IH::getRepository(static::$container, UserRepository::class);
+		/** @var User $user */
+		$user = $userRepository->findOneByRoles([$role]);
+		$this->getClient()->loginUser($user);
+		$users = array_filter(
+			$userRepository->findAll(),
+			static fn (User $user): bool => ! $user->getActive()
+											&& $user->getEmailConfirmToken() === null
+											&& $user->getEmailConfirmedAt() !== null
+		);
+		$user  = $users[array_rand($users)];
+		$route = sprintf('/admin/users/%s/activate', $user->getUuid()?->toString());
+		$this->getClient()->request(Request::METHOD_GET, $route);
 		static::assertResponseStatusCodeSame(404);
-		$userRepository = IntegrationHelp::getRepository(static::$container, UserRepository::class);
+		$userRepository = IH::getRepository(static::$container, UserRepository::class);
 		/** @var User $activeUser */
 		$activeUser = $userRepository->find($user->getId());
 		static::assertSame($user->getUuid()?->toString(), $activeUser->getUuid()?->toString());
@@ -69,11 +122,19 @@ class ActivateControllerTest extends BaseWebTestCase {
 	}
 	
 	public function testActivateDoesNotWorkForAnon(): void {
-		$user  = IntegrationHelp::getInActiveUserWithEmailConfirmed(static::$container);
-		$route = sprintf('/admin/users/%s/activate', $user->getUuid());
-		$this->client->request(Request::METHOD_GET, $route);
+		/** @var userRepository $userRepository */
+		$userRepository = IH::getRepository(static::$container, UserRepository::class);
+		$users          = array_filter(
+			$userRepository->findAll(),
+			static fn (User $user): bool => ! $user->getActive()
+											&& $user->getEmailConfirmToken() === null
+											&& $user->getEmailConfirmedAt() !== null
+		);
+		$user           = $users[array_rand($users)];
+		$route          = sprintf('/admin/users/%s/activate', $user->getUuid()?->toString());
+		$this->getClient()->request(Request::METHOD_GET, $route);
 		static::assertResponseStatusCodeSame(404);
-		$userRepository = IntegrationHelp::getRepository(static::$container, UserRepository::class);
+		$userRepository = IH::getRepository(static::$container, UserRepository::class);
 		/** @var User $activeUser */
 		$activeUser = $userRepository->find($user->getId());
 		static::assertSame($user->getUuid()?->toString(), $activeUser->getUuid()?->toString());
