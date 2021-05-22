@@ -7,21 +7,20 @@ namespace App\Controller\User\Security;
 use App\Controller\Concerns\FlashFormErrors;
 use App\Form\User\Security\PasswordForgottenType;
 use App\Repository\UserRepository;
+use App\Security\ResetPasswordService;
 use App\Service\Contracts\Flashes;
-use App\Service\Mailer;
-use App\Service\TimeCreator;
-use App\Service\TokenGenerator;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Throwable;
 
 class PasswordForgottenController extends AbstractController {
 	use FlashFormErrors;
 	
-	public function __construct(private UserRepository $userRepository, private TokenGenerator $token, private EntityManagerInterface $em, private Mailer $mailer) { }
+	public function __construct(private UserRepository $userRepository, private EntityManagerInterface $em, private ResetPasswordService $resetPasswordService) { }
 	
 	/**
 	 * @Route("/credentials/request/forgotten-password", name="credentials-forgot-password", methods={"GET", "POST"})
@@ -37,20 +36,22 @@ class PasswordForgottenController extends AbstractController {
 			if ($user === null) {
 				return $this->returnSuccess();
 			}
-			$user
-				->setPasswordResetToken($this->token->alphanumericToken(64))
-				->setPasswordResetTokenRequestedAt(TimeCreator::now())
-				->setPasswordResetTokenRequestedFromBrowser($request->headers->get('User-Agent'))
-				->setPasswordResetTokenRequestedFromIp($request->getClientIp())
-			;
+			$resetRequest = $this->resetPasswordService->createResetRequest($user, $request);
+			$this->em->persist($resetRequest);
 			$this->em->flush();
-			$this->mailer->htmlMessage(
-				(string) $user->getEmail(),
-				'Password reset token requested.',
-				'base/mail-templates/forgot-password.html.twig',
-				['user' => $user]
-			);
 			return $this->returnSuccess();
+//			$user
+//				->setPasswordResetToken($this->token->alphanumericToken(64))
+//				->setPasswordResetTokenRequestedAt(TimeCreator::now())
+//				->setPasswordResetTokenRequestedFromBrowser($request->headers->get('User-Agent'))
+//				->setPasswordResetTokenRequestedFromIp($request->getClientIp())
+//			;
+//			$this->mailer->htmlMessage(
+//				(string) $user->getEmail(),
+//				'Password reset token requested.',
+//				'base/mail-templates/forgot-password.html.twig',
+//				['user' => $user]
+//			);
 		}
 		$this->flashFormErrors($form);
 		return $this->render('user/security/login/password-forgotten.html.twig', ['form' => $form]);

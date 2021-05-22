@@ -28,7 +28,9 @@ class ProjectFixtures extends BaseFixture implements DependentFixtureInterface {
 				$project->addCanView($this->getUser());
 			}
 			for ($i = 0; $i < mt_rand(3, 6); $i++) {
-				$project->addCanEdit($this->getProjectLead());
+				$lead = $this->getProjectLead();
+				$project->addCanEdit($lead);
+				$project->addCanView($lead);
 			}
 		}
 		);
@@ -50,7 +52,9 @@ class ProjectFixtures extends BaseFixture implements DependentFixtureInterface {
 				$project->addCanView($this->getUser());
 			}
 			for ($i = 0; $i < mt_rand(3, 6); $i++) {
-				$project->addCanEdit($this->getProjectLead());
+				$lead = $this->getProjectLead();
+				$project->addCanEdit($lead);
+				$project->addCanView($lead);
 			}
 		}
 		);

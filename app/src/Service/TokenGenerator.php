@@ -49,9 +49,9 @@ final class TokenGenerator {
 	
 	private function char(): string {
 		try {
-			return $this->alphabets[random_int(0, $maxNumber = mb_strlen($this->alphabets) - 1)];
+			return $this->alphabets[random_int(0, mb_strlen($this->alphabets) - 1)];
 		} catch (Exception) {
-			return $this->alphabets[rand(0, $maxNumber = mb_strlen($this->alphabets) - 1)];
+			return $this->alphabets[rand(0, mb_strlen($this->alphabets) - 1)];
 		}
 	}
 }

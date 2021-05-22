@@ -18,7 +18,7 @@ class FeatureVoter extends Voter {
 	public function __construct(private Security $security) { }
 	
 	protected function supports($attribute, $subject): bool {
-		return in_array($attribute, $this->attributes)
+		return in_array($attribute, $this->attributes, true)
 			   && $subject instanceof Feature;
 	}
 	
@@ -30,22 +30,20 @@ class FeatureVoter extends Voter {
 	 */
 	protected function voteOnAttribute(string $attribute, $subject, TokenInterface $token): bool {
 		$user = $token->getUser();
-		if (! $user instanceof User) {
+		if (! $user instanceof User || $subject->getProject() === null) {
 			return false;
 		}
-		// This also accounts for soft delete functionality where only admin and owner should see a trashed entity.
 		if ($this->security->isGranted(Role::ROLE_ADMIN, $user) || $subject->getAuthor()?->getId() === $user->getId()) {
 			return true;
 		}
 		switch ($attribute) {
 			case Role::ROLE_ADD_FEATURE:
-				return $this->security->isGranted(Role::ROLE_ADD_FEATURE, $user);
 			case Role::ROLE_EDIT_FEATURE:
-				return $this->security->isGranted(Role::ROLE_EDIT_FEATURE, $user) && $subject->getProject()?->getCanEdit()->contains($user);
 			case Role::ROLE_IMPLEMENT_FEATURE:
-				return $this->security->isGranted(Role::ROLE_IMPLEMENT_FEATURE, $user) && $subject->getProject()?->getCanEdit()->contains($user);
 			case Role::ROLE_DELETE_FEATURE:
-				return $this->security->isGranted(Role::ROLE_DELETE_FEATURE, $user) && $subject->getProject()?->getCanEdit()->contains($user);
+				return $subject->getProject()->getCanEdit()->contains($user)
+					   && $this->security->isGranted(Role::ROLE_PROJECT_LEAD, $user);
+			
 		}
 		return false;
 	}

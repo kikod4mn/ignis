@@ -77,6 +77,11 @@ class User implements IdContract, UserInterface, TimeStampableContract, Stringab
 	/**
 	 * @ORM\Column(type="carbon_immutable", nullable=true)
 	 */
+	private ?DateTimeInterface $passwordResetTokenExpiresAt = null;
+	
+	/**
+	 * @ORM\Column(type="carbon_immutable", nullable=true)
+	 */
 	private ?DateTimeInterface $passwordResetTokenRequestedAt = null;
 	
 	/**
@@ -93,6 +98,11 @@ class User implements IdContract, UserInterface, TimeStampableContract, Stringab
 	 * @ORM\Column(type="string", length=64, nullable=true)
 	 */
 	private ?string $emailConfirmToken = null;
+	
+	/**
+	 * @ORM\Column(type="carbon_immutable", nullable=true)
+	 */
+	private ?DateTimeInterface $emailConfirmationTokenExpiresAt = null;
 	
 	/**
 	 * @ORM\Column(type="carbon_immutable", nullable=true)
@@ -294,6 +304,14 @@ class User implements IdContract, UserInterface, TimeStampableContract, Stringab
 		return $this;
 	}
 	
+	public function getPasswordResetTokenExpiresAt(): ?DateTimeInterface {
+		return $this->passwordResetTokenExpiresAt;
+	}
+	
+	public function setPasswordResetTokenExpiresAt(?DateTimeInterface $passwordResetTokenExpiresAt): void {
+		$this->passwordResetTokenExpiresAt = $passwordResetTokenExpiresAt;
+	}
+	
 	public function getPasswordResetTokenRequestedAt(): ?DateTimeInterface {
 		return $this->passwordResetTokenRequestedAt;
 	}
@@ -328,6 +346,14 @@ class User implements IdContract, UserInterface, TimeStampableContract, Stringab
 	public function setEmailConfirmToken(?string $emailConfirmToken): User {
 		$this->emailConfirmToken = $emailConfirmToken;
 		return $this;
+	}
+	
+	public function getEmailConfirmationTokenExpiresAt(): ?DateTimeInterface {
+		return $this->emailConfirmationTokenExpiresAt;
+	}
+	
+	public function setEmailConfirmationTokenExpiresAt(?DateTimeInterface $emailConfirmationTokenExpiresAt): void {
+		$this->emailConfirmationTokenExpiresAt = $emailConfirmationTokenExpiresAt;
 	}
 	
 	public function getEmailConfirmedAt(): ?DateTimeInterface {

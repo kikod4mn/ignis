@@ -5,17 +5,13 @@ declare(strict_types = 1);
 namespace App\Controller\User\Account;
 
 use App\Controller\Concerns\FlashFormErrors;
-use App\Entity\Role;
 use App\Entity\User;
-use App\Event\Creators\IdCreateEvent;
-use App\Event\Creators\TimeStampableCreatedEvent;
-use App\Event\Security\PasswordHashEvent;
+use App\Event\User\Account\RegisterEvent;
 use App\Form\User\Account\RegisterType;
 use App\Repository\RoleRepository;
 use App\Repository\UserRepository;
-use App\Service\TimeCreator;
+use App\Security\EmailConfirmService;
 use App\Service\TokenGenerator;
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
@@ -31,7 +27,8 @@ class RegisterController extends AbstractController {
 	
 	public function __construct(
 		private TokenGenerator $tokenGenerator, private EntityManagerInterface $em, private RoleRepository $roleRepository,
-		private LoggerInterface $logger, private UserRepository $userRepository, private EventDispatcherInterface $ed
+		private LoggerInterface $logger, private UserRepository $userRepository, private EventDispatcherInterface $ed,
+		private EmailConfirmService $emailConfirmService
 	) {
 	}
 	
@@ -46,15 +43,8 @@ class RegisterController extends AbstractController {
 		$form = $this->createForm(RegisterType::class, $user);
 		$form->handleRequest($request);
 		if ($form->isSubmitted() && $form->isValid()) {
-			$user->setEmailConfirmToken($this->tokenGenerator->alphanumericToken(64));
-			$user->setAgreedToTermsAt(TimeCreator::now());
-			$this->ed->dispatch(new IdCreateEvent($user));
-			$this->ed->dispatch(new TimeStampableCreatedEvent($user));
-			$this->ed->dispatch(new PasswordHashEvent($user));
-			// todo maybe extract an event and subscriber for roles
-			$roles = new ArrayCollection();
-			$roles->add($this->roleRepository->findOneBy(['name' => Role::ROLE_USER]));
-			$user->setRoles($roles);
+			$this->emailConfirmService->setTokenAndSendEmail($user);
+			$this->ed->dispatch(new RegisterEvent($user));
 			try {
 				$this->em->persist($user);
 				$this->em->flush();

@@ -1,0 +1,15 @@
+{% apply inky_to_html %}
+	<container>
+		<row>
+			<columns>
+				<spacer size="32"></spacer>
+				<h1 class="text-center">Hi, {{ user.name }}!</h1>
+				<h3 class="text-center">You must confirm your email before using Ignis</h3>
+				<p>To confirum your email, please click <a
+							href="{{ url('credentials-email-confirmation', {'token' : user.emailConfirmToken}) }}">this</a> link</p>
+				<spacer size="32"></spacer>
+				<h2 class="text-center">This link will expire on {{ user.emailConfirmTokenExpiresAt|date }}</h2>
+			</columns>
+		</row>
+	</container>
+{% endapply %}

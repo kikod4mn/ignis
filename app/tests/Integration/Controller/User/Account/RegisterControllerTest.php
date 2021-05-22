@@ -4,6 +4,7 @@ declare(strict_types = 1);
 
 namespace App\Tests\Integration\Controller\User\Account;
 
+use App\Entity\User;
 use App\Repository\UserRepository;
 use App\Tests\Integration\BaseWebTestCase;
 use App\Tests\Integration\IH;
@@ -18,7 +19,8 @@ class RegisterControllerTest extends BaseWebTestCase {
 	public function testPageDoesNotWorkForUser(): void {
 		/** @var UserRepository $userRepository */
 		$userRepository = IH::getRepository(static::$container, UserRepository::class);
-		$user           = $userRepository->find(1);
+		/** @var User $user */
+		$user = $userRepository->find(1);
 		$this->getClient()->loginUser($user);
 		$this->getClient()->request(Request::METHOD_GET, '/register');
 		static::assertResponseStatusCodeSame(404);

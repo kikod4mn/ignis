@@ -17,10 +17,10 @@ final class Mailer {
 	}
 	
 	/**
-	 * @param   string                $to
-	 * @param   string                $subject
-	 * @param   string                $template
-	 * @param   array<mixed, mixed>   $args
+	 * @param   string    $to
+	 * @param   string    $subject
+	 * @param   string    $template
+	 * @param   mixed[]   $args
 	 */
 	public function htmlMessage(string $to, string $subject, string $template, array $args): void {
 		try {
@@ -39,36 +39,48 @@ final class Mailer {
 	}
 	
 	/**
-	 * @param   string                $to
-	 * @param   string                $subject
-	 * @param   string                $template
-	 * @param   array<mixed, mixed>   $args
-	 * @param   array<mixed, mixed>   $attachments
+	 * @param   string    $to
+	 * @param   string    $subject
+	 * @param   string    $template
+	 * @param   mixed[]   $args
+	 * @param   mixed[]   $attachments
 	 * @return TemplatedEmail
 	 */
 	private function twigTemplate(string $to, string $subject, string $template, array $args, array $attachments = []): TemplatedEmail {
-		return (new TemplatedEmail())
+		$mail = (new TemplatedEmail())
 			->from($this->adminFrom)
 			->to($to)
 			->subject($subject)
 			->htmlTemplate($template)
 			->context($args)
-			;
+		;
+		if (count($attachments) > 0) {
+			foreach ($attachments as $attachment) {
+				$mail->attach($attachment);
+			}
+		}
+		return $mail;
 	}
 	
 	/**
-	 * @param   string                $to
-	 * @param   string                $subject
-	 * @param   string                $text
-	 * @param   array<mixed, mixed>   $attachments
+	 * @param   string    $to
+	 * @param   string    $subject
+	 * @param   string    $text
+	 * @param   mixed[]   $attachments
 	 * @return Email
 	 */
 	private function regMessage(string $to, string $subject, string $text, array $attachments = []): Email {
-		return (new Email())
+		$mail = (new Email())
 			->from($this->adminFrom)
 			->to($to)
 			->subject($subject)
 			->text($text)
-			;
+		;
+		if (count($attachments) > 0) {
+			foreach ($attachments as $attachment) {
+				$mail->attach($attachment);
+			}
+		}
+		return $mail;
 	}
 }

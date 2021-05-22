@@ -49,6 +49,7 @@
       </extensions>
       -->
     <extensions>
+        <extension class="App\Tests\Extensions\Boot"/>
         <extension class="DAMA\DoctrineTestBundle\PHPUnit\PHPUnitExtension"/>
     </extensions>
 </phpunit>

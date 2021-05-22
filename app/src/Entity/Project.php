@@ -17,11 +17,12 @@ use App\Repository\ProjectRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Stringable;
 
 /**
  * @ORM\Entity(repositoryClass=ProjectRepository::class)
  */
-class Project implements IdContract, TimeStampableContract, AuthorableContract, VersionableContract, SoftDeleteContract {
+class Project implements IdContract, TimeStampableContract, AuthorableContract, VersionableContract, SoftDeleteContract, Stringable {
 	use TimestampsConcern;
 	use AuthorConcern;
 	use IdConcern;
@@ -298,5 +299,14 @@ class Project implements IdContract, TimeStampableContract, AuthorableContract, 
 			}
 		}
 		return $this;
+	}
+	
+	public function __toString(): string {
+		return sprintf(
+			'User: { name: "%s",%s id: "%s",%s uuid: "%s"}%s',
+			$this->getName(), PHP_EOL,
+			$this->getId(), PHP_EOL,
+			(string) $this->getUuid(), PHP_EOL
+		);
 	}
 }

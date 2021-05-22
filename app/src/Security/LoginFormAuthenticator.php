@@ -59,10 +59,10 @@ final class LoginFormAuthenticator implements AuthenticatorInterface {
 		/** @var User $user */
 		$user = $token->getUser();
 		$this->flashBag->add(Flashes::SUCCESS_MESSAGE, 'Welcome back! ' . $user->getName());
-		if ($targetPath) {
-			return new RedirectResponse($targetPath);
+		if ($targetPath === null) {
+			return new RedirectResponse('/');
 		}
-		return new RedirectResponse('/');
+		return new RedirectResponse($targetPath);
 	}
 	
 	public function onAuthenticationFailure(Request $request, AuthenticationException $exception): ?Response {
@@ -107,7 +107,7 @@ final class LoginFormAuthenticator implements AuthenticatorInterface {
 		$this->logger->error(
 			sprintf(
 				'User "%s", id: "%d" failed to login because of an inactive account.',
-				(string) $user->getUsername(), $user->getId()
+				$user->getUsername(), $user->getId()
 			)
 		);
 		$this->flashBag->add(Flashes::DANGER_MESSAGE, $exception->getMessage());
@@ -119,14 +119,14 @@ final class LoginFormAuthenticator implements AuthenticatorInterface {
 			$this->logger->error(
 				sprintf(
 					'User "%s", id: "%d" failed to login because of invalid credentials.',
-					(string) $user->getUsername(), $user->getId()
+					$user->getUsername(), $user->getId()
 				)
 			);
 		} else {
 			$this->logger->error(
 				sprintf(
 					'User "%s" failed to login because of invalid credentials.',
-					$user instanceof UserInterface ? (string) $user->getUsername() : (string) $user
+					$user instanceof UserInterface ? $user->getUsername() : (string) $user
 				)
 			);
 		}
@@ -139,14 +139,14 @@ final class LoginFormAuthenticator implements AuthenticatorInterface {
 			$this->logger->error(
 				sprintf(
 					'User "%s", id: "%d" failed to login because of invalid csrf token received from the form.',
-					(string) $user->getUsername(), $user->getId()
+					$user->getUsername(), $user->getId()
 				)
 			);
 		} else {
 			$this->logger->error(
 				sprintf(
 					'User "%s" failed to login because of invalid csrf token received from the form..',
-					$user instanceof UserInterface ? (string) $user->getUsername() : (string) $user
+					$user instanceof UserInterface ? $user->getUsername() : (string) $user
 				)
 			);
 		}
@@ -162,7 +162,7 @@ final class LoginFormAuthenticator implements AuthenticatorInterface {
 		$this->logger->error(
 			sprintf(
 				'User "%s", id: "%d" failed to login because of an unconfirmed email.',
-				(string) $user->getUsername(), $user->getId()
+				$user->getUsername(), $user->getId()
 			)
 		);
 		$this->flashBag->add(Flashes::DANGER_MESSAGE, $exception->getMessage());

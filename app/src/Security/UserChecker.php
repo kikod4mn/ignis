@@ -36,7 +36,7 @@ final class UserChecker implements UserCheckerInterface {
 		if ($user->getDisabled()) {
 			$e = new AccountDisabledException();
 			$e->setUser($user);
-			return;
+			throw $e;
 		}
 	}
 }

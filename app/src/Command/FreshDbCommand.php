@@ -31,7 +31,7 @@ class FreshDbCommand extends Command {
 		$io = new SymfonyStyle($input, $output);
 		/** @var Application $app */
 		$app = $this->getApplication();
-		if ($this->parameterBag->get('kernel.environment') !== 'dev') {
+		if ($this->parameterBag->get('kernel.environment') === 'prod') {
 			$io->error('Cannot run command in production.');
 			return Command::FAILURE;
 		}
