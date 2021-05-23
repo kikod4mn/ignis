@@ -15,11 +15,12 @@
 	{% else %}
 		<td class="table-warning">Not Confirmed</td>
 	{% endif %}
-	{% if user.passwordResetToken %}
-		<td class="table-warning">Request Active</td>
-	{% else %}
-		<td class="table-success">Not Active</td>
-	{% endif %}
+{# todo fix	#}
+{#	{% if user.passwordResetToken %}#}
+{#		<td class="table-warning">Request Active</td>#}
+{#	{% else %}#}
+{#		<td class="table-success">Not Active</td>#}
+{#	{% endif %}#}
 	<td>{{ user.lastLoginAt }}</td>
 	<td>Projects - {{ user.projects.count }}, features - {{ user.features.count }}, bugs - {{ user.bugs.count }}</td>
 </tr>

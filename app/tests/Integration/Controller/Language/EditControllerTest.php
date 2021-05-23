@@ -5,9 +5,8 @@ declare(strict_types = 1);
 namespace App\Tests\Integration\Controller\Language;
 
 use App\Entity\Language;
-use App\Entity\Role;
+use App\Entity\User;
 use App\Repository\LanguageRepository;
-use App\Repository\RoleRepository;
 use App\Repository\UserRepository;
 use App\Tests\Integration\BaseWebTestCase;
 use App\Tests\Integration\IH;
@@ -18,12 +17,10 @@ use Symfony\Component\HttpFoundation\Request;
  */
 class EditControllerTest extends BaseWebTestCase {
 	public function testEditPage(): void {
-		/** @var Role $role */
-		$role = IH::getRepository(static::$container, RoleRepository::class)->findOneBy(['name' => Role::ROLE_ADMIN]);
 		/** @var UserRepository $userRepository */
 		$userRepository = IH::getRepository(static::$container, UserRepository::class);
-		$users          = $userRepository->findByRoles([$role]);
-		$creator        = $users[array_rand($users)];
+		/** @var User $creator */
+		$creator        = $userRepository->findOneByRole(User::ROLE_ADMIN);
 		/** @var LanguageRepository $languageRepository */
 		$languageRepository = IH::getRepository(static::$container, LanguageRepository::class);
 		$languages          = $languageRepository->findAll();
@@ -60,12 +57,10 @@ class EditControllerTest extends BaseWebTestCase {
 				'_token'       => IH::getCsrf(static::$container)->getToken('_language_edit[_csrf_token]'),
 			],
 		];
-		/** @var Role $role */
-		$role = IH::getRepository(static::$container, RoleRepository::class)->findOneBy(['name' => Role::ROLE_ADMIN]);
 		/** @var UserRepository $userRepository */
 		$userRepository = IH::getRepository(static::$container, UserRepository::class);
-		$users          = $userRepository->findByRoles([$role]);
-		$creator        = $users[array_rand($users)];
+		/** @var User $creator */
+		$creator        = $userRepository->findOneByRole(User::ROLE_ADMIN);
 		$route          = sprintf('/languages/%s/edit', $language->getUuid()?->toString());
 		$this->getClient()->loginUser($creator);
 		$this->getClient()->request(Request::METHOD_POST, $route, $data);
@@ -92,12 +87,10 @@ class EditControllerTest extends BaseWebTestCase {
 				'_token'       => IH::getCsrf(static::$container)->getToken('_language_edit[_csrf_token]'),
 			],
 		];
-		/** @var Role $role */
-		$role = IH::getRepository(static::$container, RoleRepository::class)->findOneBy(['name' => Role::ROLE_TEST_USER]);
 		/** @var UserRepository $userRepository */
 		$userRepository = IH::getRepository(static::$container, UserRepository::class);
-		$users          = $userRepository->findByRoles([$role]);
-		$creator        = $users[array_rand($users)];
+		/** @var User $creator */
+		$creator        = $userRepository->findOneByRole(User::ROLE_TEST_USER);
 		$route          = sprintf('/languages/%s/edit', $language->getUuid()?->toString());
 		$this->getClient()->loginUser($creator);
 		$this->getClient()->request(Request::METHOD_POST, $route, $data);
@@ -122,12 +115,10 @@ class EditControllerTest extends BaseWebTestCase {
 				'_token'       => IH::getCsrf(static::$container)->getToken('_language_edit[_csrf_token]'),
 			],
 		];
-		/** @var Role $role */
-		$role = IH::getRepository(static::$container, RoleRepository::class)->findOneBy(['name' => Role::ROLE_PROJECT_LEAD]);
 		/** @var UserRepository $userRepository */
 		$userRepository = IH::getRepository(static::$container, UserRepository::class);
-		$users          = $userRepository->findByRoles([$role]);
-		$creator        = $users[array_rand($users)];
+		/** @var User $creator */
+		$creator        = $userRepository->findOneByRole(User::ROLE_PROJECT_LEAD);
 		$route          = sprintf('/languages/%s/edit', $language->getUuid()?->toString());
 		$this->getClient()->loginUser($creator);
 		$this->getClient()->request(Request::METHOD_POST, $route, $data);

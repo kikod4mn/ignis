@@ -5,9 +5,8 @@ declare(strict_types = 1);
 namespace App\Controller\Language;
 
 use App\Entity\Language;
-use App\Entity\Role;
+
 use App\Entity\User;
-use App\Event\Creators\BackupCreateEvent;
 use App\Event\Updators\DeleteEvent;
 use App\Service\Contracts\Flashes;
 use Doctrine\ORM\EntityManagerInterface;
@@ -17,7 +16,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
-use function sprintf;
 
 class DeleteController extends AbstractController {
 	public function __construct(private EntityManagerInterface $em, private LoggerInterface $logger, private EventDispatcherInterface $ed) { }
@@ -27,13 +25,13 @@ class DeleteController extends AbstractController {
 	 * @ParamConverter("language", class="App\Entity\Language", options={"mapping": {"language_uuid": "uuid"}})
 	 */
 	public function __invoke(Language $language): Response {
-		if ($this->isGranted(Role::ROLE_TEST_USER)) {
+		if ($this->isGranted(User::ROLE_TEST_USER)) {
 			return $this->showcaseDelete($language);
 		}
-		if ($this->isGranted(Role::ROLE_DELETE_LANGUAGE, $language) && $this->isGranted(Role::ROLE_PROJECT_LEAD)) {
+		if ($this->isGranted(User::ROLE_DELETE_LANGUAGE, $language) && $this->isGranted(User::ROLE_PROJECT_LEAD)) {
 			return $this->delete($language);
 		}
-		if (! $this->isGranted(Role::ROLE_USER)) {
+		if (! $this->isGranted(User::ROLE_USER)) {
 			throw $this->createAccessDeniedException();
 		}
 		throw $this->createNotFoundException();
@@ -58,7 +56,7 @@ class DeleteController extends AbstractController {
 		return $this->redirectToRoute('languages-list');
 	}
 	
-	private function showcaseDelete(Language $language): Response {
+	private function showcaseDelete(): Response {
 		$this->addFlash(Flashes::SUCCESS_MESSAGE, 'Deleted the language! It is now gone and forgotten!');
 		$this->addFlash(Flashes::INFO_MESSAGE, 'Actually nothing changed. Just a test user doing test user things!');
 		return $this->redirectToRoute('languages-list');

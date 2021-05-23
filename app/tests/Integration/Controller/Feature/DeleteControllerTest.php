@@ -6,11 +6,9 @@ namespace App\Tests\Integration\Controller\Feature;
 
 use App\Entity\Feature;
 use App\Entity\Project;
-use App\Entity\Role;
 use App\Entity\User;
 use App\Repository\FeatureRepository;
 use App\Repository\ProjectRepository;
-use App\Repository\RoleRepository;
 use App\Repository\UserRepository;
 use App\Tests\Integration\BaseWebTestCase;
 use App\Tests\Integration\IH;
@@ -104,10 +102,8 @@ class DeleteControllerTest extends BaseWebTestCase {
 		$project = $feature->getProject();
 		/** @var UserRepository $userRepository */
 		$userRepository = IH::getRepository(static::$container, UserRepository::class);
-		/** @var Role $role */
-		$role = IH::getRepository(static::$container, RoleRepository::class)->findOneBy(['name' => Role::ROLE_TEST_USER]);
 		/** @var User $testUser */
-		$testUser = $userRepository->findOneByRoles([$role]);
+		$testUser = $userRepository->findOneByRole(User::ROLE_TEST_USER);
 		$route    = sprintf(
 			'/projects/%s/features/%s/delete',
 			$project->getUuid()?->toString(), $feature->getUuid()?->toString()
@@ -137,10 +133,8 @@ class DeleteControllerTest extends BaseWebTestCase {
 		$project = $feature->getProject();
 		/** @var UserRepository $userRepository */
 		$userRepository = IH::getRepository(static::$container, UserRepository::class);
-		/** @var Role $role */
-		$role  = IH::getRepository(static::$container, RoleRepository::class)->findOneBy(['name' => Role::ROLE_USER]);
 		$users = array_filter(
-			$userRepository->findByRoles([$role]),
+			$userRepository->findByRole(User::ROLE_USER),
 			static fn (User $u): bool => ! $project->getCanView()->contains($u)
 										 && ! $project->getCanEdit()->contains($u)
 										 && $project->getAuthor()?->getId() !== $u->getId()

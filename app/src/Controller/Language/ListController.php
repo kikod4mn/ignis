@@ -4,7 +4,8 @@ declare(strict_types = 1);
 
 namespace App\Controller\Language;
 
-use App\Entity\Role;
+
+use App\Entity\User;
 use App\Repository\LanguageRepository;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -18,13 +19,13 @@ class ListController extends AbstractController {
 	 * @Route("/languages/{page}", name="languages-list", methods={"GET"}, defaults={"page" = 1}, requirements={"page"="\d+"})
 	 */
 	public function __invoke(int $page): Response {
-		if ($this->isGranted(Role::ROLE_TEST_USER)) {
+		if ($this->isGranted(User::ROLE_TEST_USER)) {
 			return $this->showcaseList($page);
 		}
-		if ($this->isGranted(Role::ROLE_PROJECT_LEAD)) {
+		if ($this->isGranted(User::ROLE_PROJECT_LEAD)) {
 			return $this->showcaseList($page);
 		}
-		if (! $this->isGranted(Role::ROLE_USER)) {
+		if (! $this->isGranted(User::ROLE_USER)) {
 			throw $this->createAccessDeniedException();
 		}
 		throw $this->createNotFoundException();

@@ -6,10 +6,8 @@ namespace App\Tests\Integration\Controller\Feature;
 
 use App\Entity\Feature;
 use App\Entity\Project;
-use App\Entity\Role;
 use App\Entity\User;
 use App\Repository\FeatureRepository;
-use App\Repository\RoleRepository;
 use App\Repository\UserRepository;
 use App\Tests\Integration\BaseWebTestCase;
 use App\Tests\Integration\IH;
@@ -20,14 +18,10 @@ use Symfony\Component\HttpFoundation\Request;
  */
 class EditControllerTest extends BaseWebTestCase {
 	public function testEditPage(): void {
-		/** @var RoleRepository $roleRepository */
-		$roleRepository = IH::getRepository(static::$container, RoleRepository::class);
-		/** @var Role $role */
-		$role = $roleRepository->findOneBy(['name' => Role::ROLE_PROJECT_LEAD]);
 		/** @var UserRepository $userRepository */
 		$userRepository = IH::getRepository(static::$container, UserRepository::class);
 		$creators       = array_filter(
-			$userRepository->findByRoles([$role]),
+			$userRepository->findByRole(User::ROLE_PROJECT_LEAD),
 			static function (User $u): bool {
 				if ($u->getProjects()->isEmpty()) {
 					return false;
@@ -54,14 +48,10 @@ class EditControllerTest extends BaseWebTestCase {
 	}
 	
 	public function testEditPageForAnon(): void {
-		/** @var RoleRepository $roleRepository */
-		$roleRepository = IH::getRepository(static::$container, RoleRepository::class);
-		/** @var Role $role */
-		$role = $roleRepository->findOneBy(['name' => Role::ROLE_PROJECT_LEAD]);
 		/** @var UserRepository $userRepository */
 		$userRepository = IH::getRepository(static::$container, UserRepository::class);
 		$creators       = array_filter(
-			$userRepository->findByRoles([$role]),
+			$userRepository->findByRole(User::ROLE_PROJECT_LEAD),
 			static function (User $u): bool {
 				if ($u->getProjects()->isEmpty()) {
 					return false;
@@ -90,14 +80,10 @@ class EditControllerTest extends BaseWebTestCase {
 	}
 	
 	public function testEditForProjectAuthor(): void {
-		/** @var RoleRepository $roleRepository */
-		$roleRepository = IH::getRepository(static::$container, RoleRepository::class);
-		/** @var Role $role */
-		$role = $roleRepository->findOneBy(['name' => Role::ROLE_PROJECT_LEAD]);
 		/** @var UserRepository $userRepository */
 		$userRepository = IH::getRepository(static::$container, UserRepository::class);
 		$creators       = array_filter(
-			$userRepository->findByRoles([$role]),
+			$userRepository->findByRole(User::ROLE_PROJECT_LEAD),
 			static function (User $u): bool {
 				if ($u->getProjects()->isEmpty()) {
 					return false;
@@ -138,14 +124,10 @@ class EditControllerTest extends BaseWebTestCase {
 	}
 	
 	public function testEditForProjectLeadButNotProjectAuthor(): void {
-		/** @var RoleRepository $roleRepository */
-		$roleRepository = IH::getRepository(static::$container, RoleRepository::class);
-		/** @var Role $role */
-		$role = $roleRepository->findOneBy(['name' => Role::ROLE_PROJECT_LEAD]);
 		/** @var UserRepository $userRepository */
 		$userRepository = IH::getRepository(static::$container, UserRepository::class);
 		$creators       = array_filter(
-			$userRepository->findByRoles([$role]),
+			$userRepository->findByRole(User::ROLE_PROJECT_LEAD),
 			static function (User $u): bool {
 				if ($u->getProjects()->isEmpty()) {
 					return false;
@@ -176,7 +158,7 @@ class EditControllerTest extends BaseWebTestCase {
 			],
 		];
 		$notCreators = array_filter(
-			$userRepository->findByRoles([$role]),
+			$userRepository->findByRole(User::ROLE_PROJECT_LEAD),
 			static fn (User $u) => $u->getId() !== $creator->getId()
 								   && ! $project->getCanEdit()->contains($u)
 								   && ! $project->getCanView()->contains($u)
@@ -192,14 +174,10 @@ class EditControllerTest extends BaseWebTestCase {
 	}
 	
 	public function testEditForRegularUser(): void {
-		/** @var RoleRepository $roleRepository */
-		$roleRepository = IH::getRepository(static::$container, RoleRepository::class);
-		/** @var Role $role */
-		$role = $roleRepository->findOneBy(['name' => Role::ROLE_PROJECT_LEAD]);
 		/** @var UserRepository $userRepository */
 		$userRepository = IH::getRepository(static::$container, UserRepository::class);
 		$creators       = array_filter(
-			$userRepository->findByRoles([$role]),
+			$userRepository->findByRole(User::ROLE_PROJECT_LEAD),
 			static function (User $u): bool {
 				if ($u->getProjects()->isEmpty()) {
 					return false;
@@ -229,10 +207,8 @@ class EditControllerTest extends BaseWebTestCase {
 				'_token'       => IH::getCsrf(static::$container)->getToken('_feature_edit[_csrf_token]'),
 			],
 		];
-		/** @var Role $userRole */
-		$userRole    = $roleRepository->findOneBy(['name' => Role::ROLE_USER]);
 		$notCreators = array_filter(
-			$userRepository->findByRoles([$userRole]),
+			$userRepository->findByRole(User::ROLE_USER),
 			static fn (User $u) => $u->getId() !== $creator->getId() && ! $project->getCanEdit()->contains($u)
 		);
 		/** @var User $notCreator */
@@ -246,14 +222,10 @@ class EditControllerTest extends BaseWebTestCase {
 	}
 	
 	public function testEditForTestUser(): void {
-		/** @var RoleRepository $roleRepository */
-		$roleRepository = IH::getRepository(static::$container, RoleRepository::class);
-		/** @var Role $role */
-		$role = $roleRepository->findOneBy(['name' => Role::ROLE_PROJECT_LEAD]);
 		/** @var UserRepository $userRepository */
 		$userRepository = IH::getRepository(static::$container, UserRepository::class);
 		$creators       = array_filter(
-			$userRepository->findByRoles([$role]),
+			$userRepository->findByRole(User::ROLE_PROJECT_LEAD),
 			static function (User $u): bool {
 				if ($u->getProjects()->isEmpty()) {
 					return false;
@@ -283,10 +255,8 @@ class EditControllerTest extends BaseWebTestCase {
 				'_token'       => IH::getCsrf(static::$container)->getToken('_feature_edit[_csrf_token]'),
 			],
 		];
-		/** @var Role $testUserRole */
-		$testUserRole = $roleRepository->findOneBy(['name' => Role::ROLE_TEST_USER]);
 		$notCreators  = array_filter(
-			$userRepository->findByRoles([$testUserRole]),
+			$userRepository->findByRole(User::ROLE_TEST_USER),
 			static fn (User $u) => $u->getId() !== $creator->getId()
 		);
 		/** @var User $notCreator */
@@ -300,14 +270,10 @@ class EditControllerTest extends BaseWebTestCase {
 	}
 	
 	public function testEditForAnon(): void {
-		/** @var RoleRepository $roleRepository */
-		$roleRepository = IH::getRepository(static::$container, RoleRepository::class);
-		/** @var Role $role */
-		$role = $roleRepository->findOneBy(['name' => Role::ROLE_PROJECT_LEAD]);
 		/** @var UserRepository $userRepository */
 		$userRepository = IH::getRepository(static::$container, UserRepository::class);
 		$creators       = array_filter(
-			$userRepository->findByRoles([$role]),
+			$userRepository->findByRole(User::ROLE_PROJECT_LEAD),
 			static function (User $u): bool {
 				if ($u->getProjects()->isEmpty()) {
 					return false;

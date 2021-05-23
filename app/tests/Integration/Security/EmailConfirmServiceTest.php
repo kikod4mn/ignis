@@ -6,7 +6,7 @@ namespace App\Tests\Integration\Security;
 
 use App\Entity\User;
 use App\Repository\UserRepository;
-use App\Security\EmailConfirmService;
+use App\Security\ConfirmEmailService;
 use App\Service\TimeCreator;
 use App\Tests\Integration\BaseWebTestCase;
 use App\Tests\Integration\IH;
@@ -16,8 +16,8 @@ class EmailConfirmServiceTest extends BaseWebTestCase {
 		/** @var UserRepository $userRepository */
 		$userRepository = IH::getRepository(static::$container, UserRepository::class);
 		$user           = new User();
-		$emailConfirmer = new EmailConfirmService($userRepository);
-		$emailConfirmer->setTokenAndSendEmail($user);
+		$emailConfirmer = new ConfirmEmailService($userRepository);
+		$emailConfirmer->createConfirmRequest($user);
 		static::assertNull($user->getEmailConfirmedAt());
 		static::assertNotNull($user->getEmailConfirmToken());
 	}
@@ -28,7 +28,7 @@ class EmailConfirmServiceTest extends BaseWebTestCase {
 		/** @var User $user */
 		$user = $userRepository->findOneBy(['emailConfirmedAt' => null]);
 		$user->setEmailConfirmationTokenExpiresAt(TimeCreator::randomFuture(1));
-		$emailConfirmer = new EmailConfirmService($userRepository);
+		$emailConfirmer = new ConfirmEmailService($userRepository);
 		static::assertTrue($emailConfirmer->verifyAndConfirm((string) $user->getEmailConfirmToken()));
 		static::assertNotNull($user->getEmailConfirmedAt());
 		static::assertNull($user->getEmailConfirmToken());
@@ -39,7 +39,7 @@ class EmailConfirmServiceTest extends BaseWebTestCase {
 		$userRepository = IH::getRepository(static::$container, UserRepository::class);
 		/** @var User $user */
 		$user           = $userRepository->findOneBy(['emailConfirmToken' => null]);
-		$emailConfirmer = new EmailConfirmService($userRepository);
+		$emailConfirmer = new ConfirmEmailService($userRepository);
 		static::assertFalse($emailConfirmer->verifyAndConfirm((string) $user->getEmailConfirmToken()));
 		static::assertNotNull($user->getEmailConfirmedAt());
 		static::assertNull($user->getEmailConfirmToken());
@@ -48,7 +48,7 @@ class EmailConfirmServiceTest extends BaseWebTestCase {
 	public function testEmailVerifierWithNotRealUser(): void {
 		/** @var UserRepository $userRepository */
 		$userRepository = IH::getRepository(static::$container, UserRepository::class);
-		$emailConfirmer = new EmailConfirmService($userRepository);
+		$emailConfirmer = new ConfirmEmailService($userRepository);
 		static::assertFalse($emailConfirmer->verifyAndConfirm('what-email@no-email.xyz'));
 	}
 }

@@ -5,10 +5,8 @@ declare(strict_types = 1);
 namespace App\Tests\Integration\Controller\Feature;
 
 use App\Entity\Project;
-use App\Entity\Role;
 use App\Entity\User;
 use App\Repository\FeatureRepository;
-use App\Repository\RoleRepository;
 use App\Repository\UserRepository;
 use App\Tests\Integration\BaseWebTestCase;
 use App\Tests\Integration\IH;
@@ -19,14 +17,10 @@ use Symfony\Component\HttpFoundation\Request;
  */
 class CreateControllerTest extends BaseWebTestCase {
 	public function testCreatePage(): void {
-		/** @var RoleRepository $roleRepository */
-		$roleRepository = IH::getRepository(static::$container, RoleRepository::class);
-		/** @var Role $role */
-		$role = $roleRepository->findOneBy(['name' => Role::ROLE_PROJECT_LEAD]);
 		/** @var UserRepository $userRepository */
 		$userRepository = IH::getRepository(static::$container, UserRepository::class);
 		$creators       = array_filter(
-			$userRepository->findByRoles([$role]),
+			$userRepository->findByRole(User::ROLE_PROJECT_LEAD),
 			static fn (User $u) => ! $u->getProjects()->isEmpty()
 		);
 		/** @var User $creator */
@@ -40,14 +34,10 @@ class CreateControllerTest extends BaseWebTestCase {
 	}
 	
 	public function testCreatePageForAnon(): void {
-		/** @var RoleRepository $roleRepository */
-		$roleRepository = IH::getRepository(static::$container, RoleRepository::class);
-		/** @var Role $role */
-		$role = $roleRepository->findOneBy(['name' => Role::ROLE_PROJECT_LEAD]);
 		/** @var UserRepository $userRepository */
 		$userRepository = IH::getRepository(static::$container, UserRepository::class);
 		$creators       = array_filter(
-			$userRepository->findByRoles([$role]),
+			$userRepository->findByRole(User::ROLE_PROJECT_LEAD),
 			static fn (User $u) => ! $u->getProjects()->isEmpty()
 		);
 		/** @var User $creator */
@@ -63,14 +53,10 @@ class CreateControllerTest extends BaseWebTestCase {
 	}
 	
 	public function testCreateForProjectAuthor(): void {
-		/** @var RoleRepository $roleRepository */
-		$roleRepository = IH::getRepository(static::$container, RoleRepository::class);
-		/** @var Role $role */
-		$role = $roleRepository->findOneBy(['name' => Role::ROLE_PROJECT_LEAD]);
 		/** @var UserRepository $userRepository */
 		$userRepository = IH::getRepository(static::$container, UserRepository::class);
 		$creators       = array_filter(
-			$userRepository->findByRoles([$role]),
+			$userRepository->findByRole(User::ROLE_PROJECT_LEAD),
 			static fn (User $u) => ! $u->getProjects()->isEmpty()
 		);
 		/** @var User $creator */
@@ -98,14 +84,10 @@ class CreateControllerTest extends BaseWebTestCase {
 	}
 	
 	public function testCreateForProjectLeadButNotProjectAuthor(): void {
-		/** @var RoleRepository $roleRepository */
-		$roleRepository = IH::getRepository(static::$container, RoleRepository::class);
-		/** @var Role $role */
-		$role = $roleRepository->findOneBy(['name' => Role::ROLE_PROJECT_LEAD]);
 		/** @var UserRepository $userRepository */
 		$userRepository = IH::getRepository(static::$container, UserRepository::class);
 		$creators       = array_filter(
-			$userRepository->findByRoles([$role]),
+			$userRepository->findByRole(User::ROLE_PROJECT_LEAD),
 			static fn (User $u) => ! $u->getProjects()->isEmpty()
 		);
 		/** @var User $creator */
@@ -139,14 +121,10 @@ class CreateControllerTest extends BaseWebTestCase {
 	}
 	
 	public function testCreateForRegularUser(): void {
-		/** @var RoleRepository $roleRepository */
-		$roleRepository = IH::getRepository(static::$container, RoleRepository::class);
-		/** @var Role $role */
-		$role = $roleRepository->findOneBy(['name' => Role::ROLE_PROJECT_LEAD]);
 		/** @var UserRepository $userRepository */
 		$userRepository = IH::getRepository(static::$container, UserRepository::class);
 		$creators       = array_filter(
-			$userRepository->findByRoles([$role]),
+			$userRepository->findByRole(User::ROLE_PROJECT_LEAD),
 			static fn (User $u) => ! $u->getProjects()->isEmpty()
 		);
 		/** @var User $creator */
@@ -163,10 +141,8 @@ class CreateControllerTest extends BaseWebTestCase {
 				'_token'       => IH::getCsrf(static::$container)->getToken('_feature_create[_csrf_token]'),
 			],
 		];
-		/** @var Role $userRole */
-		$userRole    = $roleRepository->findOneBy(['name' => Role::ROLE_USER]);
 		$notCreators = array_filter(
-			$userRepository->findByRoles([$userRole]),
+			$userRepository->findByRole(User::ROLE_USER),
 			static fn (User $u) => $u->getId() !== $creator->getId()
 		);
 		/** @var User $notCreator */
@@ -180,14 +156,10 @@ class CreateControllerTest extends BaseWebTestCase {
 	}
 	
 	public function testCreateForTestUser(): void {
-		/** @var RoleRepository $roleRepository */
-		$roleRepository = IH::getRepository(static::$container, RoleRepository::class);
-		/** @var Role $role */
-		$role = $roleRepository->findOneBy(['name' => Role::ROLE_PROJECT_LEAD]);
 		/** @var UserRepository $userRepository */
 		$userRepository = IH::getRepository(static::$container, UserRepository::class);
 		$creators       = array_filter(
-			$userRepository->findByRoles([$role]),
+			$userRepository->findByRole(User::ROLE_PROJECT_LEAD),
 			static fn (User $u) => ! $u->getProjects()->isEmpty()
 		);
 		/** @var User $creator */
@@ -204,10 +176,8 @@ class CreateControllerTest extends BaseWebTestCase {
 				'_token'       => IH::getCsrf(static::$container)->getToken('_feature_create[_csrf_token]'),
 			],
 		];
-		/** @var Role $testUserRole */
-		$testUserRole = $roleRepository->findOneBy(['name' => Role::ROLE_TEST_USER]);
-		$notCreators  = array_filter(
-			$userRepository->findByRoles([$testUserRole]),
+		$notCreators = array_filter(
+			$userRepository->findByRole(User::ROLE_TEST_USER),
 			static fn (User $u) => $u->getId() !== $creator->getId()
 		);
 		/** @var User $notCreator */
@@ -223,14 +193,10 @@ class CreateControllerTest extends BaseWebTestCase {
 	}
 	
 	public function testCreateForAnon(): void {
-		/** @var RoleRepository $roleRepository */
-		$roleRepository = IH::getRepository(static::$container, RoleRepository::class);
-		/** @var Role $role */
-		$role = $roleRepository->findOneBy(['name' => Role::ROLE_PROJECT_LEAD]);
 		/** @var UserRepository $userRepository */
 		$userRepository = IH::getRepository(static::$container, UserRepository::class);
 		$creators       = array_filter(
-			$userRepository->findByRoles([$role]),
+			$userRepository->findByRole(User::ROLE_PROJECT_LEAD),
 			static fn (User $u) => ! $u->getProjects()->isEmpty()
 		);
 		/** @var User $creator */

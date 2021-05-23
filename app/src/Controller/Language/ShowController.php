@@ -5,7 +5,8 @@ declare(strict_types = 1);
 namespace App\Controller\Language;
 
 use App\Entity\Language;
-use App\Entity\Role;
+
+use App\Entity\User;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -17,13 +18,13 @@ class ShowController extends AbstractController {
 	 * @ParamConverter("language", class="App\Entity\Language", options={"mapping": {"language_uuid" = "uuid"}})
 	 */
 	public function __invoke(Language $language): Response {
-		if ($this->isGranted(Role::ROLE_TEST_USER)) {
+		if ($this->isGranted(User::ROLE_TEST_USER)) {
 			return $this->showcaseShow($language);
 		}
-		if ($this->isGranted(Role::ROLE_PROJECT_LEAD)) {
+		if ($this->isGranted(User::ROLE_PROJECT_LEAD)) {
 			return $this->showcaseShow($language);
 		}
-		if (! $this->isGranted(Role::ROLE_USER)) {
+		if (! $this->isGranted(User::ROLE_USER)) {
 			throw $this->createAccessDeniedException();
 		}
 		throw $this->createNotFoundException();

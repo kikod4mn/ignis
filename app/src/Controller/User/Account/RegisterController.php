@@ -6,12 +6,13 @@ namespace App\Controller\User\Account;
 
 use App\Controller\Concerns\FlashFormErrors;
 use App\Entity\User;
-use App\Event\User\Account\RegisterEvent;
+use App\Event\Creators\IdCreateEvent;
+use App\Event\Creators\TimeStampableCreatedEvent;
+use App\Event\Security\PasswordHashEvent;
 use App\Form\User\Account\RegisterType;
-use App\Repository\RoleRepository;
 use App\Repository\UserRepository;
-use App\Security\EmailConfirmService;
-use App\Service\TokenGenerator;
+use App\Security\ConfirmEmailService;
+use Carbon\Carbon;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
@@ -26,9 +27,8 @@ class RegisterController extends AbstractController {
 	use FlashFormErrors;
 	
 	public function __construct(
-		private TokenGenerator $tokenGenerator, private EntityManagerInterface $em, private RoleRepository $roleRepository,
-		private LoggerInterface $logger, private UserRepository $userRepository, private EventDispatcherInterface $ed,
-		private EmailConfirmService $emailConfirmService
+		private EntityManagerInterface $em, private LoggerInterface $logger, private UserRepository $userRepository,
+		private EventDispatcherInterface $ed, private ConfirmEmailService $emailConfirmService
 	) {
 	}
 	
@@ -43,8 +43,11 @@ class RegisterController extends AbstractController {
 		$form = $this->createForm(RegisterType::class, $user);
 		$form->handleRequest($request);
 		if ($form->isSubmitted() && $form->isValid()) {
-			$this->emailConfirmService->setTokenAndSendEmail($user);
-			$this->ed->dispatch(new RegisterEvent($user));
+			$this->emailConfirmService->createConfirmRequest($user);
+			$user->setAgreedToTermsAt(Carbon::now());
+			$this->ed->dispatch(new IdCreateEvent($user));
+			$this->ed->dispatch(new TimeStampableCreatedEvent($user));
+			$this->ed->dispatch(new PasswordHashEvent($user));
 			try {
 				$this->em->persist($user);
 				$this->em->flush();

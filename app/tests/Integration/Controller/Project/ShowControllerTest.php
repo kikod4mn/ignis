@@ -4,10 +4,8 @@ declare(strict_types = 1);
 
 namespace App\Tests\Integration\Controller\Project;
 
-use App\Entity\Role;
 use App\Entity\User;
 use App\Repository\ProjectRepository;
-use App\Repository\RoleRepository;
 use App\Repository\UserRepository;
 use App\Tests\Integration\BaseWebTestCase;
 use App\Tests\Integration\IH;
@@ -22,12 +20,10 @@ class ShowControllerTest extends BaseWebTestCase {
 		$projectRepository = IH::getRepository(static::$container, ProjectRepository::class);
 		$projects          = $projectRepository->findAll();
 		$project           = $projects[array_rand($projects)];
-		/** @var Role $role */
-		$role = IH::getRepository(static::$container, RoleRepository::class)->findOneBy(['name' => Role::ROLE_ADMIN]);
 		/** @var UserRepository $userRepository */
 		$userRepository = IH::getRepository(static::$container, UserRepository::class);
 		/** @var User $user */
-		$user  = $userRepository->findOneByRoles([$role]);
+		$user  = $userRepository->findOneByRole(User::ROLE_ADMIN);
 		$route = sprintf('/projects/%s/show', $project->getUuid()?->toString());
 		$this->getClient()->loginUser($user);
 		$this->getClient()->request(Request::METHOD_GET, $route);
@@ -39,12 +35,10 @@ class ShowControllerTest extends BaseWebTestCase {
 		$projectRepository = IH::getRepository(static::$container, ProjectRepository::class);
 		$projects          = $projectRepository->findAll();
 		$project           = $projects[array_rand($projects)];
-		/** @var Role $role */
-		$role = IH::getRepository(static::$container, RoleRepository::class)->findOneBy(['name' => Role::ROLE_TEST_USER]);
 		/** @var UserRepository $userRepository */
 		$userRepository = IH::getRepository(static::$container, UserRepository::class);
 		/** @var User $user */
-		$user  = $userRepository->findOneByRoles([$role]);
+		$user  = $userRepository->findOneByRole(User::ROLE_TEST_USER);
 		$route = sprintf('/projects/%s/show', $project->getUuid()?->toString());
 		$this->getClient()->loginUser($user);
 		$this->getClient()->request(Request::METHOD_GET, $route);
@@ -56,12 +50,10 @@ class ShowControllerTest extends BaseWebTestCase {
 		$projectRepository = IH::getRepository(static::$container, ProjectRepository::class);
 		$projects          = $projectRepository->findAll();
 		$project           = $projects[array_rand($projects)];
-		/** @var Role $role */
-		$role = IH::getRepository(static::$container, RoleRepository::class)->findOneBy(['name' => Role::ROLE_PROJECT_LEAD]);
 		/** @var UserRepository $userRepository */
 		$userRepository = IH::getRepository(static::$container, UserRepository::class);
 		$users          = array_filter(
-			$userRepository->findByRoles([$role]),
+			$userRepository->findByRole(User::ROLE_PROJECT_LEAD),
 			static fn (User $u): bool => $project->getCanEdit()->contains($u)
 		);
 		/** @var User $user */
@@ -77,12 +69,10 @@ class ShowControllerTest extends BaseWebTestCase {
 		$projectRepository = IH::getRepository(static::$container, ProjectRepository::class);
 		$projects          = $projectRepository->findAll();
 		$project           = $projects[array_rand($projects)];
-		/** @var Role $role */
-		$role = IH::getRepository(static::$container, RoleRepository::class)->findOneBy(['name' => Role::ROLE_PROJECT_LEAD]);
 		/** @var UserRepository $userRepository */
 		$userRepository = IH::getRepository(static::$container, UserRepository::class);
 		$users          = array_filter(
-			$userRepository->findByRoles([$role]),
+			$userRepository->findByRole(User::ROLE_PROJECT_LEAD),
 			static fn (User $u): bool => $u->getId() !== $project->getAuthor()?->getId()
 										 && ! $project->getCanEdit()->contains($u)
 										 && ! $project->getCanView()->contains($u)
@@ -100,12 +90,10 @@ class ShowControllerTest extends BaseWebTestCase {
 		$projectRepository = IH::getRepository(static::$container, ProjectRepository::class);
 		$projects          = $projectRepository->findAll();
 		$project           = $projects[array_rand($projects)];
-		/** @var Role $role */
-		$role = IH::getRepository(static::$container, RoleRepository::class)->findOneBy(['name' => Role::ROLE_USER]);
 		/** @var UserRepository $userRepository */
 		$userRepository = IH::getRepository(static::$container, UserRepository::class);
 		$users          = array_filter(
-			$userRepository->findByRoles([$role]),
+			$userRepository->findByRole(User::ROLE_USER),
 			static fn (User $u): bool => $project->getCanView()->contains($u)
 		);
 		/** @var User $user */
@@ -121,12 +109,10 @@ class ShowControllerTest extends BaseWebTestCase {
 		$projectRepository = IH::getRepository(static::$container, ProjectRepository::class);
 		$projects          = $projectRepository->findAll();
 		$project           = $projects[array_rand($projects)];
-		/** @var Role $role */
-		$role = IH::getRepository(static::$container, RoleRepository::class)->findOneBy(['name' => Role::ROLE_USER]);
 		/** @var UserRepository $userRepository */
 		$userRepository = IH::getRepository(static::$container, UserRepository::class);
 		$users          = array_filter(
-			$userRepository->findByRoles([$role]),
+			$userRepository->findByRole(User::ROLE_USER),
 			static fn (User $u): bool => $u->getId() !== $project->getAuthor()?->getId()
 										 && ! $project->getCanEdit()->contains($u)
 										 && ! $project->getCanView()->contains($u)

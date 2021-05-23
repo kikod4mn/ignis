@@ -5,10 +5,8 @@ declare(strict_types = 1);
 namespace App\Tests\Integration\Controller\Project;
 
 use App\Entity\Project;
-use App\Entity\Role;
 use App\Entity\User;
 use App\Repository\ProjectRepository;
-use App\Repository\RoleRepository;
 use App\Repository\UserRepository;
 use App\Tests\Integration\BaseWebTestCase;
 use App\Tests\Integration\IH;
@@ -66,14 +64,10 @@ class DeleteControllerTest extends BaseWebTestCase {
 		$projectRepository = IH::getRepository(static::$container, ProjectRepository::class);
 		$projects          = $projectRepository->findBy(['softDeleted' => false]);
 		$project           = $projects[array_rand($projects)];
-		/** @var RoleRepository $roleRepository */
-		$roleRepository = IH::getRepository(static::$container, RoleRepository::class);
-		/** @var Role $role */
-		$role = $roleRepository->findOneBy(['name' => Role::ROLE_PROJECT_LEAD]);
 		/** @var UserRepository $userRepository */
 		$userRepository = IH::getRepository(static::$container, UserRepository::class);
 		$deletors       = array_filter(
-			$userRepository->findByRoles([$role]),
+			$userRepository->findByRole(User::ROLE_PROJECT_LEAD),
 			static fn (User $u) => $u->getId() !== $project->getAuthor()?->getId()
 		);
 		/** @var User $deletor */
@@ -95,14 +89,10 @@ class DeleteControllerTest extends BaseWebTestCase {
 		$projectRepository = IH::getRepository(static::$container, ProjectRepository::class);
 		$projects          = $projectRepository->findBy(['softDeleted' => false]);
 		$project           = $projects[array_rand($projects)];
-		/** @var RoleRepository $roleRepository */
-		$roleRepository = IH::getRepository(static::$container, RoleRepository::class);
-		/** @var Role $role */
-		$role = $roleRepository->findOneBy(['name' => Role::ROLE_TEST_USER]);
 		/** @var UserRepository $userRepository */
 		$userRepository = IH::getRepository(static::$container, UserRepository::class);
 		$deletors       = array_filter(
-			$userRepository->findByRoles([$role]),
+			$userRepository->findByRole(User::ROLE_TEST_USER),
 			static fn (User $u) => $u->getId() !== $project->getAuthor()?->getId()
 		);
 		/** @var User $deletor */
@@ -143,14 +133,10 @@ class DeleteControllerTest extends BaseWebTestCase {
 		$projectRepository = IH::getRepository(static::$container, ProjectRepository::class);
 		$projects          = $projectRepository->findBy(['softDeleted' => false]);
 		$project           = $projects[array_rand($projects)];
-		/** @var RoleRepository $roleRepository */
-		$roleRepository = IH::getRepository(static::$container, RoleRepository::class);
-		/** @var Role $role */
-		$role = $roleRepository->findOneBy(['name' => Role::ROLE_USER]);
 		/** @var UserRepository $userRepository */
 		$userRepository = IH::getRepository(static::$container, UserRepository::class);
 		$deletors       = array_filter(
-			$userRepository->findByRoles([$role]),
+			$userRepository->findByRole(User::ROLE_USER),
 			static fn (User $u) => $u->getId() !== $project->getAuthor()?->getId()
 		);
 		/** @var User $deletor */

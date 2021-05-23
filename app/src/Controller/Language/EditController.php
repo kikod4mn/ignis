@@ -6,7 +6,7 @@ namespace App\Controller\Language;
 
 use App\Controller\Concerns\FlashFormErrors;
 use App\Entity\Language;
-use App\Entity\Role;
+
 use App\Entity\User;
 use App\Event\Creators\VersionCreateEvent;
 use App\Form\Language\LanguageEditType;
@@ -32,13 +32,13 @@ class EditController extends AbstractController {
 	 * @ParamConverter("language", class="App\Entity\Language", options={"mapping": {"language_uuid": "uuid"}})
 	 */
 	public function __invoke(Request $request, Language $language): Response {
-		if ($this->isGranted(Role::ROLE_TEST_USER)) {
+		if ($this->isGranted(User::ROLE_TEST_USER)) {
 			return $this->showcaseEdit($request, $language);
 		}
-		if ($this->isGranted(Role::ROLE_EDIT_LANGUAGE, $language) && $this->isGranted(Role::ROLE_PROJECT_LEAD)) {
+		if ($this->isGranted(User::ROLE_EDIT_LANGUAGE, $language) && $this->isGranted(User::ROLE_PROJECT_LEAD)) {
 			return $this->edit($request, $language);
 		}
-		if (! $this->isGranted(Role::ROLE_USER)) {
+		if (! $this->isGranted(User::ROLE_USER)) {
 			throw $this->createAccessDeniedException();
 		}
 		throw $this->createNotFoundException();

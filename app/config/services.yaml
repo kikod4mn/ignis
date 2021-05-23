@@ -2,6 +2,7 @@ parameters:
     adminTo: '%env(MAILER_TO)%'
     adminFrom: '%env(MAILER_FROM)%'
     projectDir: '%kernel.project_dir%'
+    signingKey: '%kernel.secret%'
 services:
     _defaults:
         autowire: true
@@ -32,3 +33,9 @@ services:
         arguments:
             $adminTo: '%adminTo%'
             $adminFrom: '%adminFrom%'
+    App\Security\ResetPasswordService:
+        arguments:
+            $signingKey: '%signingKey%'
+    App\Security\ConfirmEmailService:
+        arguments:
+            $signingKey: '%signingKey%'

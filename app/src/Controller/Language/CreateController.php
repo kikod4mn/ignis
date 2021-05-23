@@ -6,7 +6,7 @@ namespace App\Controller\Language;
 
 use App\Controller\Concerns\FlashFormErrors;
 use App\Entity\Language;
-use App\Entity\Role;
+use App\Entity\User;
 use App\Event\Creators\IdCreateEvent;
 use App\Form\Language\LanguageCreateType;
 use App\Service\Contracts\Flashes;
@@ -28,13 +28,13 @@ class CreateController extends AbstractController {
 	 * @Route("/languages/create", name="languages-create", methods={"GET", "POST"})
 	 */
 	public function __invoke(Request $request): Response {
-		if ($this->isGranted(Role::ROLE_TEST_USER)) {
+		if ($this->isGranted(User::ROLE_TEST_USER)) {
 			return $this->createShowcase($request);
 		}
-		if ($this->isGranted(Role::ROLE_ADD_LANGUAGE)) {
+		if ($this->isGranted(User::ROLE_ADD_LANGUAGE)) {
 			return $this->create($request);
 		}
-		if (! $this->isGranted(Role::ROLE_USER)) {
+		if (! $this->isGranted(User::ROLE_USER)) {
 			throw $this->createAccessDeniedException();
 		}
 		throw $this->createNotFoundException();

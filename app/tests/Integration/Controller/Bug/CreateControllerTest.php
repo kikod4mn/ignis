@@ -6,11 +6,9 @@ namespace App\Tests\Integration\Controller\Bug;
 
 use App\Entity\Bug;
 use App\Entity\Project;
-use App\Entity\Role;
 use App\Entity\User;
 use App\Repository\BugRepository;
 use App\Repository\ProjectRepository;
-use App\Repository\RoleRepository;
 use App\Repository\UserRepository;
 use App\Tests\Integration\BaseWebTestCase;
 use App\Tests\Integration\IH;
@@ -23,10 +21,9 @@ class CreateControllerTest extends BaseWebTestCase {
 	public function testCreatePage(): void {
 		/** @var ProjectRepository $projectRepository */
 		$projectRepository = IH::getRepository(static::$container, ProjectRepository::class);
-		$projects          = array_filter($projectRepository->findAll(), static fn (Project $p) => ! $p->getSoftDeleted());
-		/** @var Project $project */
-		$project = $projects[array_rand($projects)];
-		$users   = array_filter($project->getCanView()->toArray(), static fn (User $u) => $u->getActive());
+		$projects          = $projectRepository->findAll();
+		$project           = $projects[array_rand($projects)];
+		$users             = array_filter($project->getCanView()->toArray(), static fn (User $u) => $u->getActive());
 		/** @var User $creator */
 		$creator = $users[array_rand($users)];
 		$route   = sprintf('/projects/%s/bugs/create', $project->getUuid()?->toString());
@@ -38,10 +35,9 @@ class CreateControllerTest extends BaseWebTestCase {
 	public function testCreatePageForAnon(): void {
 		/** @var ProjectRepository $projectRepository */
 		$projectRepository = IH::getRepository(static::$container, ProjectRepository::class);
-		$projects          = array_filter($projectRepository->findAll(), static fn (Project $p) => ! $p->getSoftDeleted());
-		/** @var Project $project */
-		$project = $projects[array_rand($projects)];
-		$route   = sprintf('/projects/%s/bugs/create', $project->getUuid()?->toString());
+		$projects          = $projectRepository->findAll();
+		$project           = $projects[array_rand($projects)];
+		$route             = sprintf('/projects/%s/bugs/create', $project->getUuid()?->toString());
 		$this->getClient()->request(Request::METHOD_GET, $route);
 		static::assertResponseStatusCodeSame(302);
 		$this->getClient()->followRedirect();
@@ -51,10 +47,9 @@ class CreateControllerTest extends BaseWebTestCase {
 	public function testCreate(): void {
 		/** @var ProjectRepository $projectRepository */
 		$projectRepository = IH::getRepository(static::$container, ProjectRepository::class);
-		$projects          = array_filter($projectRepository->findAll(), static fn (Project $p) => ! $p->getSoftDeleted());
-		/** @var Project $project */
-		$project = $projects[array_rand($projects)];
-		$users   = array_filter($project->getCanView()->toArray(), static fn (User $u) => $u->getActive());
+		$projects          = $projectRepository->findAll();
+		$project           = $projects[array_rand($projects)];
+		$users             = array_filter($project->getCanView()->toArray(), static fn (User $u) => $u->getActive());
 		/** @var User $creator */
 		$creator     = $users[array_rand($users)];
 		$route       = sprintf('/projects/%s/bugs/create', $project->getUuid()?->toString());
@@ -81,16 +76,12 @@ class CreateControllerTest extends BaseWebTestCase {
 	public function testCreateForTestUser(): void {
 		/** @var ProjectRepository $projectRepository */
 		$projectRepository = IH::getRepository(static::$container, ProjectRepository::class);
-		$projects          = array_filter($projectRepository->findAll(), static fn (Project $p) => ! $p->getSoftDeleted());
-		/** @var Project $project */
-		$project = $projects[array_rand($projects)];
-		$users   = array_filter($project->getCanView()->toArray(), static fn (User $u) => $u->getActive());
-		/** @var Role $role */
-		$role = IH::getRepository(static::$container, RoleRepository::class)->findOneBy(['name' => Role::ROLE_TEST_USER]);
+		$projects          = $projectRepository->findAll();
+		$project           = $projects[array_rand($projects)];
 		/** @var UserRepository $userRepository */
 		$userRepository = IH::getRepository(static::$container, UserRepository::class);
 		/** @var User $creator */
-		$creator     = $userRepository->findOneByRoles([$role]);
+		$creator     = $userRepository->findOneByRole(User::ROLE_TEST_USER);
 		$route       = sprintf('/projects/%s/bugs/create', $project->getUuid()?->toString());
 		$title       = $this->getFaker()->sentence;
 		$description = $this->getFaker()->paragraph;
@@ -113,10 +104,9 @@ class CreateControllerTest extends BaseWebTestCase {
 	public function testUserCannotCreateForProjectHeCannotView(): void {
 		/** @var ProjectRepository $projectRepository */
 		$projectRepository = IH::getRepository(static::$container, ProjectRepository::class);
-		$projects          = array_filter($projectRepository->findAll(), static fn (Project $p) => ! $p->getSoftDeleted());
-		/** @var Project $project */
-		$project = $projects[array_rand($projects)];
-		$users   = array_filter($project->getCanView()->toArray(), static fn (User $u) => $u->getActive());
+		$projects          = $projectRepository->findAll();
+		$project           = $projects[array_rand($projects)];
+		$users             = array_filter($project->getCanView()->toArray(), static fn (User $u) => $u->getActive());
 		/** @var User $creator */
 		$creator = $users[array_rand($users)];
 		/** @var ProjectRepository $projectRepository */
@@ -151,10 +141,8 @@ class CreateControllerTest extends BaseWebTestCase {
 	public function testProjectLeadCannotCreateForProjectHeCannotEdit(): void {
 		/** @var UserRepository $userRepository */
 		$userRepository = IH::getRepository(static::$container, UserRepository::class);
-		/** @var Role $role */
-		$role = IH::getRepository(static::$container, RoleRepository::class)->findOneBy(['name' => Role::ROLE_PROJECT_LEAD]);
 		/** @var User $creator */
-		$creator = $userRepository->findOneByRoles([$role]);
+		$creator = $userRepository->findOneByRole(User::ROLE_PROJECT_LEAD);
 		/** @var ProjectRepository $projectRepository */
 		$projectRepository = IH::getRepository(static::$container, ProjectRepository::class);
 		$projects          = array_filter(

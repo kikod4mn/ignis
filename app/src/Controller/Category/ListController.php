@@ -4,7 +4,8 @@ declare(strict_types = 1);
 
 namespace App\Controller\Category;
 
-use App\Entity\Role;
+
+use App\Entity\User;
 use App\Repository\CategoryRepository;
 use Knp\Component\Pager\PaginatorInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -20,14 +21,14 @@ class ListController extends AbstractController {
 	 * @Template("categories/list.html.twig")
 	 */
 	public function __invoke(int $page): Response {
-		if ($this->isGranted(Role::ROLE_TEST_USER)) {
+		if ($this->isGranted(User::ROLE_TEST_USER)) {
 			return $this->showcaseList($page);
 		}
 		//todo for now use the same method because no difference exists for category listing for test user
-		if ($this->isGranted(Role::ROLE_PROJECT_LEAD)) {
+		if ($this->isGranted(User::ROLE_PROJECT_LEAD)) {
 			return $this->showcaseList($page);
 		}
-		if (! $this->isGranted(Role::ROLE_USER)) {
+		if (! $this->isGranted(User::ROLE_USER)) {
 			throw $this->createAccessDeniedException();
 		}
 		throw $this->createNotFoundException();

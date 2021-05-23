@@ -5,10 +5,8 @@ declare(strict_types = 1);
 namespace App\Tests\Integration\Controller\Feature;
 
 use App\Entity\Project;
-use App\Entity\Role;
 use App\Entity\User;
 use App\Repository\ProjectRepository;
-use App\Repository\RoleRepository;
 use App\Repository\UserRepository;
 use App\Tests\Integration\BaseWebTestCase;
 use App\Tests\Integration\IH;
@@ -57,10 +55,6 @@ class ListControllerTest extends BaseWebTestCase {
 	}
 	
 	public function testListForTestUser(): void {
-		/** @var RoleRepository $roleRepository */
-		$roleRepository = IH::getRepository(static::$container, RoleRepository::class);
-		/** @var Role $role */
-		$role = $roleRepository->findOneBy(['name' => Role::ROLE_TEST_USER]);
 		/** @var UserRepository $userRepository */
 		$userRepository = IH::getRepository(static::$container, UserRepository::class);
 		/** @var ProjectRepository $projectRepository */
@@ -75,21 +69,17 @@ class ListControllerTest extends BaseWebTestCase {
 		$project = $projects[array_rand($projects)];
 		$route   = sprintf('/projects/%s/features', $project->getUuid()?->toString());
 		/** @var User $user */
-		$user = $userRepository->findOneByRoles([$role]);
+		$user = $userRepository->findOneByRole(User::ROLE_TEST_USER);
 		$this->getClient()->loginUser($user);
 		$this->getClient()->request(Request::METHOD_GET, $route);
 		static::assertResponseIsSuccessful();
 	}
 	
 	public function testListDoesNotWorkForProjectLeadWhoCannotViewProject(): void {
-		/** @var RoleRepository $roleRepository */
-		$roleRepository = IH::getRepository(static::$container, RoleRepository::class);
-		/** @var Role $role */
-		$role = $roleRepository->findOneBy(['name' => Role::ROLE_PROJECT_LEAD]);
 		/** @var UserRepository $userRepository */
 		$userRepository = IH::getRepository(static::$container, UserRepository::class);
 		/** @var User $user */
-		$user = $userRepository->findOneByRoles([$role]);
+		$user = $userRepository->findOneByRole(User::ROLE_PROJECT_LEAD);
 		/** @var ProjectRepository $projectRepository */
 		$projectRepository = IH::getRepository(static::$container, ProjectRepository::class);
 		$projects          = array_filter(
@@ -109,14 +99,10 @@ class ListControllerTest extends BaseWebTestCase {
 	}
 	
 	public function testListDoesNotWorkForRegularUserWhoCannotViewProject(): void {
-		/** @var RoleRepository $roleRepository */
-		$roleRepository = IH::getRepository(static::$container, RoleRepository::class);
-		/** @var Role $role */
-		$role = $roleRepository->findOneBy(['name' => Role::ROLE_USER]);
 		/** @var UserRepository $userRepository */
 		$userRepository = IH::getRepository(static::$container, UserRepository::class);
 		/** @var User $user */
-		$user = $userRepository->findOneByRoles([$role]);
+		$user = $userRepository->findOneByRole(User::ROLE_USER);
 		/** @var ProjectRepository $projectRepository */
 		$projectRepository = IH::getRepository(static::$container, ProjectRepository::class);
 		$projects          = array_filter(

@@ -4,19 +4,11 @@ declare(strict_types = 1);
 
 namespace App\Repository;
 
-use App\Entity\Role;
 use App\Entity\User;
 use App\Repository\Concerns\RepositoryUuidFinderConcern;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use LogicException;
-use function array_key_last;
-use function count;
-use function dd;
-use function explode;
-use function mb_strtolower;
-use function mb_substr;
-use function sprintf;
 
 /**
  * @method User|null find($id, $lockMode = null, $lockVersion = null)
@@ -31,30 +23,18 @@ class UserRepository extends ServiceEntityRepository {
 		parent::__construct($registry, User::class);
 	}
 	
-	/**
-	 * @param   array<int, Role>   $roles
-	 * @param   bool               $active
-	 * @return array<int, User>
-	 */
-	public function findByRoles(array $roles, bool $active = true): array {
-		$qb = $this->createQueryBuilder('u');
-		foreach ($roles as $role) {
-			$qb->where(':role MEMBER OF u.roles')
-			   ->setParameter('role', $role)
-			   ->andWhere('u.active = :active')
-			   ->setParameter('active', $active)
-			;
-		}
+	public function findByRole(string $role, bool $active = true): array {
+		$qb = $this->getEntityManager()->createQueryBuilder();
+		$qb->select('u')
+		   ->from(User::class, 'u')
+		   ->where('u.roles LIKE :roles')->setParameter('roles', sprintf('%%"%s"%%', $role))
+		   ->andWhere('u.active = :active')->setParameter('active', $active)
+		;
 		return $qb->getQuery()->getResult();
 	}
 	
-	/**
-	 * @param   array<int, Role>   $roles
-	 * @param   bool               $active
-	 * @return null|User
-	 */
-	public function findOneByRoles(array $roles, bool $active = true): ?User {
-		$users = $this->findByRoles($roles);
+	public function findOneByRole(string $role, bool $active = true): ?User {
+		$users = $this->findByRole($role, $active);
 		return $users[array_rand($users)];
 	}
 	

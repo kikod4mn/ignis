@@ -4,9 +4,7 @@ declare(strict_types = 1);
 
 namespace App\Tests\Integration\Controller\User\Profile;
 
-use App\Entity\Role;
 use App\Entity\User;
-use App\Repository\RoleRepository;
 use App\Repository\UserRepository;
 use App\Tests\Integration\BaseWebTestCase;
 use App\Tests\Integration\IH;
@@ -47,18 +45,12 @@ class PublicProfileControllerTest extends BaseWebTestCase {
 	}
 	
 	public function testTheTestUserCanNotSeeOtherUsers(): void {
-		/** @var RoleRepository $roleRepository */
-		$roleRepository = IH::getRepository(static::$container, RoleRepository::class);
-		/** @var Role $userRole */
-		$userRole = $roleRepository->findOneBy(['name' => Role::ROLE_USER]);
-		/** @var Role $testUserRole */
-		$testUserRole = $roleRepository->findOneBy(['name' => Role::ROLE_TEST_USER]);
 		/** @var UserRepository $userRepository */
 		$userRepository = IH::getRepository(static::$container, UserRepository::class);
 		/** @var User $userToView */
-		$userToView = $userRepository->findOneByRoles([$userRole]);
+		$userToView = $userRepository->findOneByRole(User::ROLE_USER);
 		/** @var User $user */
-		$user = $userRepository->findOneByRoles([$testUserRole]);
+		$user = $userRepository->findOneByRole(User::ROLE_TEST_USER);
 		$this->getClient()->loginUser($user);
 		$route = sprintf('/%s/profile', $userToView->getUuid()?->toString());
 		$this->getClient()->request(Request::METHOD_GET, $route);

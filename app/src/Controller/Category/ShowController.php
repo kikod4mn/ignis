@@ -5,7 +5,8 @@ declare(strict_types = 1);
 namespace App\Controller\Category;
 
 use App\Entity\Category;
-use App\Entity\Role;
+
+use App\Entity\User;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -17,14 +18,14 @@ class ShowController extends AbstractController {
 	 * @ParamConverter("category", class="App\Entity\Category", options={"mapping": {"category_uuid" = "uuid"}})
 	 */
 	public function __invoke(Category $category): Response {
-		if ($this->isGranted(Role::ROLE_TEST_USER)) {
+		if ($this->isGranted(User::ROLE_TEST_USER)) {
 			return $this->showcaseShow($category);
 		}
 		//todo for now use the same method because no difference exists for category show for test user
-		if ($this->isGranted(Role::ROLE_PROJECT_LEAD)) {
+		if ($this->isGranted(User::ROLE_PROJECT_LEAD)) {
 			return $this->showcaseShow($category);
 		}
-		if (! $this->isGranted(Role::ROLE_USER)) {
+		if (! $this->isGranted(User::ROLE_USER)) {
 			throw $this->createAccessDeniedException();
 		}
 		throw $this->createNotFoundException();

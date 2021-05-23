@@ -5,11 +5,8 @@ declare(strict_types = 1);
 namespace App\Tests\Integration\Controller\Bug;
 
 use App\Entity\Bug;
-use App\Entity\Project;
-use App\Entity\Role;
 use App\Entity\User;
 use App\Repository\BugRepository;
-use App\Repository\RoleRepository;
 use App\Repository\UserRepository;
 use App\Tests\Integration\BaseWebTestCase;
 use App\Tests\Integration\IH;
@@ -86,10 +83,8 @@ class EditControllerTest extends BaseWebTestCase {
 	public function testEditForTestUser(): void {
 		/** @var UserRepository $userRepository */
 		$userRepository = IH::getRepository(static::$container, UserRepository::class);
-		/** @var Role $role */
-		$role = IH::getRepository(static::$container, RoleRepository::class)->findOneBy(['name' => Role::ROLE_TEST_USER]);
 		/** @var User $creator */
-		$creator = $userRepository->findOneByRoles([$role]);
+		$creator = $userRepository->findOneByRole(User::ROLE_TEST_USER);
 		/** @var BugRepository $bugRepository */
 		$bugRepository = IH::getRepository(static::$container, BugRepository::class);
 		$bugs          = array_filter(
@@ -119,10 +114,8 @@ class EditControllerTest extends BaseWebTestCase {
 	public function testUserCannotEditForProjectHeCannotView(): void {
 		/** @var UserRepository $userRepository */
 		$userRepository = IH::getRepository(static::$container, UserRepository::class);
-		/** @var Role $role */
-		$role = IH::getRepository(static::$container, RoleRepository::class)->findOneBy(['name' => Role::ROLE_USER]);
 		/** @var User $creator */
-		$creator = $userRepository->findOneByRoles([$role]);
+		$creator = $userRepository->findOneByRole(User::ROLE_USER);
 		/** @var BugRepository $bugRepository */
 		$bugRepository = IH::getRepository(static::$container, BugRepository::class);
 		$bugs          = array_filter(
@@ -153,10 +146,8 @@ class EditControllerTest extends BaseWebTestCase {
 	public function testProjectLeadCannotEditForProjectHeCannotEdit(): void {
 		/** @var UserRepository $userRepository */
 		$userRepository = IH::getRepository(static::$container, UserRepository::class);
-		/** @var Role $role */
-		$role = IH::getRepository(static::$container, RoleRepository::class)->findOneBy(['name' => Role::ROLE_PROJECT_LEAD]);
 		/** @var User $creator */
-		$creator = $userRepository->findOneByRoles([$role]);
+		$creator = $userRepository->findOneByRole(User::ROLE_PROJECT_LEAD);
 		/** @var BugRepository $bugRepository */
 		$bugRepository = IH::getRepository(static::$container, BugRepository::class);
 		$bugs          = array_filter(

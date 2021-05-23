@@ -6,7 +6,7 @@ namespace App\Controller\Category;
 
 use App\Controller\Concerns\FlashFormErrors;
 use App\Entity\Category;
-use App\Entity\Role;
+use App\Entity\User;
 use App\Event\Creators\IdCreateEvent;
 use App\Form\Category\CategoryCreateType;
 use App\Service\Contracts\Flashes;
@@ -27,13 +27,13 @@ class CreateController extends AbstractController {
 	 * @Route("/categories/create", name="categories-create", methods={"GET", "POST"})
 	 */
 	public function __invoke(Request $request): Response {
-		if ($this->isGranted(Role::ROLE_TEST_USER)) {
+		if ($this->isGranted(User::ROLE_TEST_USER)) {
 			return $this->showcaseCreate($request);
 		}
-		if ($this->isGranted(Role::ROLE_ADD_CATEGORY)) {
+		if ($this->isGranted(User::ROLE_ADD_CATEGORY)) {
 			return $this->create($request);
 		}
-		if (! $this->isGranted(Role::ROLE_USER)) {
+		if (! $this->isGranted(User::ROLE_USER)) {
 			throw $this->createAccessDeniedException();
 		}
 		throw $this->createNotFoundException();

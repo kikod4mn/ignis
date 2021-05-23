@@ -21,4 +21,8 @@ class BugRepository extends ServiceEntityRepository {
 	public function __construct(ManagerRegistry $registry) {
 		parent::__construct($registry, Bug::class);
 	}
+	
+	public function getOneUnFixedBug(): ?Bug {
+		return $this->findOneBy(['fixed' => false]);
+	}
 }

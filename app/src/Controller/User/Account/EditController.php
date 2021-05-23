@@ -5,7 +5,7 @@ declare(strict_types = 1);
 namespace App\Controller\User\Account;
 
 use App\Controller\Concerns\FlashFormErrors;
-use App\Entity\Role;
+
 use App\Entity\User;
 use App\Event\Security\EmailModifiedEvent;
 use App\Event\Security\PasswordHashEvent;
@@ -26,13 +26,13 @@ class EditController extends AbstractController {
 	 * @Route("/account/edit", name="account-edit", methods={"GET", "POST"})
 	 */
 	public function __invoke(Request $request): Response {
-		if (! $this->isGranted(Role::ROLE_USER)) {
+		if (! $this->isGranted(User::ROLE_USER)) {
 			throw $this->createAccessDeniedException();
 		}
 		/** @var User $user */
 		$user     = $this->getUser();
 		$oldEmail = $user->getEmail();
-		if (! $this->isGranted(Role::ROLE_EDIT_ACCOUNT, $user)) {
+		if (! $this->isGranted(User::ROLE_EDIT_ACCOUNT, $user)) {
 			throw $this->createNotFoundException();
 		}
 		$form = $this->createForm(EditType::class, $user);

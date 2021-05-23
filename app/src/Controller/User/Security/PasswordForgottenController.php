@@ -15,7 +15,6 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Throwable;
 
 class PasswordForgottenController extends AbstractController {
 	use FlashFormErrors;
@@ -36,16 +35,14 @@ class PasswordForgottenController extends AbstractController {
 			if ($user === null) {
 				return $this->returnSuccess();
 			}
-			$resetRequest = $this->resetPasswordService->createResetRequest($user, $request);
+			$resetRequest = $this->resetPasswordService->createResetRequest(
+				$user, (string) $request->getClientIp(), (string) $request->headers->get('User-Agent')
+			);
+			$resetRequest->generateUuid();
+			$resetRequest->setCreationTimestamps();
 			$this->em->persist($resetRequest);
 			$this->em->flush();
 			return $this->returnSuccess();
-//			$user
-//				->setPasswordResetToken($this->token->alphanumericToken(64))
-//				->setPasswordResetTokenRequestedAt(TimeCreator::now())
-//				->setPasswordResetTokenRequestedFromBrowser($request->headers->get('User-Agent'))
-//				->setPasswordResetTokenRequestedFromIp($request->getClientIp())
-//			;
 //			$this->mailer->htmlMessage(
 //				(string) $user->getEmail(),
 //				'Password reset token requested.',

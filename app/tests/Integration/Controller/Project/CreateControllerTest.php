@@ -5,10 +5,9 @@ declare(strict_types = 1);
 namespace App\Tests\Integration\Controller\Project;
 
 use App\Entity\Category;
-use App\Entity\Role;
+use App\Entity\User;
 use App\Repository\CategoryRepository;
 use App\Repository\ProjectRepository;
-use App\Repository\RoleRepository;
 use App\Repository\UserRepository;
 use App\Tests\Integration\BaseWebTestCase;
 use App\Tests\Integration\IH;
@@ -19,11 +18,9 @@ use Symfony\Component\HttpFoundation\Request;
  */
 class CreateControllerTest extends BaseWebTestCase {
 	public function testCreatePage(): void {
-		/** @var Role $role */
-		$role = IH::getRepository(static::$container, RoleRepository::class)->findOneBy(['name' => Role::ROLE_PROJECT_LEAD]);
 		/** @var UserRepository $userRepository */
 		$userRepository = IH::getRepository(static::$container, UserRepository::class);
-		$users          = $userRepository->findByRoles([$role]);
+		$users          = $userRepository->findByRole(User::ROLE_PROJECT_LEAD);
 		$creator        = $users[array_rand($users)];
 		$route          = '/projects/create';
 		$this->getClient()->loginUser($creator);
@@ -40,11 +37,9 @@ class CreateControllerTest extends BaseWebTestCase {
 	}
 	
 	public function testCreatePageForRegularUser(): void {
-		/** @var Role $role */
-		$role = IH::getRepository(static::$container, RoleRepository::class)->findOneBy(['name' => Role::ROLE_USER]);
 		/** @var UserRepository $userRepository */
 		$userRepository = IH::getRepository(static::$container, UserRepository::class);
-		$users          = $userRepository->findByRoles([$role]);
+		$users          = $userRepository->findByRole(User::ROLE_USER);
 		$creator        = $users[array_rand($users)];
 		$route          = '/projects/create';
 		$this->getClient()->loginUser($creator);
@@ -53,11 +48,9 @@ class CreateControllerTest extends BaseWebTestCase {
 	}
 	
 	public function testCreate(): void {
-		/** @var Role $role */
-		$role = IH::getRepository(static::$container, RoleRepository::class)->findOneBy(['name' => Role::ROLE_PROJECT_LEAD]);
 		/** @var UserRepository $userRepository */
 		$userRepository     = IH::getRepository(static::$container, UserRepository::class);
-		$users              = $userRepository->findByRoles([$role]);
+		$users              = $userRepository->findByRole(User::ROLE_PROJECT_LEAD);
 		$creator            = $users[array_rand($users)];
 		$route              = '/projects/create';
 		$categoryRepository = IH::getRepository(static::$container, CategoryRepository::class);
@@ -81,16 +74,14 @@ class CreateControllerTest extends BaseWebTestCase {
 		static::assertResponseIsSuccessful();
 		static::assertNotNull(
 			IH::getRepository(static::$container, ProjectRepository::class)
-			  ->findOneBy(['name' => $name, 'description' => $description, 'category' => $category])
+			  ->findOneBy(compact('name', 'description', 'category'))
 		);
 	}
 	
 	public function testCreateForTestUser(): void {
-		/** @var Role $role */
-		$role = IH::getRepository(static::$container, RoleRepository::class)->findOneBy(['name' => Role::ROLE_TEST_USER]);
 		/** @var UserRepository $userRepository */
 		$userRepository     = IH::getRepository(static::$container, UserRepository::class);
-		$users              = $userRepository->findByRoles([$role]);
+		$users              = $userRepository->findByRole(User::ROLE_TEST_USER);
 		$creator            = $users[array_rand($users)];
 		$route              = '/projects/create';
 		$categoryRepository = IH::getRepository(static::$container, CategoryRepository::class);
@@ -114,7 +105,7 @@ class CreateControllerTest extends BaseWebTestCase {
 		static::assertResponseIsSuccessful();
 		static::assertNull(
 			IH::getRepository(static::$container, ProjectRepository::class)
-			  ->findOneBy(['name' => $name, 'description' => $description, 'category' => $category])
+			  ->findOneBy(compact('name', 'description', 'category'))
 		);
 	}
 	
@@ -140,16 +131,14 @@ class CreateControllerTest extends BaseWebTestCase {
 		static::assertStringContainsStringIgnoringCase('Login', (string) $this->getClient()->getResponse()->getContent());
 		static::assertNull(
 			IH::getRepository(static::$container, ProjectRepository::class)
-			  ->findOneBy(['name' => $name, 'description' => $description, 'category' => $category])
+			  ->findOneBy(compact('name', 'description', 'category'))
 		);
 	}
 	
 	public function testCreateDoesNotWorkForRegularUser(): void {
-		/** @var Role $role */
-		$role = IH::getRepository(static::$container, RoleRepository::class)->findOneBy(['name' => Role::ROLE_USER]);
 		/** @var UserRepository $userRepository */
 		$userRepository     = IH::getRepository(static::$container, UserRepository::class);
-		$users              = $userRepository->findByRoles([$role]);
+		$users              = $userRepository->findByRole(User::ROLE_USER);
 		$creator            = $users[array_rand($users)];
 		$route              = '/projects/create';
 		$categoryRepository = IH::getRepository(static::$container, CategoryRepository::class);
@@ -171,7 +160,7 @@ class CreateControllerTest extends BaseWebTestCase {
 		static::assertResponseStatusCodeSame(404);
 		static::assertNull(
 			IH::getRepository(static::$container, ProjectRepository::class)
-			  ->findOneBy(['name' => $name, 'description' => $description, 'category' => $category])
+			  ->findOneBy(compact('name', 'description', 'category'))
 		);
 	}
 }

@@ -6,11 +6,9 @@ namespace App\Tests\Integration\Controller\Project;
 
 use App\Entity\Category;
 use App\Entity\Project;
-use App\Entity\Role;
 use App\Entity\User;
 use App\Repository\CategoryRepository;
 use App\Repository\ProjectRepository;
-use App\Repository\RoleRepository;
 use App\Repository\UserRepository;
 use App\Tests\Integration\BaseWebTestCase;
 use App\Tests\Integration\IH;
@@ -21,12 +19,10 @@ use Symfony\Component\HttpFoundation\Request;
  */
 class EditControllerTest extends BaseWebTestCase {
 	public function testEditPage(): void {
-		/** @var Role $role */
-		$role = IH::getRepository(static::$container, RoleRepository::class)->findOneBy(['name' => Role::ROLE_PROJECT_LEAD]);
 		/** @var UserRepository $userRepository */
 		$userRepository = IH::getRepository(static::$container, UserRepository::class);
 		$users          = array_filter(
-			$userRepository->findByRoles([$role]),
+			$userRepository->findByRole(User::ROLE_PROJECT_LEAD),
 			static fn (User $u): bool => $u->getProjects()->count() > 5
 		);
 		$creator        = $users[array_rand($users)];
@@ -39,12 +35,10 @@ class EditControllerTest extends BaseWebTestCase {
 	}
 	
 	public function testEditPageForAnon(): void {
-		/** @var Role $role */
-		$role = IH::getRepository(static::$container, RoleRepository::class)->findOneBy(['name' => Role::ROLE_PROJECT_LEAD]);
 		/** @var UserRepository $userRepository */
 		$userRepository = IH::getRepository(static::$container, UserRepository::class);
 		$users          = array_filter(
-			$userRepository->findByRoles([$role]),
+			$userRepository->findByRole(User::ROLE_PROJECT_LEAD),
 			static fn (User $u): bool => $u->getProjects()->count() > 5
 		);
 		$creator        = $users[array_rand($users)];
@@ -58,22 +52,18 @@ class EditControllerTest extends BaseWebTestCase {
 	}
 	
 	public function testEditPageForRegularUser(): void {
-		/** @var Role $role */
-		$role = IH::getRepository(static::$container, RoleRepository::class)->findOneBy(['name' => Role::ROLE_PROJECT_LEAD]);
 		/** @var UserRepository $userRepository */
 		$userRepository = IH::getRepository(static::$container, UserRepository::class);
 		$users          = array_filter(
-			$userRepository->findByRoles([$role]),
+			$userRepository->findByRole(User::ROLE_PROJECT_LEAD),
 			static fn (User $u): bool => $u->getProjects()->count() > 5
 		);
 		$creator        = $users[array_rand($users)];
 		/** @var Project $project */
 		$project = $creator->getProjects()[0];
-		/** @var Role $role */
-		$role = IH::getRepository(static::$container, RoleRepository::class)->findOneBy(['name' => Role::ROLE_USER]);
 		/** @var UserRepository $userRepository */
 		$userRepository = IH::getRepository(static::$container, UserRepository::class);
-		$users          = $userRepository->findByRoles([$role]);
+		$users          = $userRepository->findByRole(User::ROLE_USER);
 		$creator        = $users[array_rand($users)];
 		$route          = sprintf('/projects/%s/edit', $project->getUuid()?->toString());
 		$this->getClient()->loginUser($creator);
@@ -82,12 +72,10 @@ class EditControllerTest extends BaseWebTestCase {
 	}
 	
 	public function testEdit(): void {
-		/** @var Role $role */
-		$role = IH::getRepository(static::$container, RoleRepository::class)->findOneBy(['name' => Role::ROLE_PROJECT_LEAD]);
 		/** @var UserRepository $userRepository */
 		$userRepository = IH::getRepository(static::$container, UserRepository::class);
 		$users          = array_filter(
-			$userRepository->findByRoles([$role]),
+			$userRepository->findByRole(User::ROLE_PROJECT_LEAD),
 			static fn (User $u): bool => $u->getProjects()->count() > 5
 		);
 		$creator        = $users[array_rand($users)];
@@ -123,12 +111,10 @@ class EditControllerTest extends BaseWebTestCase {
 	}
 	
 	public function testEditForEditor(): void {
-		/** @var Role $role */
-		$role = IH::getRepository(static::$container, RoleRepository::class)->findOneBy(['name' => Role::ROLE_PROJECT_LEAD]);
 		/** @var UserRepository $userRepository */
 		$userRepository = IH::getRepository(static::$container, UserRepository::class);
 		$users          = array_filter(
-			$userRepository->findByRoles([$role]),
+			$userRepository->findByRole(User::ROLE_PROJECT_LEAD),
 			static fn (User $u): bool => $u->getProjects()->count() > 5
 		);
 		$creator        = $users[array_rand($users)];
@@ -170,12 +156,10 @@ class EditControllerTest extends BaseWebTestCase {
 	}
 	
 	public function testEditForNotEditor(): void {
-		/** @var Role $role */
-		$role = IH::getRepository(static::$container, RoleRepository::class)->findOneBy(['name' => Role::ROLE_PROJECT_LEAD]);
 		/** @var UserRepository $userRepository */
 		$userRepository = IH::getRepository(static::$container, UserRepository::class);
 		$users          = array_filter(
-			$userRepository->findByRoles([$role]),
+			$userRepository->findByRole(User::ROLE_PROJECT_LEAD),
 			static fn (User $u): bool => $u->getProjects()->count() > 5
 		);
 		$creator        = $users[array_rand($users)];
@@ -201,7 +185,7 @@ class EditControllerTest extends BaseWebTestCase {
 			],
 		];
 		$notEditors  = array_filter(
-			$userRepository->findByRoles([$role]),
+			$userRepository->findByRole(User::ROLE_PROJECT_LEAD),
 			static fn (User $u): bool => $u->getId() !== $project->getAuthor()?->getId()
 										 && ! $project->getCanEdit()->contains($u)
 										 && ! $project->getCanView()->contains($u)
@@ -218,12 +202,10 @@ class EditControllerTest extends BaseWebTestCase {
 	}
 	
 	public function testEditForTestUser(): void {
-		/** @var Role $role */
-		$role = IH::getRepository(static::$container, RoleRepository::class)->findOneBy(['name' => Role::ROLE_TEST_USER]);
 		/** @var UserRepository $userRepository */
 		$userRepository = IH::getRepository(static::$container, UserRepository::class);
 		/** @var User $creator */
-		$creator = $userRepository->findOneByRoles([$role]);
+		$creator = $userRepository->findOneByRole(User::ROLE_TEST_USER);
 		/** @var ProjectRepository $projectRepository */
 		$projectRepository = IH::getRepository(static::$container, ProjectRepository::class);
 		/** @var Project $project */
@@ -253,12 +235,10 @@ class EditControllerTest extends BaseWebTestCase {
 	}
 	
 	public function testEditDoesNotWorkForAnon(): void {
-		/** @var Role $role */
-		$role = IH::getRepository(static::$container, RoleRepository::class)->findOneBy(['name' => Role::ROLE_PROJECT_LEAD]);
 		/** @var UserRepository $userRepository */
 		$userRepository = IH::getRepository(static::$container, UserRepository::class);
 		$users          = array_filter(
-			$userRepository->findByRoles([$role]),
+			$userRepository->findByRole(User::ROLE_PROJECT_LEAD),
 			static fn (User $u): bool => $u->getProjects()->count() > 5
 		);
 		$creator        = $users[array_rand($users)];
@@ -291,23 +271,19 @@ class EditControllerTest extends BaseWebTestCase {
 	}
 	
 	public function testEditDoesNotWorkForRegularUser(): void {
-		/** @var Role $role */
-		$role = IH::getRepository(static::$container, RoleRepository::class)->findOneBy(['name' => Role::ROLE_PROJECT_LEAD]);
 		/** @var UserRepository $userRepository */
 		$userRepository = IH::getRepository(static::$container, UserRepository::class);
 		$users          = array_filter(
-			$userRepository->findByRoles([$role]),
+			$userRepository->findByRole(User::ROLE_PROJECT_LEAD),
 			static fn (User $u): bool => $u->getProjects()->count() > 5
 		);
 		$creator        = $users[array_rand($users)];
 		$projects       = $creator->getProjects()->toArray();
 		/** @var Project $project */
 		$project = $projects[array_rand($projects)];
-		/** @var Role $role */
-		$role = IH::getRepository(static::$container, RoleRepository::class)->findOneBy(['name' => Role::ROLE_USER]);
 		/** @var UserRepository $userRepository */
 		$userRepository     = IH::getRepository(static::$container, UserRepository::class);
-		$users              = $userRepository->findByRoles([$role]);
+		$users              = $userRepository->findByRole(User::ROLE_USER);
 		$creator            = $users[array_rand($users)];
 		$route              = sprintf('/projects/%s/edit', $project->getUuid()?->toString());
 		$categoryRepository = IH::getRepository(static::$container, CategoryRepository::class);

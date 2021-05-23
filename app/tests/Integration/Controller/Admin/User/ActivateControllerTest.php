@@ -4,9 +4,7 @@ declare(strict_types = 1);
 
 namespace App\Tests\Integration\Controller\Admin\User;
 
-use App\Entity\Role;
 use App\Entity\User;
-use App\Repository\RoleRepository;
 use App\Repository\UserRepository;
 use App\Tests\Integration\BaseWebTestCase;
 use App\Tests\Integration\IH;
@@ -17,18 +15,14 @@ use Symfony\Component\HttpFoundation\Request;
  */
 class ActivateControllerTest extends BaseWebTestCase {
 	public function testActivate(): void {
-		/** @var Role $role */
-		$role = IH::getRepository(static::$container, RoleRepository::class)->findOneBy(['name' => Role::ROLE_ADMIN]);
-		/** @var userRepository $userRepository */
+		/** @var UserRepository $userRepository */
 		$userRepository = IH::getRepository(static::$container, UserRepository::class);
 		/** @var User $user */
-		$user = $userRepository->findOneByRoles([$role]);
+		$user = $userRepository->findOneByRole(User::ROLE_ADMIN);
 		$this->getClient()->loginUser($user);
 		$users = array_filter(
 			$userRepository->findAll(),
 			static fn (User $user): bool => ! $user->getActive()
-											&& $user->getEmailConfirmToken() === null
-											&& $user->getEmailConfirmedAt() !== null
 		);
 		$user  = $users[array_rand($users)];
 		$route = sprintf('/admin/users/%s/activate', $user->getUuid()?->toString());
@@ -44,18 +38,14 @@ class ActivateControllerTest extends BaseWebTestCase {
 	}
 	
 	public function testActivateDoesNotWorkForTestUser(): void {
-		/** @var Role $role */
-		$role = IH::getRepository(static::$container, RoleRepository::class)->findOneBy(['name' => Role::ROLE_TEST_USER]);
-		/** @var userRepository $userRepository */
+		/** @var UserRepository $userRepository */
 		$userRepository = IH::getRepository(static::$container, UserRepository::class);
 		/** @var User $user */
-		$user = $userRepository->findOneByRoles([$role]);
+		$user = $userRepository->findOneByRole(User::ROLE_TEST_USER);
 		$this->getClient()->loginUser($user);
 		$users = array_filter(
 			$userRepository->findAll(),
 			static fn (User $user): bool => ! $user->getActive()
-											&& $user->getEmailConfirmToken() === null
-											&& $user->getEmailConfirmedAt() !== null
 		);
 		$user  = $users[array_rand($users)];
 		$route = sprintf('/admin/users/%s/activate', $user->getUuid()?->toString());
@@ -72,18 +62,14 @@ class ActivateControllerTest extends BaseWebTestCase {
 	}
 	
 	public function testActivateDoesNotWorkForProjectLead(): void {
-		/** @var Role $role */
-		$role = IH::getRepository(static::$container, RoleRepository::class)->findOneBy(['name' => Role::ROLE_PROJECT_LEAD]);
-		/** @var userRepository $userRepository */
+		/** @var UserRepository $userRepository */
 		$userRepository = IH::getRepository(static::$container, UserRepository::class);
 		/** @var User $user */
-		$user = $userRepository->findOneByRoles([$role]);
+		$user = $userRepository->findOneByRole(User::ROLE_PROJECT_LEAD);
 		$this->getClient()->loginUser($user);
 		$users = array_filter(
 			$userRepository->findAll(),
 			static fn (User $user): bool => ! $user->getActive()
-											&& $user->getEmailConfirmToken() === null
-											&& $user->getEmailConfirmedAt() !== null
 		);
 		$user  = $users[array_rand($users)];
 		$route = sprintf('/admin/users/%s/activate', $user->getUuid()?->toString());
@@ -97,18 +83,14 @@ class ActivateControllerTest extends BaseWebTestCase {
 	}
 	
 	public function testActivateDoesNotWorkForUser(): void {
-		/** @var Role $role */
-		$role = IH::getRepository(static::$container, RoleRepository::class)->findOneBy(['name' => Role::ROLE_USER]);
-		/** @var userRepository $userRepository */
+		/** @var UserRepository $userRepository */
 		$userRepository = IH::getRepository(static::$container, UserRepository::class);
 		/** @var User $user */
-		$user = $userRepository->findOneByRoles([$role]);
+		$user = $userRepository->findOneByRole(User::ROLE_USER);
 		$this->getClient()->loginUser($user);
 		$users = array_filter(
 			$userRepository->findAll(),
 			static fn (User $user): bool => ! $user->getActive()
-											&& $user->getEmailConfirmToken() === null
-											&& $user->getEmailConfirmedAt() !== null
 		);
 		$user  = $users[array_rand($users)];
 		$route = sprintf('/admin/users/%s/activate', $user->getUuid()?->toString());
@@ -127,8 +109,6 @@ class ActivateControllerTest extends BaseWebTestCase {
 		$users          = array_filter(
 			$userRepository->findAll(),
 			static fn (User $user): bool => ! $user->getActive()
-											&& $user->getEmailConfirmToken() === null
-											&& $user->getEmailConfirmedAt() !== null
 		);
 		$user           = $users[array_rand($users)];
 		$route          = sprintf('/admin/users/%s/activate', $user->getUuid()?->toString());

@@ -5,14 +5,14 @@ declare(strict_types = 1);
 namespace App\Security\Voter;
 
 use App\Entity\Language;
-use App\Entity\Role;
+
 use App\Entity\User;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
 class LanguageVoter extends Voter {
 	/** @var array<int, string> */
-	private array $attributes = [Role::ROLE_ADD_LANGUAGE, Role::ROLE_EDIT_LANGUAGE, Role::ROLE_DELETE_LANGUAGE];
+	private array $attributes = [User::ROLE_ADD_LANGUAGE, User::ROLE_EDIT_LANGUAGE, User::ROLE_DELETE_LANGUAGE];
 	
 	protected function supports($attribute, $subject): bool {
 		return in_array($attribute, $this->attributes, true)
@@ -31,10 +31,10 @@ class LanguageVoter extends Voter {
 			return false;
 		}
 		switch ($attribute) {
-			case Role::ROLE_ADD_LANGUAGE:
-			case Role::ROLE_EDIT_LANGUAGE:
-			case Role::ROLE_DELETE_LANGUAGE:
-				return $user->hasRole(Role::ROLE_ADMIN);
+			case User::ROLE_ADD_LANGUAGE:
+			case User::ROLE_EDIT_LANGUAGE:
+			case User::ROLE_DELETE_LANGUAGE:
+				return $user->hasRole(User::ROLE_ADMIN);
 		}
 		return false;
 	}

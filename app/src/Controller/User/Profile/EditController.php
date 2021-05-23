@@ -5,7 +5,7 @@ declare(strict_types = 1);
 namespace App\Controller\User\Profile;
 
 use App\Controller\Concerns\FlashFormErrors;
-use App\Entity\Role;
+
 use App\Entity\User;
 use App\Event\Creators\VersionCreateEvent;
 use App\Form\User\Profile\EditType;
@@ -25,12 +25,12 @@ class EditController extends AbstractController {
 	 * @Route("/profile/edit", name="profile-edit", methods={"GET", "POST"})
 	 */
 	public function __invoke(Request $request): Response {
-		if (! $this->isGranted(Role::ROLE_USER)) {
+		if (! $this->isGranted(User::ROLE_USER)) {
 			throw $this->createAccessDeniedException();
 		}
 		/** @var User $user */
 		$user = $this->getUser();
-		if (! $this->isGranted(Role::ROLE_EDIT_PROFILE, $user)) {
+		if (! $this->isGranted(User::ROLE_EDIT_PROFILE, $user)) {
 			throw $this->createNotFoundException();
 		}
 		$oldName = $user->getName();

@@ -5,7 +5,7 @@ declare(strict_types = 1);
 namespace App\Security\Voter;
 
 use App\Entity\Project;
-use App\Entity\Role;
+
 use App\Entity\User;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
@@ -14,7 +14,7 @@ class ProjectVoter extends Voter {
 	/**
 	 * @var array<int, string>
 	 */
-	private array $attributes = [Role::ROLE_PROJECT_LEAD, Role::ROLE_VIEW_PROJECT, Role::ROLE_ADD_PROJECT, Role::ROLE_EDIT_PROJECT, Role::ROLE_DELETE_PROJECT];
+	private array $attributes = [User::ROLE_PROJECT_LEAD, User::ROLE_VIEW_PROJECT, User::ROLE_ADD_PROJECT, User::ROLE_EDIT_PROJECT, User::ROLE_DELETE_PROJECT];
 	
 	protected function supports(string $attribute, mixed $subject): bool {
 		return in_array($attribute, $this->attributes, true)
@@ -32,17 +32,17 @@ class ProjectVoter extends Voter {
 		if (! $user instanceof User || $subject->getAuthor() === null) {
 			return false;
 		}
-		if ($user->hasRole(Role::ROLE_ADMIN) || $subject->getAuthor()->getId() === $user->getId()) {
+		if ($user->hasRole(User::ROLE_ADMIN) || $subject->getAuthor()->getId() === $user->getId()) {
 			return true;
 		}
 		switch ($attribute) {
-			case Role::ROLE_ADD_PROJECT:
-				return $user->hasRole(Role::ROLE_PROJECT_LEAD);
-			case Role::ROLE_EDIT_PROJECT:
+			case User::ROLE_ADD_PROJECT:
+				return $user->hasRole(User::ROLE_PROJECT_LEAD);
+			case User::ROLE_EDIT_PROJECT:
 				return $subject->getCanEdit()->contains($user) && $subject->getCanView()->contains($user);
-			case Role::ROLE_VIEW_PROJECT:
+			case User::ROLE_VIEW_PROJECT:
 				return $subject->getCanView()->contains($user) || $subject->getCanEdit()->contains($user);
-			case Role::ROLE_DELETE_PROJECT:
+			case User::ROLE_DELETE_PROJECT:
 				return $subject->getAuthor()->getId() === $user->getId();
 		}
 		return false;

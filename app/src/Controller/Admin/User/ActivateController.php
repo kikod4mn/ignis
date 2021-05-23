@@ -4,7 +4,6 @@ declare(strict_types = 1);
 
 namespace App\Controller\Admin\User;
 
-use App\Entity\Role;
 use App\Entity\User;
 use App\Event\Security\ActivateEvent;
 use App\Service\Contracts\Flashes;
@@ -25,10 +24,10 @@ class ActivateController extends AbstractController {
 	 * @ParamConverter("user", class="App\Entity\User", options={"mapping": {"user_uuid" = "uuid"}})
 	 */
 	public function __invoke(User $user): Response {
-		if ($this->isGranted(Role::ROLE_TEST_USER)) {
+		if ($this->isGranted(User::ROLE_TEST_USER)) {
 			return $this->showcaseActivate();
 		}
-		if ($this->isGranted(Role::ROLE_ADMIN)) {
+		if ($this->isGranted(User::ROLE_ADMIN)) {
 			return $this->activate($user);
 		}
 		throw $this->createNotFoundException();

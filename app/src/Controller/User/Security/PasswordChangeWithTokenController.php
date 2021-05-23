@@ -8,7 +8,7 @@ use App\Controller\Concerns\FlashFormErrors;
 use App\Controller\Concerns\FlashHome;
 use App\Event\Security\PasswordHashEvent;
 use App\Form\User\Security\PasswordChangeWithTokenType;
-use App\Repository\UserRepository;
+use App\Repository\ResetPasswordRequestRepository;
 use App\Service\Contracts\Flashes;
 use App\Service\Mailer;
 use Doctrine\ORM\EntityManagerInterface;
@@ -23,7 +23,7 @@ class PasswordChangeWithTokenController extends AbstractController {
 	use FlashHome;
 	
 	public function __construct(
-		private Mailer $mailer, private UserRepository $userRepository,
+		private Mailer $mailer, private ResetPasswordRequestRepository $passwordRequestRepository,
 		private EntityManagerInterface $em, private EventDispatcherInterface $ed
 	) {
 	}
@@ -32,27 +32,26 @@ class PasswordChangeWithTokenController extends AbstractController {
 	 * @Route("/credentials/change-password/{passwordToken}", name="credentials-password-change-with-token", methods={"GET", "POST"})
 	 */
 	public function __invoke(Request $request, string $passwordToken): Response {
-		$user = $this->userRepository->findOneBy(['passwordResetToken' => $passwordToken]);
-		if (! $this->isGranted('IS_ANONYMOUS')) {
-			throw $this->createNotFoundException();
-		}
-		if ($user === null) {
+		$token = $this->passwordRequestRepository->findOneBy(['selector' => $passwordToken]);
+		if ($token === null || ! $this->isGranted('IS_ANONYMOUS')) {
 			$this->addFlash(Flashes::DANGER_MESSAGE, 'No user found with the token. Please verify the link is correct.');
 			return $this->redirectToRoute('home');
 		}
+		$user = $token->getUser();
 		$form = $this->createForm(PasswordChangeWithTokenType::class);
 		$form->handleRequest($request);
 		if ($form->isSubmitted() && $form->isValid()) {
-			$user->setPasswordResetToken(null);
 			$user->setPlainPassword($form->get('_password')->getData());
 			$this->ed->dispatch(new PasswordHashEvent($user));
+			$this->em->remove($token);
+			// todo remove all tokens for user
 			$this->em->flush();
-			$this->mailer->htmlMessage(
-				(string) $user->getEmail(),
-				'Password successfully changed',
-				'base/mail-templates/password-change-with-token-success.html.twig',
-				['user' => $user]
-			);
+//			$this->mailer->htmlMessage(
+//				(string) $user->getEmail(),
+//				'Password successfully changed',
+//				'base/mail-templates/password-change-with-token-success.html.twig',
+//				['user' => $user]
+//			);
 			$this->addFlash(Flashes::SUCCESS_MESSAGE, 'Password successfully changed. You must now login with the new password.');
 			return $this->redirectToRoute('home');
 		}

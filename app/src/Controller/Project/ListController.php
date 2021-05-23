@@ -4,7 +4,7 @@ declare(strict_types = 1);
 
 namespace App\Controller\Project;
 
-use App\Entity\Role;
+
 use App\Entity\User;
 use App\Repository\ProjectRepository;
 use Knp\Component\Pager\PaginatorInterface;
@@ -19,13 +19,13 @@ class ListController extends AbstractController {
 	 * @Route("/projects/{page}", name="projects-list", methods={"GET"}, defaults={"page"=1}, requirements={"page"="\d+"})
 	 */
 	public function __invoke(int $page): Response {
-		if ($this->isGranted(Role::ROLE_TEST_USER)) {
+		if ($this->isGranted(User::ROLE_TEST_USER)) {
 			return $this->showcaseList($page);
 		}
-		if ($this->isGranted(Role::ROLE_USER)) {
+		if ($this->isGranted(User::ROLE_USER)) {
 			return $this->showcaseList($page);
 		}
-		if (! $this->isGranted(Role::ROLE_USER)) {
+		if (! $this->isGranted(User::ROLE_USER)) {
 			throw $this->createAccessDeniedException();
 		}
 		throw $this->createNotFoundException();

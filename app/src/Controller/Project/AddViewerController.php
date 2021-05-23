@@ -6,7 +6,6 @@ namespace App\Controller\Project;
 
 use App\Controller\Concerns\FlashFormErrors;
 use App\Entity\Project;
-use App\Entity\Role;
 use App\Entity\User;
 use App\Form\Project\ChooseUserAddViewerType;
 use App\Service\Contracts\Flashes;
@@ -28,12 +27,12 @@ class AddViewerController extends AbstractController {
 	 * @ParamConverter("project", class="App\Entity\Project", options={"mapping": {"project_uuid" = "uuid"}})
 	 */
 	public function chooseEditor(Request $request, Project $project): Response {
-		if (! $this->isGranted(Role::ROLE_USER)) {
+		if (! $this->isGranted(User::ROLE_USER)) {
 			throw $this->createAccessDeniedException();
 		}
 		/** @var User $lead */
 		$lead = $this->getUser();
-		if ($this->isGranted(Role::ROLE_PROJECT_LEAD) && $project->getAuthor()?->getId() === $lead->getId()) {
+		if ($this->isGranted(User::ROLE_PROJECT_LEAD) && $project->getAuthor()?->getId() === $lead->getId()) {
 			$chooseUserForm = $this->createForm(ChooseUserAddViewerType::class, $project);
 			$chooseUserForm->handleRequest($request);
 			if ($chooseUserForm->isSubmitted() && $chooseUserForm->isValid()) {

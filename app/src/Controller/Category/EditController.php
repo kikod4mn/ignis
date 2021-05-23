@@ -6,7 +6,6 @@ namespace App\Controller\Category;
 
 use App\Controller\Concerns\FlashFormErrors;
 use App\Entity\Category;
-use App\Entity\Role;
 use App\Entity\User;
 use App\Event\Creators\VersionCreateEvent;
 use App\Form\Category\CategoryEditType;
@@ -32,13 +31,13 @@ class EditController extends AbstractController {
 	 * @ParamConverter("category", class="App\Entity\Category", options={"mapping": {"category_uuid": "uuid"}})
 	 */
 	public function __invoke(Request $request, Category $category): Response {
-		if ($this->isGranted(Role::ROLE_TEST_USER)) {
+		if ($this->isGranted(User::ROLE_TEST_USER)) {
 			return $this->showcaseEdit($request, $category);
 		}
-		if ($this->isGranted(Role::ROLE_EDIT_CATEGORY, $category)) {
+		if ($this->isGranted(User::ROLE_EDIT_CATEGORY, $category)) {
 			return $this->edit($request, $category);
 		}
-		if (! $this->isGranted(Role::ROLE_USER)) {
+		if (! $this->isGranted(User::ROLE_USER)) {
 			throw $this->createAccessDeniedException();
 		}
 		throw $this->createNotFoundException();

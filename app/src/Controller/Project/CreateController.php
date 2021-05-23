@@ -6,7 +6,7 @@ namespace App\Controller\Project;
 
 use App\Controller\Concerns\FlashFormErrors;
 use App\Entity\Project;
-use App\Entity\Role;
+use App\Entity\User;
 use App\Event\Creators\AuthorableCreateEvent;
 use App\Event\Creators\IdCreateEvent;
 use App\Event\Creators\TimeStampableCreatedEvent;
@@ -30,13 +30,13 @@ final class CreateController extends AbstractController {
 	 * @Route("/projects/create", name="projects-create", methods={"GET", "POST"})
 	 */
 	public function __invoke(Request $request): Response {
-		if ($this->isGranted(Role::ROLE_TEST_USER)) {
+		if ($this->isGranted(User::ROLE_TEST_USER)) {
 			return $this->createShowcase($request);
 		}
-		if ($this->isGranted(Role::ROLE_ADD_PROJECT) && $this->isGranted(Role::ROLE_PROJECT_LEAD)) {
+		if ($this->isGranted(User::ROLE_ADD_PROJECT) && $this->isGranted(User::ROLE_PROJECT_LEAD)) {
 			return $this->create($request);
 		}
-		if (! $this->isGranted(Role::ROLE_USER)) {
+		if (! $this->isGranted(User::ROLE_USER)) {
 			throw $this->createAccessDeniedException();
 		}
 		throw $this->createNotFoundException();

@@ -4,26 +4,22 @@ declare(strict_types = 1);
 
 namespace App\DataFixtures;
 
-use App\Entity\Role;
 use App\Entity\User;
-use App\Repository\RoleRepository;
+use App\Security\ConfirmEmailService;
 use App\Service\TimeCreator;
 use App\Service\TokenGenerator;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
-use Doctrine\Common\DataFixtures\DependentFixtureInterface;
-use Doctrine\Common\DataFixtures\FixtureInterface;
+use Carbon\Carbon;
 use Faker\Factory;
 use Faker\Generator;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use function mt_rand;
 
-class UserFixtures extends BaseFixture implements DependentFixtureInterface {
+class UserFixtures extends BaseFixture {
 	public const PASSWORD      = 'secret';
 	public const PASSWORD_HASH = '$argon2id$v=19$m=65536,t=4,p=1$bXIzMzM2dEdBRnF2dTBmZw$TPURFO0mxfivx7d3M3W0el2TFw2HpdYloxUEsdc7nIo';
 	protected Generator $faker;
 	
-	public function __construct(private TokenGenerator $tokenGenerator, private RoleRepository $roleRepository, private UserPasswordEncoderInterface $encoder) {
+	public function __construct(private ConfirmEmailService $confirmEmailService, private UserPasswordEncoderInterface $encoder) {
 		$this->faker = Factory::create();
 	}
 	
@@ -34,7 +30,10 @@ class UserFixtures extends BaseFixture implements DependentFixtureInterface {
 			$this->setBasicUserRoles($user);
 			$this->setBasicUserProps($user);
 			$user->setActive(false);
-			$user->setEmailConfirmToken($this->tokenGenerator->alphanumericToken(64));
+			$confirmToken = $this->confirmEmailService->createConfirmRequest(
+				$user, $this->getFaker()->ipv4, $this->getFaker()->userAgent
+			);
+			$this->manager->persist($confirmToken);
 		}
 		);
 		// Not yet activated with emails verified
@@ -43,8 +42,11 @@ class UserFixtures extends BaseFixture implements DependentFixtureInterface {
 			$this->setBasicUserRoles($user);
 			$this->setBasicUserProps($user);
 			$user->setActive(false);
-			$user->setEmailConfirmedAt(TimeCreator::randomPast());
-			$user->setEmailConfirmToken(null);
+			$confirmToken = $this->confirmEmailService->createConfirmRequest(
+				$user, $this->getFaker()->ipv4, $this->getFaker()->userAgent
+			);
+			$confirmToken->setConfirmedAt(Carbon::now());
+			$this->manager->persist($confirmToken);
 		}
 		);
 		// Active users with emails verified
@@ -58,29 +60,20 @@ class UserFixtures extends BaseFixture implements DependentFixtureInterface {
 			$user->setUpdatedAt(mt_rand(0, 1) > 0 ? TimeCreator::randomPast() : null);
 		}
 		);
-		// Active and password reset requested
-		$this->createMany(
-			User::class, 4, function (User $user): void {
-			$this->setBasicUserRoles($user);
-			$this->setBasicUserProps($user);
-			$this->setUserActive($user);
-			$this->setPasswordReset($user);
-		}
-		);
 		// Admins
 		$this->createMany(
 			User::class, 5, function (User $user): void {
-			$this->setAdminUserRoles($user);
 			$this->setBasicUserProps($user);
 			$this->setUserActive($user);
+			$this->setAdminUserRoles($user);
 		}
 		);
 		// Project leads
 		$this->createMany(
 			User::class, 15, function (User $user): void {
-			$this->setProjectLeadRoles($user);
 			$this->setBasicUserProps($user);
 			$this->setUserActive($user);
+			$this->setProjectLeadRoles($user);
 		}
 		);
 		// Test User
@@ -92,16 +85,13 @@ class UserFixtures extends BaseFixture implements DependentFixtureInterface {
 			$user->setPassword($this->encoder->encodePassword($user, 'test123'));
 			$user->setAgreedToTermsAt(TimeCreator::now());
 			$user->setCreatedAt(TimeCreator::now());
-			/** @var Collection<int, Role> $roles */
-			$roles = new ArrayCollection(
-				[
-					$this->roleRepository->findOneBy(['name' => Role::ROLE_TEST_USER]),
-				]
-			);
-			$user->setRoles($roles);
+			$user->setRoles([User::ROLE_TEST_USER]);
 			$user->setActive(true);
-			$user->setEmailConfirmedAt(TimeCreator::now());
-			$user->setEmailConfirmToken(null);
+			$confirmToken = $this->confirmEmailService->createConfirmRequest(
+				$user, $this->getFaker()->ipv4, $this->getFaker()->userAgent
+			);
+			$confirmToken->setConfirmedAt(Carbon::now());
+			$this->manager->persist($confirmToken);
 		}
 		);
 		// Special Admin User
@@ -113,25 +103,15 @@ class UserFixtures extends BaseFixture implements DependentFixtureInterface {
 			$user->setPassword($this->encoder->encodePassword($user, 'secret'));
 			$user->setAgreedToTermsAt(TimeCreator::now());
 			$user->setCreatedAt(TimeCreator::now());
-			/** @var Collection<int, Role> $roles */
-			$roles = new ArrayCollection(
-				[
-					$this->roleRepository->findOneBy(['name' => Role::ROLE_ADMIN]),
-				]
-			);
-			$user->setRoles($roles);
+			$user->setRoles([User::ROLE_ADMIN]);
 			$user->setActive(true);
-			$user->setEmailConfirmedAt(TimeCreator::now());
-			$user->setEmailConfirmToken(null);
+			$confirmToken = $this->confirmEmailService->createConfirmRequest(
+				$user, $this->getFaker()->ipv4, $this->getFaker()->userAgent
+			);
+			$confirmToken->setConfirmedAt(Carbon::now());
+			$this->manager->persist($confirmToken);
 		}
 		);
-	}
-	
-	/**
-	 * @return array<class-string<FixtureInterface>>
-	 */
-	public function getDependencies(): array {
-		return [RoleFixtures::class];
 	}
 	
 	protected function setBasicUserProps(User $user): void {
@@ -145,51 +125,29 @@ class UserFixtures extends BaseFixture implements DependentFixtureInterface {
 	}
 	
 	protected function setBasicUserRoles(User $user): void {
-		/** @var Collection<int, Role> $roles */
-		$roles = new ArrayCollection(
-			[
-				$this->roleRepository->findOneBy(['name' => Role::ROLE_USER]),
-			]
-		);
-		$user->setRoles($roles);
+		$user->setRoles([User::ROLE_USER]);
 	}
 	
 	protected function setAdminUserRoles(User $user): void {
-		/** @var Collection<int, Role> $roles */
-		$roles = new ArrayCollection(
-			[
-				$this->roleRepository->findOneBy(['name' => Role::ROLE_ADMIN]),
-			]
-		);
-		$user->setRoles($roles);
+		$user->setRoles([User::ROLE_ADMIN]);
 	}
 	
 	protected function setProjectLeadRoles(User $user): void {
-		/** @var Collection<int, Role> $roles */
-		$roles = new ArrayCollection(
-			[
-				$this->roleRepository->findOneBy(['name' => Role::ROLE_PROJECT_LEAD]),
-			]
-		);
-		$user->setRoles($roles);
+		$user->setRoles([User::ROLE_PROJECT_LEAD]);
 	}
 	
 	protected function setUserActive(User $user): void {
 		$user->setActive(true);
-		$user->setEmailConfirmedAt(TimeCreator::randomPast());
-		$user->setEmailConfirmToken(null);
+		$confirmToken = $this->confirmEmailService->createConfirmRequest(
+			$user, $this->getFaker()->ipv4, $this->getFaker()->userAgent
+		);
+		$confirmToken->setConfirmedAt(Carbon::now());
+		$this->manager->persist($confirmToken);
 	}
 	
 	protected function setUserLastLogin(User $user): void {
 		$user->setLastLoginAt(TimeCreator::randomPast());
 		$user->setLastLoginFromIp($this->faker->ipv4);
 		$user->setLastLoginFromBrowser($this->faker->userAgent);
-	}
-	
-	protected function setPasswordReset(User $user): void {
-		$user->setPasswordResetToken($this->tokenGenerator->alphanumericToken(64));
-		$user->setPasswordResetTokenRequestedAt(TimeCreator::randomPast());
-		$user->setPasswordResetTokenRequestedFromIp($this->faker->ipv4);
-		$user->setPasswordResetTokenRequestedFromBrowser($this->faker->userAgent);
 	}
 }

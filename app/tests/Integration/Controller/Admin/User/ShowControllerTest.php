@@ -4,9 +4,7 @@ declare(strict_types = 1);
 
 namespace App\Tests\Integration\Controller\Admin\User;
 
-use App\Entity\Role;
 use App\Entity\User;
-use App\Repository\RoleRepository;
 use App\Repository\UserRepository;
 use App\Tests\Integration\BaseWebTestCase;
 use App\Tests\Integration\IH;
@@ -14,12 +12,10 @@ use Symfony\Component\HttpFoundation\Request;
 
 class ShowControllerTest extends BaseWebTestCase {
 	public function testShow(): void {
-		/** @var Role $role */
-		$role = IH::getRepository(static::$container, RoleRepository::class)->findOneBy(['name' => Role::ROLE_ADMIN]);
-		/** @var userRepository $userRepository */
+		/** @var UserRepository $userRepository */
 		$userRepository = IH::getRepository(static::$container, UserRepository::class);
 		/** @var User $loggedUser */
-		$loggedUser = $userRepository->findOneByRoles([$role]);
+		$loggedUser = $userRepository->findOneByRole(User::ROLE_ADMIN);
 		$this->getClient()->loginUser($loggedUser);
 		$users = array_filter(
 			$userRepository->findAll(),
@@ -32,12 +28,10 @@ class ShowControllerTest extends BaseWebTestCase {
 	}
 	
 	public function testShowDoesWorkForTestUser(): void {
-		/** @var Role $role */
-		$role = IH::getRepository(static::$container, RoleRepository::class)->findOneBy(['name' => Role::ROLE_TEST_USER]);
-		/** @var userRepository $userRepository */
+		/** @var UserRepository $userRepository */
 		$userRepository = IH::getRepository(static::$container, UserRepository::class);
 		/** @var User $loggedUser */
-		$loggedUser = $userRepository->findOneByRoles([$role]);
+		$loggedUser = $userRepository->findOneByRole(User::ROLE_TEST_USER);
 		$this->getClient()->loginUser($loggedUser);
 		$users = array_filter(
 			$userRepository->findAll(),
@@ -50,12 +44,10 @@ class ShowControllerTest extends BaseWebTestCase {
 	}
 	
 	public function testShowDoesNotWorkForProjectLead(): void {
-		/** @var Role $role */
-		$role = IH::getRepository(static::$container, RoleRepository::class)->findOneBy(['name' => Role::ROLE_PROJECT_LEAD]);
-		/** @var userRepository $userRepository */
+		/** @var UserRepository $userRepository */
 		$userRepository = IH::getRepository(static::$container, UserRepository::class);
 		/** @var User $loggedUser */
-		$loggedUser = $userRepository->findOneByRoles([$role]);
+		$loggedUser = $userRepository->findOneByRole(User::ROLE_PROJECT_LEAD);
 		$this->getClient()->loginUser($loggedUser);
 		$users = array_filter(
 			$userRepository->findAll(),
@@ -68,12 +60,10 @@ class ShowControllerTest extends BaseWebTestCase {
 	}
 	
 	public function testShowDoesNotWorkForRegularUser(): void {
-		/** @var Role $role */
-		$role = IH::getRepository(static::$container, RoleRepository::class)->findOneBy(['name' => Role::ROLE_USER]);
-		/** @var userRepository $userRepository */
+		/** @var UserRepository $userRepository */
 		$userRepository = IH::getRepository(static::$container, UserRepository::class);
 		/** @var User $loggedUser */
-		$loggedUser = $userRepository->findOneByRoles([$role]);
+		$loggedUser = $userRepository->findOneByRole(User::ROLE_USER);
 		$this->getClient()->loginUser($loggedUser);
 		$users = array_filter(
 			$userRepository->findAll(),

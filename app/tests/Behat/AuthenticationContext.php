@@ -7,6 +7,7 @@ namespace App\Tests\Behat;
 use App\Entity\Role;
 use App\Entity\User;
 use App\Service\TimeCreator;
+use App\Tests\TestDatabaseHelper;
 use Behat\Behat\Context\Context;
 use Behat\Mink\Session;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -34,7 +35,7 @@ final class AuthenticationContext implements Context {
 	 * @BeforeSuite
 	 */
 	public static function setup(): void {
-		BehatDatabaseHelper::reset();
+		TestDatabaseHelper::reset();
 	}
 	
 	/**

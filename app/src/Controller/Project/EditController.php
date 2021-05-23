@@ -6,7 +6,7 @@ namespace App\Controller\Project;
 
 use App\Controller\Concerns\FlashFormErrors;
 use App\Entity\Project;
-use App\Entity\Role;
+
 use App\Entity\User;
 use App\Event\Creators\VersionCreateEvent;
 use App\Event\Updators\TimeStampableUpdateEvent;
@@ -32,13 +32,13 @@ class EditController extends AbstractController {
 	 * @ParamConverter("project", class="App\Entity\Project", options={"mapping": {"project_uuid" = "uuid"}})
 	 */
 	public function __invoke(Request $request, Project $project): Response {
-		if ($this->isGranted(Role::ROLE_TEST_USER)) {
+		if ($this->isGranted(User::ROLE_TEST_USER)) {
 			return $this->showcaseEdit($request, $project);
 		}
-		if ($this->isGranted(Role::ROLE_EDIT_PROJECT, $project) && $this->isGranted(Role::ROLE_PROJECT_LEAD)) {
+		if ($this->isGranted(User::ROLE_EDIT_PROJECT, $project) && $this->isGranted(User::ROLE_PROJECT_LEAD)) {
 			return $this->edit($request, $project);
 		}
-		if (! $this->isGranted(Role::ROLE_USER)) {
+		if (! $this->isGranted(User::ROLE_USER)) {
 			throw $this->createAccessDeniedException();
 		}
 		throw $this->createNotFoundException();

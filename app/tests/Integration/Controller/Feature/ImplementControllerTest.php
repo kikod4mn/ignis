@@ -6,10 +6,8 @@ namespace App\Tests\Integration\Controller\Feature;
 
 use App\Entity\Feature;
 use App\Entity\Project;
-use App\Entity\Role;
 use App\Entity\User;
 use App\Repository\FeatureRepository;
-use App\Repository\RoleRepository;
 use App\Repository\UserRepository;
 use App\Tests\Integration\BaseWebTestCase;
 use App\Tests\Integration\IH;
@@ -44,14 +42,10 @@ class ImplementControllerTest extends BaseWebTestCase {
 	}
 	
 	public function testFeatureImplementDoesNotWorkForProjectLeadWhoIsNotConnectedToProject(): void {
-		/** @var RoleRepository $roleRepository */
-		$roleRepository = IH::getRepository(static::$container, RoleRepository::class);
-		/** @var Role $role */
-		$role = $roleRepository->findOneBy(['name' => Role::ROLE_PROJECT_LEAD]);
 		/** @var UserRepository $userRepository */
 		$userRepository = IH::getRepository(static::$container, UserRepository::class);
 		/** @var User $implementer */
-		$implementer = $userRepository->findOneByRoles([$role]);
+		$implementer = $userRepository->findOneByRole(User::ROLE_PROJECT_LEAD);
 		/** @var FeatureRepository $featureRepository */
 		$featureRepository = IH::getRepository(static::$container, FeatureRepository::class);
 		$features          = array_filter(
@@ -113,14 +107,10 @@ class ImplementControllerTest extends BaseWebTestCase {
 		$feature = $features[array_rand($features)];
 		/** @var Project $project */
 		$project = $feature->getProject();
-		/** @var RoleRepository $roleRepository */
-		$roleRepository = IH::getRepository(static::$container, RoleRepository::class);
-		/** @var Role $role */
-		$role = $roleRepository->findOneBy(['name' => Role::ROLE_PROJECT_LEAD]);
 		/** @var UserRepository $userRepository */
 		$userRepository = IH::getRepository(static::$container, UserRepository::class);
 		$implementers   = array_filter(
-			$userRepository->findByRoles([$role]),
+			$userRepository->findByRole(User::ROLE_PROJECT_LEAD),
 			static fn (User $u): bool => ! $project->getCanEdit()->contains($u)
 										 && ! $project->getCanView()->contains($u)
 										 && $feature->getAuthor()?->getId() !== $u->getId()
@@ -137,10 +127,6 @@ class ImplementControllerTest extends BaseWebTestCase {
 	}
 	
 	public function testFeatureImplementForTestUser(): void {
-		/** @var RoleRepository $roleRepository */
-		$roleRepository = IH::getRepository(static::$container, RoleRepository::class);
-		/** @var Role $role */
-		$role = $roleRepository->findOneBy(['name' => Role::ROLE_TEST_USER]);
 		/** @var FeatureRepository $featureRepository */
 		$featureRepository = IH::getRepository(static::$container, FeatureRepository::class);
 		$features          = array_filter(
@@ -154,7 +140,7 @@ class ImplementControllerTest extends BaseWebTestCase {
 		/** @var UserRepository $userRepository */
 		$userRepository = IH::getRepository(static::$container, UserRepository::class);
 		/** @var User $implementer */
-		$implementer = $userRepository->findOneByRoles([$role]);
+		$implementer = $userRepository->findOneByRole(User::ROLE_TEST_USER);
 		$route       = sprintf('/projects/%s/features/%s/implement', $project->getUuid()?->toString(), $feature->getUuid()?->toString());
 		$this->getClient()->loginUser($implementer);
 		$this->getClient()->request(Request::METHOD_GET, $route);
@@ -165,10 +151,6 @@ class ImplementControllerTest extends BaseWebTestCase {
 	}
 	
 	public function testFeatureFixForRegularUser(): void {
-		/** @var RoleRepository $roleRepository */
-		$roleRepository = IH::getRepository(static::$container, RoleRepository::class);
-		/** @var Role $role */
-		$role = $roleRepository->findOneBy(['name' => Role::ROLE_USER]);
 		/** @var FeatureRepository $featureRepository */
 		$featureRepository = IH::getRepository(static::$container, FeatureRepository::class);
 		$features          = array_filter(
@@ -182,7 +164,7 @@ class ImplementControllerTest extends BaseWebTestCase {
 		/** @var UserRepository $userRepository */
 		$userRepository = IH::getRepository(static::$container, UserRepository::class);
 		/** @var User $implementer */
-		$implementer = $userRepository->findOneByRoles([$role]);
+		$implementer = $userRepository->findOneByRole(User::ROLE_USER);
 		$route       = sprintf('/projects/%s/features/%s/implement', $project->getUuid()?->toString(), $feature->getUuid()?->toString());
 		$this->getClient()->loginUser($implementer);
 		$this->getClient()->request(Request::METHOD_GET, $route);

@@ -4,8 +4,7 @@ declare(strict_types = 1);
 
 namespace App\Controller\User\Account;
 
-use App\Repository\UserRepository;
-use App\Security\EmailConfirmService;
+use App\Security\ConfirmEmailService;
 use App\Service\Contracts\Flashes;
 use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
@@ -14,7 +13,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 class EmailConfirmController extends AbstractController {
-	public function __construct(private UserRepository $userRepository, private EntityManagerInterface $em, private EmailConfirmService $emailConfirmService) { }
+	public function __construct(private EntityManagerInterface $em, private ConfirmEmailService $emailConfirmService) { }
 	
 	/**
 	 * @Route("/credentials/confirm/email/{token}", name="credentials-email-confirmation", methods={"GET"})

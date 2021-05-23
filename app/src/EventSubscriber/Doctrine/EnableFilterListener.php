@@ -4,7 +4,7 @@ declare(strict_types = 1);
 
 namespace App\EventSubscriber\Doctrine;
 
-use App\Entity\Role;
+
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\Security\Core\Security;
@@ -17,7 +17,7 @@ class EnableFilterListener {
 //			return;
 //		}
 		// disable relevant filters for admins
-//		if ($this->security->isGranted(Role::ROLE_ADMIN)) {
+//		if ($this->security->isGranted(User::ROLE_ADMIN)) {
 //			return;
 //		}
 //		$filter = $this->em->getFilters()->enable('soft_deleted_filter');

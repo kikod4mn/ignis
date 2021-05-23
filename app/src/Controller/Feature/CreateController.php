@@ -7,7 +7,7 @@ namespace App\Controller\Feature;
 use App\Controller\Concerns\FlashFormErrors;
 use App\Entity\Feature;
 use App\Entity\Project;
-use App\Entity\Role;
+use App\Entity\User;
 use App\Event\Creators\AuthorableCreateEvent;
 use App\Event\Creators\IdCreateEvent;
 use App\Event\Creators\TimeStampableCreatedEvent;
@@ -33,16 +33,16 @@ class CreateController extends AbstractController {
 	 * @ParamConverter("project", class="App\Entity\Project", options={"mapping": {"project_uuid" = "uuid"}})
 	 */
 	public function __invoke(Request $request, Project $project): Response {
-		if ($this->isGranted(Role::ROLE_TEST_USER)) {
+		if ($this->isGranted(User::ROLE_TEST_USER)) {
 			return $this->showcaseCreate($request, $project);
 		}
-		if ($this->isGranted(Role::ROLE_VIEW_PROJECT, $project)
-			&& $this->isGranted(Role::ROLE_ADD_FEATURE)
-			&& $this->isGranted(Role::ROLE_PROJECT_LEAD)
+		if ($this->isGranted(User::ROLE_VIEW_PROJECT, $project)
+			&& $this->isGranted(User::ROLE_ADD_FEATURE)
+			&& $this->isGranted(User::ROLE_PROJECT_LEAD)
 		) {
 			return $this->create($request, $project);
 		}
-		if (! $this->isGranted(Role::ROLE_USER)) {
+		if (! $this->isGranted(User::ROLE_USER)) {
 			throw $this->createAccessDeniedException();
 		}
 		throw $this->createNotFoundException();

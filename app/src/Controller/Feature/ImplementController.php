@@ -6,7 +6,7 @@ namespace App\Controller\Feature;
 
 use App\Entity\Feature;
 use App\Entity\Project;
-use App\Entity\Role;
+
 use App\Entity\User;
 use App\Service\Contracts\Flashes;
 use Doctrine\ORM\EntityManagerInterface;
@@ -15,8 +15,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use function dd;
-use function sprintf;
 
 class ImplementController extends AbstractController {
 	public function __construct(private EntityManagerInterface $em, private LoggerInterface $logger) { }
@@ -27,15 +25,15 @@ class ImplementController extends AbstractController {
 	 * @ParamConverter("feature", class="App\Entity\Feature", options={"mapping": {"feature_uuid" = "uuid"}})
 	 */
 	public function __invoke(Project $project, Feature $feature): Response {
-		if ($this->isGranted(Role::ROLE_TEST_USER)) {
+		if ($this->isGranted(User::ROLE_TEST_USER)) {
 			return $this->showcaseImplement($project);
 		}
-		if ($this->isGranted(Role::ROLE_PROJECT_LEAD)
-			&& $this->isGranted(Role::ROLE_VIEW_PROJECT, $project)
-			&& $this->isGranted(Role::ROLE_IMPLEMENT_FEATURE, $feature)) {
+		if ($this->isGranted(User::ROLE_PROJECT_LEAD)
+			&& $this->isGranted(User::ROLE_VIEW_PROJECT, $project)
+			&& $this->isGranted(User::ROLE_IMPLEMENT_FEATURE, $feature)) {
 			return $this->implement($feature, $project);
 		}
-		if (! $this->isGranted(Role::ROLE_USER)) {
+		if (! $this->isGranted(User::ROLE_USER)) {
 			throw $this->createAccessDeniedException();
 		}
 		throw $this->createNotFoundException();

@@ -5,7 +5,8 @@ declare(strict_types = 1);
 namespace App\Controller\Feature;
 
 use App\Entity\Project;
-use App\Entity\Role;
+
+use App\Entity\User;
 use Knp\Component\Pager\PaginatorInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -20,14 +21,14 @@ class ListController extends AbstractController {
 	 * @ParamConverter("project", class="App\Entity\Project", options={"mapping": {"project_uuid" = "uuid"}})
 	 */
 	public function __invoke(Project $project, int $page): Response {
-		if ($this->isGranted(Role::ROLE_TEST_USER)) {
+		if ($this->isGranted(User::ROLE_TEST_USER)) {
 			return $this->showcaseList($project, $page);
 		}
 		//todo for now use the same method because no difference exists for feature listing for test user
-		if ($this->isGranted(Role::ROLE_VIEW_PROJECT, $project)) {
+		if ($this->isGranted(User::ROLE_VIEW_PROJECT, $project)) {
 			return $this->showcaseList($project, $page);
 		}
-		if (! $this->isGranted(Role::ROLE_USER)) {
+		if (! $this->isGranted(User::ROLE_USER)) {
 			throw $this->createAccessDeniedException();
 		}
 		throw $this->createNotFoundException();

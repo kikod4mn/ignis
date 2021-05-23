@@ -13,26 +13,26 @@ use Symfony\Component\HttpFoundation\Request;
 final class ResetPasswordService {
 	public function __construct(private string $signingKey, private TokenGenerator $tokenGenerator) { }
 	
-	public function createResetRequest(User $user, Request $request): ResetPasswordRequest {
+	public function createResetRequest(User $user, string $fromIp, string $fromBrowser): ResetPasswordRequest {
 		$expiresAt = Carbon::now()->addHours(3);
 		$selector  = $this->tokenGenerator->alphanumericToken(20);
 		$verifier  = $this->tokenGenerator->alphanumericToken(20);
-		$encoded   = json_encode([$verifier, $user->getId(), $expiresAt]);
+		$encoded   = json_encode([$verifier, $user->getId(), $expiresAt], JSON_THROW_ON_ERROR);
 		return new ResetPasswordRequest(
 			$user,
 			$expiresAt,
 			$selector,
 			$this->getHashedToken($encoded),
-			(string) $request->headers->get('User-Agent'),
-			(string) $request->getClientIp()
+			$fromIp,
+			$fromBrowser
 		);
 	}
 	
-	public function validateResetRequest(string $token): User {
-		$resetRequest        = $this->findResetRequest($token);
+	public function validateResetRequest(string $fullToken): User {
+		$resetRequest        = $this->findResetRequest($fullToken);
 		$user                = $resetRequest->getUser();
-		$hashedVerifierToken = json_encode([mb_substr($token, 0, 20), $user->getId(), $resetRequest->getExpiresAt()]);
-		if (hash_equals($resetRequest->getHashedToken(), $this->getHashedToken($hashedVerifierToken))) {
+		$hashedVerifierToken = json_encode([mb_substr($fullToken, 0, 20), $user->getId(), $resetRequest->getExpiresAt()], JSON_THROW_ON_ERROR);
+		if (! hash_equals($resetRequest->getHashedToken(), $this->getHashedToken($hashedVerifierToken))) {
 			// todo token is wrong!!!
 			dd('throw');
 		}

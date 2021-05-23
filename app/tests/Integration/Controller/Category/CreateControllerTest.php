@@ -5,9 +5,8 @@ declare(strict_types = 1);
 namespace App\Tests\Integration\Controller\Category;
 
 use App\Entity\Category;
-use App\Entity\Role;
+use App\Entity\User;
 use App\Repository\CategoryRepository;
-use App\Repository\RoleRepository;
 use App\Repository\UserRepository;
 use App\Tests\Integration\BaseWebTestCase;
 use App\Tests\Integration\IH;
@@ -18,13 +17,11 @@ use Symfony\Component\HttpFoundation\Request;
  */
 class CreateControllerTest extends BaseWebTestCase {
 	public function testCreatePage(): void {
-		/** @var Role $role */
-		$role = IH::getRepository(static::$container, RoleRepository::class)->findOneBy(['name' => Role::ROLE_ADMIN]);
 		/** @var UserRepository $userRepository */
 		$userRepository = IH::getRepository(static::$container, UserRepository::class);
-		$users          = $userRepository->findByRoles([$role]);
-		$creator        = $users[array_rand($users)];
-		$route          = '/categories/create';
+		/** @var User $creator */
+		$creator = $userRepository->findOneByRole(User::ROLE_ADMIN);
+		$route   = '/categories/create';
 		$this->getClient()->loginUser($creator);
 		$this->getClient()->request(Request::METHOD_GET, $route);
 		static::assertResponseIsSuccessful();
@@ -46,13 +43,11 @@ class CreateControllerTest extends BaseWebTestCase {
 				'_token' => IH::getCsrf(static::$container)->getToken('_category_create[_csrf_token]'),
 			],
 		];
-		/** @var Role $role */
-		$role = IH::getRepository(static::$container, RoleRepository::class)->findOneBy(['name' => Role::ROLE_ADMIN]);
 		/** @var UserRepository $userRepository */
 		$userRepository = IH::getRepository(static::$container, UserRepository::class);
-		$users          = $userRepository->findByRoles([$role]);
-		$creator        = $users[array_rand($users)];
-		$route          = '/categories/create';
+		/** @var User $creator */
+		$creator = $userRepository->findOneByRole(User::ROLE_ADMIN);
+		$route   = '/categories/create';
 		$this->getClient()->loginUser($creator);
 		$this->getClient()->request(Request::METHOD_POST, $route, $data);
 		static::assertResponseStatusCodeSame(302);
@@ -72,13 +67,11 @@ class CreateControllerTest extends BaseWebTestCase {
 				'_token' => IH::getCsrf(static::$container)->getToken('_category_create[_csrf_token]'),
 			],
 		];
-		/** @var Role $role */
-		$role = IH::getRepository(static::$container, RoleRepository::class)->findOneBy(['name' => Role::ROLE_TEST_USER]);
 		/** @var UserRepository $userRepository */
 		$userRepository = IH::getRepository(static::$container, UserRepository::class);
-		$users          = $userRepository->findByRoles([$role]);
-		$creator        = $users[array_rand($users)];
-		$route          = '/categories/create';
+		/** @var User $creator */
+		$creator = $userRepository->findOneByRole(User::ROLE_TEST_USER);
+		$route   = '/categories/create';
 		$this->getClient()->loginUser($creator);
 		$this->getClient()->request(Request::METHOD_POST, $route, $data);
 		static::assertResponseStatusCodeSame(302);
@@ -98,13 +91,11 @@ class CreateControllerTest extends BaseWebTestCase {
 				'_token' => IH::getCsrf(static::$container)->getToken('_category_create[_csrf_token]'),
 			],
 		];
-		/** @var Role $role */
-		$role = IH::getRepository(static::$container, RoleRepository::class)->findOneBy(['name' => Role::ROLE_PROJECT_LEAD]);
 		/** @var UserRepository $userRepository */
 		$userRepository = IH::getRepository(static::$container, UserRepository::class);
-		$users          = $userRepository->findByRoles([$role]);
-		$creator        = $users[array_rand($users)];
-		$route          = '/categories/create';
+		/** @var User $creator */
+		$creator = $userRepository->findOneByRole(User::ROLE_PROJECT_LEAD);
+		$route   = '/categories/create';
 		$this->getClient()->loginUser($creator);
 		$this->getClient()->request(Request::METHOD_POST, $route, $data);
 		static::assertResponseStatusCodeSame(404);

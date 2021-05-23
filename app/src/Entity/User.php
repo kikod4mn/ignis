@@ -19,9 +19,6 @@ use Doctrine\ORM\Mapping as ORM;
 use Stringable;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\UserInterface;
-use function count;
-use function implode;
-use const PHP_EOL;
 
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
@@ -31,6 +28,33 @@ class User implements IdContract, UserInterface, TimeStampableContract, Stringab
 	use SoftDeleteConcern;
 	use TimestampsConcern;
 	use IdConcern;
+	
+	public const ROLE_TEST_USER         = 'ROLE_TEST_USER';
+	public const ROLE_USER              = 'ROLE_USER';
+	public const ROLE_EDIT_ACCOUNT      = 'ROLE_EDIT_ACCOUNT';
+	public const ROLE_EDIT_PROFILE      = 'ROLE_EDIT_PROFILE';
+	public const ROLE_PROJECT_LEAD      = 'ROLE_PROJECT_LEAD';
+	public const ROLE_ADMIN             = 'ROLE_ADMIN';
+	public const ROLE_DELETE_USER       = 'ROLE_DELETE_USER';
+	public const ROLE_MODIFY_ROLES      = 'ROLE_MODIFY_ROLES';
+	public const ROLE_VIEW_PROJECT      = 'ROLE_VIEW_PROJECT';
+	public const ROLE_ADD_PROJECT       = 'ROLE_ADD_PROJECT';
+	public const ROLE_EDIT_PROJECT      = 'ROLE_EDIT_PROJECT';
+	public const ROLE_DELETE_PROJECT    = 'ROLE_DELETE_PROJECT';
+	public const ROLE_ADD_FEATURE       = 'ROLE_ADD_FEATURE';
+	public const ROLE_IMPLEMENT_FEATURE = 'ROLE_IMPLEMENT_FEATURE';
+	public const ROLE_EDIT_FEATURE      = 'ROLE_EDIT_FEATURE';
+	public const ROLE_DELETE_FEATURE    = 'ROLE_DELETE_FEATURE';
+	public const ROLE_ADD_CATEGORY      = 'ROLE_ADD_CATEGORY';
+	public const ROLE_EDIT_CATEGORY     = 'ROLE_EDIT_CATEGORY';
+	public const ROLE_DELETE_CATEGORY   = 'ROLE_DELETE_CATEGORY';
+	public const ROLE_ADD_LANGUAGE      = 'ROLE_ADD_LANGUAGE';
+	public const ROLE_EDIT_LANGUAGE     = 'ROLE_EDIT_LANGUAGE';
+	public const ROLE_DELETE_LANGUAGE   = 'ROLE_DELETE_LANGUAGE';
+	public const ROLE_ADD_BUG           = 'ROLE_ADD_BUG';
+	public const ROLE_EDIT_BUG          = 'ROLE_EDIT_BUG';
+	public const ROLE_FIX_BUG           = 'ROLE_FIX_BUG';
+	public const ROLE_DELETE_BUG        = 'ROLE_DELETE_BUG';
 	
 	/**
 	 * @ORM\Column(type="string", length=255, nullable=false)
@@ -70,46 +94,6 @@ class User implements IdContract, UserInterface, TimeStampableContract, Stringab
 	private ?string $plainPassword = null;
 	
 	/**
-	 * @ORM\Column(type="string", length=64, nullable=true)
-	 */
-	private ?string $passwordResetToken = null;
-	
-	/**
-	 * @ORM\Column(type="carbon_immutable", nullable=true)
-	 */
-	private ?DateTimeInterface $passwordResetTokenExpiresAt = null;
-	
-	/**
-	 * @ORM\Column(type="carbon_immutable", nullable=true)
-	 */
-	private ?DateTimeInterface $passwordResetTokenRequestedAt = null;
-	
-	/**
-	 * @ORM\Column(type="string", length=64, nullable=true)
-	 */
-	private ?string $passwordResetTokenRequestedFromIp = null;
-	
-	/**
-	 * @ORM\Column(type="string", length=300, nullable=true)
-	 */
-	private ?string $passwordResetTokenRequestedFromBrowser = null;
-	
-	/**
-	 * @ORM\Column(type="string", length=64, nullable=true)
-	 */
-	private ?string $emailConfirmToken = null;
-	
-	/**
-	 * @ORM\Column(type="carbon_immutable", nullable=true)
-	 */
-	private ?DateTimeInterface $emailConfirmationTokenExpiresAt = null;
-	
-	/**
-	 * @ORM\Column(type="carbon_immutable", nullable=true)
-	 */
-	private ?DateTimeInterface $emailConfirmedAt = null;
-	
-	/**
 	 * @ORM\Column(type="boolean", options={"default":0})
 	 */
 	private bool $active = false;
@@ -125,6 +109,7 @@ class User implements IdContract, UserInterface, TimeStampableContract, Stringab
 	 */
 	private ?DateTimeInterface $agreedToTermsAt = null;
 	
+	// todo extract login events for more history
 	/**
 	 * @ORM\Column(type="carbon_immutable", nullable=true)
 	 */
@@ -139,6 +124,11 @@ class User implements IdContract, UserInterface, TimeStampableContract, Stringab
 	 * @ORM\Column(type="string", length=300, nullable=true)
 	 */
 	private ?string $lastLoginFromBrowser = null;
+	
+	/**
+	 * @ORM\OneToOne(targetEntity="App\Entity\ConfirmEmailRequest")
+	 */
+	private ?ConfirmEmailRequest $confirmEmailRequest = null;
 	
 	/**
 	 * @ORM\OneToMany(targetEntity="App\Entity\Project", mappedBy="author")
@@ -177,22 +167,17 @@ class User implements IdContract, UserInterface, TimeStampableContract, Stringab
 	private Collection $images;
 	
 	/**
-	 * @ORM\ManyToMany(targetEntity="App\Entity\Role", inversedBy="users")
-	 * @var Collection<int, Role>
-	 */
-	private Collection $roles;
-	
-	/**
+	 * @ORM\Column(type="array")
 	 * @var array<int, string>
 	 */
-	private array $roleCache = [];
+	private array $roles;
 	
 	public function __construct() {
 		$this->projects         = new ArrayCollection();
 		$this->bugs             = new ArrayCollection();
 		$this->features         = new ArrayCollection();
 		$this->images           = new ArrayCollection();
-		$this->roles            = new ArrayCollection();
+		$this->roles            = [];
 		$this->editableProjects = new ArrayCollection();
 		$this->viewableProjects = new ArrayCollection();
 	}
@@ -295,76 +280,6 @@ class User implements IdContract, UserInterface, TimeStampableContract, Stringab
 		return $this;
 	}
 	
-	public function getPasswordResetToken(): ?string {
-		return $this->passwordResetToken;
-	}
-	
-	public function setPasswordResetToken(?string $passwordResetToken): User {
-		$this->passwordResetToken = $passwordResetToken;
-		return $this;
-	}
-	
-	public function getPasswordResetTokenExpiresAt(): ?DateTimeInterface {
-		return $this->passwordResetTokenExpiresAt;
-	}
-	
-	public function setPasswordResetTokenExpiresAt(?DateTimeInterface $passwordResetTokenExpiresAt): void {
-		$this->passwordResetTokenExpiresAt = $passwordResetTokenExpiresAt;
-	}
-	
-	public function getPasswordResetTokenRequestedAt(): ?DateTimeInterface {
-		return $this->passwordResetTokenRequestedAt;
-	}
-	
-	public function setPasswordResetTokenRequestedAt(?DateTimeInterface $requestedAt): User {
-		$this->passwordResetTokenRequestedAt = $requestedAt;
-		return $this;
-	}
-	
-	public function getPasswordResetTokenRequestedFromIp(): ?string {
-		return $this->passwordResetTokenRequestedFromIp;
-	}
-	
-	public function setPasswordResetTokenRequestedFromIp(?string $passwordResetTokenRequestedFromIp): User {
-		$this->passwordResetTokenRequestedFromIp = $passwordResetTokenRequestedFromIp;
-		return $this;
-	}
-	
-	public function getPasswordResetTokenRequestedFromBrowser(): ?string {
-		return $this->passwordResetTokenRequestedFromBrowser;
-	}
-	
-	public function setPasswordResetTokenRequestedFromBrowser(?string $passwordResetTokenRequestedFromBrowser): User {
-		$this->passwordResetTokenRequestedFromBrowser = $passwordResetTokenRequestedFromBrowser;
-		return $this;
-	}
-	
-	public function getEmailConfirmToken(): ?string {
-		return $this->emailConfirmToken;
-	}
-	
-	public function setEmailConfirmToken(?string $emailConfirmToken): User {
-		$this->emailConfirmToken = $emailConfirmToken;
-		return $this;
-	}
-	
-	public function getEmailConfirmationTokenExpiresAt(): ?DateTimeInterface {
-		return $this->emailConfirmationTokenExpiresAt;
-	}
-	
-	public function setEmailConfirmationTokenExpiresAt(?DateTimeInterface $emailConfirmationTokenExpiresAt): void {
-		$this->emailConfirmationTokenExpiresAt = $emailConfirmationTokenExpiresAt;
-	}
-	
-	public function getEmailConfirmedAt(): ?DateTimeInterface {
-		return $this->emailConfirmedAt;
-	}
-	
-	public function setEmailConfirmedAt(?DateTimeInterface $emailConfirmedAt): User {
-		$this->emailConfirmedAt = $emailConfirmedAt;
-		return $this;
-	}
-	
 	public function getActive(): bool {
 		return $this->active;
 	}
@@ -417,6 +332,14 @@ class User implements IdContract, UserInterface, TimeStampableContract, Stringab
 	public function setLastLoginFromBrowser(?string $lastLoginFromBrowser): User {
 		$this->lastLoginFromBrowser = $lastLoginFromBrowser;
 		return $this;
+	}
+	
+	public function getConfirmEmailRequest(): ?ConfirmEmailRequest {
+		return $this->confirmEmailRequest;
+	}
+	
+	public function setConfirmEmailRequest(ConfirmEmailRequest $confirmEmailRequest): void {
+		$this->confirmEmailRequest = $confirmEmailRequest;
 	}
 	
 	public function eraseCredentials(): void {
@@ -605,50 +528,29 @@ class User implements IdContract, UserInterface, TimeStampableContract, Stringab
 		return $this;
 	}
 	
-	/**
-	 * @return array<int, string>
-	 */
 	public function getRoles(): array {
-		if (count($this->roleCache) === 0) {
-			foreach ($this->roles->toArray() as $role) {
-				$this->roleCache[] = (string) $role->getName();
-			}
-		}
-		if (count($this->roleCache) === 0) {
-			return [Role::ROLE_USER];
-		}
-		return [...$this->roleCache];
+		return array_unique([...$this->roles, self::ROLE_USER]);
 	}
 	
-	public function hasRole(string $roleToTest): bool {
-		if ($roleToTest === Role::ROLE_USER) {
-			return true;
-		}
-		return $this->roles->exists(
-			fn (int $key, Role $role) => $role->getName() === $roleToTest
-		);
+	public function hasRole(string $role): bool {
+		return in_array($role, $this->roles, true);
 	}
 	
 	/**
-	 * @param   Collection<int, Role>   $roles
-	 * @return $this
+	 * @param   array<int, string>   $roles
 	 */
-	public function setRoles(Collection $roles): User {
+	public function setRoles(array $roles): User {
 		$this->roles = $roles;
 		return $this;
 	}
 	
-	public function addRole(Role $role): User {
-		if (! $this->roles->contains($role)) {
-			$this->roles->add($role);
-		}
+	public function addRole(string $role): User {
+		$this->roles = array_unique([...$this->roles, $role]);
 		return $this;
 	}
 	
-	public function removeRole(Role $role): User {
-		if ($this->roles->contains($role)) {
-			$this->roles->removeElement($role);
-		}
+	public function removeRole(string $role): User {
+		$this->roles = array_filter($this->roles, static fn (string $r) => $r !== $role);
 		return $this;
 	}
 	

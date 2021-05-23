@@ -6,7 +6,6 @@ namespace App\Controller\Bug;
 
 use App\Entity\Bug;
 use App\Entity\Project;
-use App\Entity\Role;
 use App\Entity\User;
 use App\Event\Updators\DeleteEvent;
 use App\Service\Contracts\Flashes;
@@ -33,13 +32,13 @@ class DeleteController extends AbstractController {
 	 * @ParamConverter("bug", class="App\Entity\Bug", options={"mapping":{"bug_uuid" = "uuid"}})
 	 */
 	public function __invoke(Project $project, Bug $bug): Response {
-		if ($this->isGranted(Role::ROLE_TEST_USER)) {
+		if ($this->isGranted(User::ROLE_TEST_USER)) {
 			return $this->showcaseDelete($project);
 		}
-		if ($this->isGranted(Role::ROLE_VIEW_PROJECT, $project) && $this->isGranted(Role::ROLE_DELETE_BUG, $bug)) {
+		if ($this->isGranted(User::ROLE_VIEW_PROJECT, $project) && $this->isGranted(User::ROLE_DELETE_BUG, $bug)) {
 			return $this->delete($project, $bug);
 		}
-		if (! $this->isGranted(Role::ROLE_USER)) {
+		if (! $this->isGranted(User::ROLE_USER)) {
 			throw $this->createAccessDeniedException();
 		}
 		throw $this->createNotFoundException();

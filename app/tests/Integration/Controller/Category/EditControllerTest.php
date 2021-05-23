@@ -5,9 +5,8 @@ declare(strict_types = 1);
 namespace App\Tests\Integration\Controller\Category;
 
 use App\Entity\Category;
-use App\Entity\Role;
+use App\Entity\User;
 use App\Repository\CategoryRepository;
-use App\Repository\RoleRepository;
 use App\Repository\UserRepository;
 use App\Tests\Integration\BaseWebTestCase;
 use App\Tests\Integration\IH;
@@ -18,12 +17,10 @@ use Symfony\Component\HttpFoundation\Request;
  */
 class EditControllerTest extends BaseWebTestCase {
 	public function testEditPage(): void {
-		/** @var Role $role */
-		$role = IH::getRepository(static::$container, RoleRepository::class)->findOneBy(['name' => Role::ROLE_ADMIN]);
 		/** @var UserRepository $userRepository */
 		$userRepository = IH::getRepository(static::$container, UserRepository::class);
-		$users          = $userRepository->findByRoles([$role]);
-		$creator        = $users[array_rand($users)];
+		/** @var User $creator */
+		$creator = $userRepository->findOneByRole(User::ROLE_ADMIN);
 		/** @var CategoryRepository $categoryRepository */
 		$categoryRepository = IH::getRepository(static::$container, CategoryRepository::class);
 		$categories         = $categoryRepository->findAll();
@@ -58,13 +55,11 @@ class EditControllerTest extends BaseWebTestCase {
 				'_token' => IH::getCsrf(static::$container)->getToken('_category_edit[_csrf_token]'),
 			],
 		];
-		/** @var Role $role */
-		$role = IH::getRepository(static::$container, RoleRepository::class)->findOneBy(['name' => Role::ROLE_ADMIN]);
 		/** @var UserRepository $userRepository */
 		$userRepository = IH::getRepository(static::$container, UserRepository::class);
-		$users          = $userRepository->findByRoles([$role]);
-		$creator        = $users[array_rand($users)];
-		$route          = sprintf('/categories/%s/edit', $category->getUuid()?->toString());
+		/** @var User $creator */
+		$creator = $userRepository->findOneByRole(User::ROLE_ADMIN);
+		$route   = sprintf('/categories/%s/edit', $category->getUuid()?->toString());
 		$this->getClient()->loginUser($creator);
 		$this->getClient()->request(Request::METHOD_POST, $route, $data);
 		static::assertResponseStatusCodeSame(302);
@@ -88,13 +83,11 @@ class EditControllerTest extends BaseWebTestCase {
 				'_token' => IH::getCsrf(static::$container)->getToken('_category_edit[_csrf_token]'),
 			],
 		];
-		/** @var Role $role */
-		$role = IH::getRepository(static::$container, RoleRepository::class)->findOneBy(['name' => Role::ROLE_TEST_USER]);
 		/** @var UserRepository $userRepository */
 		$userRepository = IH::getRepository(static::$container, UserRepository::class);
-		$users          = $userRepository->findByRoles([$role]);
-		$creator        = $users[array_rand($users)];
-		$route          = sprintf('/categories/%s/edit', $category->getUuid()?->toString());
+		/** @var User $creator */
+		$creator = $userRepository->findOneByRole(User::ROLE_TEST_USER);
+		$route   = sprintf('/categories/%s/edit', $category->getUuid()?->toString());
 		$this->getClient()->loginUser($creator);
 		$this->getClient()->request(Request::METHOD_POST, $route, $data);
 		static::assertResponseIsSuccessful();
@@ -116,13 +109,11 @@ class EditControllerTest extends BaseWebTestCase {
 				'_token' => IH::getCsrf(static::$container)->getToken('_category_edit[_csrf_token]'),
 			],
 		];
-		/** @var Role $role */
-		$role = IH::getRepository(static::$container, RoleRepository::class)->findOneBy(['name' => Role::ROLE_PROJECT_LEAD]);
 		/** @var UserRepository $userRepository */
 		$userRepository = IH::getRepository(static::$container, UserRepository::class);
-		$users          = $userRepository->findByRoles([$role]);
-		$creator        = $users[array_rand($users)];
-		$route          = sprintf('/categories/%s/edit', $category->getUuid()?->toString());
+		/** @var User $creator */
+		$creator = $userRepository->findOneByRole(User::ROLE_PROJECT_LEAD);
+		$route   = sprintf('/categories/%s/edit', $category->getUuid()?->toString());
 		$this->getClient()->loginUser($creator);
 		$this->getClient()->request(Request::METHOD_POST, $route, $data);
 		static::assertResponseStatusCodeSame(404);

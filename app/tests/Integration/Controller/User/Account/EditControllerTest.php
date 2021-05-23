@@ -4,9 +4,7 @@ declare(strict_types = 1);
 
 namespace App\Tests\Integration\Controller\User\Account;
 
-use App\Entity\Role;
 use App\Entity\User;
-use App\Repository\RoleRepository;
 use App\Repository\UserRepository;
 use App\Tests\Integration\BaseWebTestCase;
 use App\Tests\Integration\IH;
@@ -17,28 +15,20 @@ use Symfony\Component\HttpFoundation\Request;
  */
 class EditControllerTest extends BaseWebTestCase {
 	public function testEditPage(): void {
-		/** @var RoleRepository $roleRepository */
-		$roleRepository = IH::getRepository(static::$container, RoleRepository::class);
-		/** @var Role $role */
-		$role = $roleRepository->findOneBy(['name' => Role::ROLE_USER]);
 		/** @var UserRepository $userRepository */
 		$userRepository = IH::getRepository(static::$container, UserRepository::class);
 		/** @var User $user */
-		$user = $userRepository->findOneByRoles([$role]);
+		$user = $userRepository->findOneByRole(User::ROLE_USER);
 		$this->getClient()->loginUser($user);
 		$this->getClient()->request(Request::METHOD_GET, '/account/edit');
 		static::assertResponseIsSuccessful();
 	}
 	
 	public function testEditSubmission(): void {
-		/** @var RoleRepository $roleRepository */
-		$roleRepository = IH::getRepository(static::$container, RoleRepository::class);
-		/** @var Role $role */
-		$role = $roleRepository->findOneBy(['name' => Role::ROLE_USER]);
 		/** @var UserRepository $userRepository */
 		$userRepository = IH::getRepository(static::$container, UserRepository::class);
 		/** @var User $user */
-		$user       = $userRepository->findOneByRoles([$role]);
+		$user       = $userRepository->findOneByRole(User::ROLE_USER);
 		$newEmail   = $this->getFaker()->email;
 		$oldEmail   = $user->getEmail();
 		$oldPwdHash = $user->getPassword();

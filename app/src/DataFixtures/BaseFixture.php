@@ -8,10 +8,9 @@ use App\Entity\Category;
 use App\Entity\Feature;
 use App\Entity\Language;
 use App\Entity\Project;
-use App\Entity\Role;
+
 use App\Entity\User;
 use Doctrine\Bundle\FixturesBundle\Fixture;
-use Doctrine\Common\DataFixtures\FixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 use Exception;
 use Faker\Factory;
@@ -25,7 +24,7 @@ use function str_starts_with;
 /**
  * @codeCoverageIgnore
  */
-abstract class BaseFixture extends Fixture implements FixtureInterface {
+abstract class BaseFixture extends Fixture {
 	/** @var array<string, array<int, string>> */
 	protected array         $references = [];
 	protected ObjectManager $manager;
@@ -86,7 +85,7 @@ abstract class BaseFixture extends Fixture implements FixtureInterface {
 	protected function getProjectLead(): User {
 		/** @var User $user */
 		$user = $this->getRandomRef(User::class);
-		if (! $user->hasRole(Role::ROLE_PROJECT_LEAD)) {
+		if (! $user->hasRole(User::ROLE_PROJECT_LEAD)) {
 			return $this->getProjectLead();
 		}
 		return $user;
@@ -95,8 +94,8 @@ abstract class BaseFixture extends Fixture implements FixtureInterface {
 	protected function getUser(): User {
 		/** @var User $user */
 		$user = $this->getRandomRef(User::class);
-		if ($user->hasRole(Role::ROLE_PROJECT_LEAD)
-			|| $user->hasRole(Role::ROLE_ADMIN)
+		if ($user->hasRole(User::ROLE_PROJECT_LEAD)
+			|| $user->hasRole(User::ROLE_ADMIN)
 			|| ! $user->getActive()
 		) {
 			return $this->getUser();
@@ -106,7 +105,7 @@ abstract class BaseFixture extends Fixture implements FixtureInterface {
 	
 	protected function getRole(string $role): Role {
 		/** @var Role $foundRole */
-		$foundRole = $this->getRandomRef(Role::class);
+		$foundRole = $this->getRandomRef(User::class);
 		if ($role === $foundRole->getName()) {
 			return $foundRole;
 		}

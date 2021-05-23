@@ -5,14 +5,14 @@ declare(strict_types = 1);
 namespace App\Security\Voter;
 
 use App\Entity\Bug;
-use App\Entity\Role;
+
 use App\Entity\User;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
 class BugVoter extends Voter {
 	/** @var array<int, string> */
-	private array $attributes = [Role::ROLE_ADD_BUG, Role::ROLE_FIX_BUG, Role::ROLE_EDIT_BUG, Role::ROLE_DELETE_BUG];
+	private array $attributes = [User::ROLE_ADD_BUG, User::ROLE_FIX_BUG, User::ROLE_EDIT_BUG, User::ROLE_DELETE_BUG];
 	
 	protected function supports(string $attribute, $subject): bool {
 		return in_array($attribute, $this->attributes, true)
@@ -30,15 +30,15 @@ class BugVoter extends Voter {
 		if (! $user instanceof User || $subject->getProject() === null || $subject->getAuthor() === null) {
 			return false;
 		}
-		if ($user->hasRole(Role::ROLE_ADMIN) || $subject->getAuthor()->getId() === $user->getId()) {
+		if ($user->hasRole(User::ROLE_ADMIN) || $subject->getAuthor()->getId() === $user->getId()) {
 			return true;
 		}
 		switch ($attribute) {
-			case Role::ROLE_ADD_BUG:
+			case User::ROLE_ADD_BUG:
 				return $subject->getProject()->getCanView()->contains($user);
-			case Role::ROLE_FIX_BUG:
-			case Role::ROLE_EDIT_BUG:
-			case Role::ROLE_DELETE_BUG:
+			case User::ROLE_FIX_BUG:
+			case User::ROLE_EDIT_BUG:
+			case User::ROLE_DELETE_BUG:
 				return $subject->getProject()->getCanEdit()->contains($user);
 		}
 		return false;
