@@ -4,15 +4,15 @@
 <div class="row mx-auto p-2 bg-white border-3 shadow-3">
 	<div class="col-12 col-xl-6">
 		<h5 class="text-uppercase p-0 m-0 text__dark-accent">Latest Login</h5>
-		<p class="p-0 m-0">Last logged in at: {{ user.lastLoginAt }}</p>
-		<p class="p-0 m-0">Last logged in from IP: {{ user.lastLoginFromIp }}</p>
-		<p class="p-0 m-0">Last logged in from browser: {{ user.lastLoginFromBrowser }}</p>
+{#		<p class="p-0 m-0">Last logged in at: {{ user.lastLoginAt }}</p>#}
+		{# <p class="p-0 m-0">Last logged in from IP: {{ user.lastLoginFromIp }}</p> #}
+		{# <p class="p-0 m-0">Last logged in from browser: {{ user.lastLoginFromBrowser }}</p>#}
 	</div>
 	<div class="col-12 col-xl-6">
 		<h5 class="text-uppercase p-0 m-0 text__dark-accent">Activation status</h5>
 		<p class="m-0 p-0">Account activated: {{ user.active ? 'Yes' : 'No' }}</p>
-		<p class="m-0 p-0">Email confirmed: {{ user.emailConfirmedAt ? 'Yes' : 'No' }}</p>
-		<p class="m-0 p-0">Email confirmed at: {{ user.emailConfirmedAt }}</p>
+{#		<p class="m-0 p-0">Email confirmed: {{ user.emailConfirmedAt ? 'Yes' : 'No' }}</p>#}
+{#		<p class="m-0 p-0">Email confirmed at: {{ user.emailConfirmedAt }}</p>#}
 	</div>
 	<hr class="m-0 mt-1 p-0">
 </div>

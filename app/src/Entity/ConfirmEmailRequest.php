@@ -30,7 +30,7 @@ class ConfirmEmailRequest implements IdContract, TimeStampableContract {
 	private string $hashedToken;
 	
 	/**
-	 * @ORM\Column(type="carbon_immutable")
+	 * @ORM\Column(type="carbon_immutable", nullable=true)
 	 */
 	private ?DateTimeInterface $confirmedAt = null;
 	

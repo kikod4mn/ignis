@@ -6,12 +6,13 @@ namespace App\Security;
 
 use App\Entity\ResetPasswordRequest;
 use App\Entity\User;
+use App\Repository\ResetPasswordRequestRepository;
 use App\Service\TokenGenerator;
 use Carbon\Carbon;
-use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Security\Core\Exception\CustomUserMessageAccountStatusException;
 
 final class ResetPasswordService {
-	public function __construct(private string $signingKey, private TokenGenerator $tokenGenerator) { }
+	public function __construct(private string $signingKey, private TokenGenerator $tokenGenerator, private ResetPasswordRequestRepository $resetPasswordRepository) { }
 	
 	public function createResetRequest(User $user, string $fromIp, string $fromBrowser): ResetPasswordRequest {
 		$expiresAt = Carbon::now()->addHours(3);
@@ -29,10 +30,11 @@ final class ResetPasswordService {
 	}
 	
 	public function validateResetRequest(string $fullToken): User {
-		$resetRequest        = $this->findResetRequest($fullToken);
-		$user                = $resetRequest->getUser();
-		$hashedVerifierToken = json_encode([mb_substr($fullToken, 0, 20), $user->getId(), $resetRequest->getExpiresAt()], JSON_THROW_ON_ERROR);
-		if (! hash_equals($resetRequest->getHashedToken(), $this->getHashedToken($hashedVerifierToken))) {
+		$resetRequest  = $this->findResetRequest($fullToken);
+		$user          = $resetRequest->getUser();
+		$verifierToken = json_encode([substr($fullToken), $user->getId(), $resetRequest->getExpiresAt()], JSON_THROW_ON_ERROR);
+		dd(hash_equals($resetRequest->getHashedToken(), $this->getHashedToken($verifierToken)));
+		if (! hash_equals($resetRequest->getHashedToken(), $this->getHashedToken($verifierToken))) {
 			// todo token is wrong!!!
 			dd('throw');
 		}
@@ -53,5 +55,10 @@ final class ResetPasswordService {
 	}
 	
 	private function findResetRequest(string $token): ResetPasswordRequest {
+		$request = $this->resetPasswordRepository->findOneBy(['selector' => substr($token, 0, 20)]);
+		if ($request === null) {
+			throw new CustomUserMessageAccountStatusException('Either no account found for the token or this token is expired. Request a new one.');
+		}
+		return $request;
 	}
 }

@@ -43,7 +43,11 @@ class RegisterController extends AbstractController {
 		$form = $this->createForm(RegisterType::class, $user);
 		$form->handleRequest($request);
 		if ($form->isSubmitted() && $form->isValid()) {
-			$this->emailConfirmService->createConfirmRequest($user);
+			$this->emailConfirmService->createConfirmRequest(
+				$user,
+				(string) $request->getClientIp(),
+				(string) $request->headers->get('User-Agent')
+			);
 			$user->setAgreedToTermsAt(Carbon::now());
 			$this->ed->dispatch(new IdCreateEvent($user));
 			$this->ed->dispatch(new TimeStampableCreatedEvent($user));

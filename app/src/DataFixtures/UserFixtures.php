@@ -5,21 +5,17 @@ declare(strict_types = 1);
 namespace App\DataFixtures;
 
 use App\Entity\User;
-use App\Security\ConfirmEmailService;
 use App\Service\TimeCreator;
-use App\Service\TokenGenerator;
-use Carbon\Carbon;
 use Faker\Factory;
 use Faker\Generator;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
-use function mt_rand;
 
 class UserFixtures extends BaseFixture {
 	public const PASSWORD      = 'secret';
 	public const PASSWORD_HASH = '$argon2id$v=19$m=65536,t=4,p=1$bXIzMzM2dEdBRnF2dTBmZw$TPURFO0mxfivx7d3M3W0el2TFw2HpdYloxUEsdc7nIo';
 	protected Generator $faker;
 	
-	public function __construct(private ConfirmEmailService $confirmEmailService, private UserPasswordEncoderInterface $encoder) {
+	public function __construct(private UserPasswordEncoderInterface $encoder) {
 		$this->faker = Factory::create();
 	}
 	
@@ -29,11 +25,6 @@ class UserFixtures extends BaseFixture {
 			User::class, 4, function (User $user): void {
 			$this->setBasicUserRoles($user);
 			$this->setBasicUserProps($user);
-			$user->setActive(false);
-			$confirmToken = $this->confirmEmailService->createConfirmRequest(
-				$user, $this->getFaker()->ipv4, $this->getFaker()->userAgent
-			);
-			$this->manager->persist($confirmToken);
 		}
 		);
 		// Not yet activated with emails verified
@@ -42,11 +33,6 @@ class UserFixtures extends BaseFixture {
 			$this->setBasicUserRoles($user);
 			$this->setBasicUserProps($user);
 			$user->setActive(false);
-			$confirmToken = $this->confirmEmailService->createConfirmRequest(
-				$user, $this->getFaker()->ipv4, $this->getFaker()->userAgent
-			);
-			$confirmToken->setConfirmedAt(Carbon::now());
-			$this->manager->persist($confirmToken);
 		}
 		);
 		// Active users with emails verified
@@ -55,7 +41,6 @@ class UserFixtures extends BaseFixture {
 			$this->setBasicUserRoles($user);
 			$this->setBasicUserProps($user);
 			$this->setUserActive($user);
-			$this->setUserLastLogin($user);
 			/** @noinspection RandomApiMigrationInspection */
 			$user->setUpdatedAt(mt_rand(0, 1) > 0 ? TimeCreator::randomPast() : null);
 		}
@@ -87,11 +72,6 @@ class UserFixtures extends BaseFixture {
 			$user->setCreatedAt(TimeCreator::now());
 			$user->setRoles([User::ROLE_TEST_USER]);
 			$user->setActive(true);
-			$confirmToken = $this->confirmEmailService->createConfirmRequest(
-				$user, $this->getFaker()->ipv4, $this->getFaker()->userAgent
-			);
-			$confirmToken->setConfirmedAt(Carbon::now());
-			$this->manager->persist($confirmToken);
 		}
 		);
 		// Special Admin User
@@ -105,11 +85,6 @@ class UserFixtures extends BaseFixture {
 			$user->setCreatedAt(TimeCreator::now());
 			$user->setRoles([User::ROLE_ADMIN]);
 			$user->setActive(true);
-			$confirmToken = $this->confirmEmailService->createConfirmRequest(
-				$user, $this->getFaker()->ipv4, $this->getFaker()->userAgent
-			);
-			$confirmToken->setConfirmedAt(Carbon::now());
-			$this->manager->persist($confirmToken);
 		}
 		);
 	}
@@ -138,16 +113,5 @@ class UserFixtures extends BaseFixture {
 	
 	protected function setUserActive(User $user): void {
 		$user->setActive(true);
-		$confirmToken = $this->confirmEmailService->createConfirmRequest(
-			$user, $this->getFaker()->ipv4, $this->getFaker()->userAgent
-		);
-		$confirmToken->setConfirmedAt(Carbon::now());
-		$this->manager->persist($confirmToken);
-	}
-	
-	protected function setUserLastLogin(User $user): void {
-		$user->setLastLoginAt(TimeCreator::randomPast());
-		$user->setLastLoginFromIp($this->faker->ipv4);
-		$user->setLastLoginFromBrowser($this->faker->userAgent);
 	}
 }
