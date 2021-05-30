@@ -5,18 +5,26 @@ networks:
     nginx-php-node-mariadb-redis:
 
 services:
-#    jenkins-service:
-#        build:
-#            context: .
-#            dockerfile: ./jenkins/Dockerfile
-#        container_name: jenkins-container
-#        ports:
-#            - "8080:8080"
-#        #            - "50000:50000"
-#        volumes:
-#            - ./jenkins/jenkins_home:/var/jenkins_home
-#        networks:
-#            - nginx-php-node-mariadb-redis
+    #    jenkins-service:
+    #        build:
+    #            context: .
+    #            dockerfile: ./jenkins/Dockerfile
+    #        container_name: jenkins-container
+    #        ports:
+    #            - "8080:8080"
+    #        #            - "50000:50000"
+    #        volumes:
+    #            - ./jenkins/jenkins_home:/var/jenkins_home
+    #        networks:
+    #            - nginx-php-node-mariadb-redis
+    
+    # mailchatcher
+    mailer-service:
+        image: schickling/mailcatcher
+        container_name: mailer-container
+        ports: [ 1025, 1080 ]
+        networks:
+            - nginx-php-node-mariadb-redis
     
     # nginx
     nginx-service:
@@ -71,11 +79,14 @@ services:
     
     # node
     node-service:
-        image: node:latest
+        #        image: node:latest
+        build:
+            context: .
+            dockerfile: ./node/Dockerfile
         container_name: node-container
         volumes:
             - ./app:/var/www/project
-        working_dir: /var/www/project
+        #        working_dir: /var/www/project
         networks:
             - nginx-php-node-mariadb-redis
     

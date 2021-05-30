@@ -1,0 +1,66 @@
+{% extends 'base/app.html.twig' %}
+{% block title %}Reset your password{% endblock %}
+{% block body %}
+	
+	<div class="pt-5 col-12 col-lg-8 col-xl-6 mx-auto">
+		{# FORM START #}
+		{{ form_start(resetForm) }}
+		{# FORM START #}
+		
+		{# FORM HEADER #}
+		<div class="form-row">
+			<h1 class="text-center w-100">Reset your password</h1>
+		</div>
+		{# FORM HEADER #}
+		
+		{# GENERAL ERRORS #}
+		<div class="flash flash__error">
+			{{ form_errors(resetForm) }}
+		</div>
+		{# GENERAL ERRORS #}
+		
+		{# USER PASSWORD #}
+		<div class="form-group py-1 px-md-1 p-lg-3">
+			{% if resetForm._plainPassword.vars.errors is not empty and resetForm._plainPassword.vars.errors|length > 0 %}
+				<div class="flash flash__danger">{{ form_errors(resetForm._plainPassword) }}</div>
+			{% endif %}
+			<div class="form-outline">
+				<i class="toggle__password-icon icon-lock trailing"></i>
+				{{ form_widget(resetForm._plainPassword, {'attr':{'class':'form-control form-control-lg custom__form-input'}}) }}
+				{{ form_label(resetForm._plainPassword, null, {'label_attr':{'class':'form-label'}}) }}
+			</div>
+		</div>
+		{# USER PASSWORD #}
+		
+		<div class="form-group p-1 p-lg-3 d-flex flex-row">
+			<span class="validation__bar validation__bar-1"></span>
+			<span class="validation__bar validation__bar-2"></span>
+			<span class="validation__bar validation__bar-3"></span>
+			<span class="validation__bar validation__bar-4"></span>
+		</div>
+		<div class="form-group p-1 p-lg-3">
+			<ul class="list-unstyled validations-list">
+				<li><i class="validation__1-icon icon-exclamation"></i> must be at least 12 characters</li>
+				<li><i class="validation__2-icon icon-exclamation"></i> must contain at least one capital letter</li>
+				<li><i class="validation__3-icon icon-exclamation"></i> must contain minimum of one number</li>
+				<li><i class="validation__4-icon icon-exclamation"></i> must contain at least one symbol $&+,:;=?@#</li>
+			</ul>
+		</div>
+		
+		{# FORM SUBMIT #}
+		<div class="form-group py-1 px-md-1 p-lg-3 text-center">
+			{{ form_widget(resetForm._reset, {'attr':{'class':'btn btn-primary'}}) }}
+		</div>
+		{# FORM SUBMIT #}
+		
+		{# FORM END #}
+		{{ form_rest(resetForm) }}
+		{{ form_end(resetForm) }}
+		{# FORM END #}
+	
+	</div>
+{% endblock %}
+{% block javascripts %}
+	{{ parent() }}
+	{{ encore_entry_script_tags('password-change-validations') }}
+{% endblock %}

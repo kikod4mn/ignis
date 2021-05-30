@@ -1,18 +1,18 @@
 let strength = 0;
 let validations = [];
 const emailCheckPath = $('#email-check-path-data').attr('data-url');
-const nameField = $('#register-name');
-const emailField = $('#register-email');
+const nameField = $('#register__name');
+const emailField = $('#register__email');
 const emailAvailabilityField = $('.email__availability');
-const passwordField = $('#register-password');
+const passwordField = $('#register__plainPassword');
 const togglePassword = $('.toggle__password');
 const passwordToggleIcon = $('.toggle__password-icon');
 const validationBar1 = $('.validation__bar-1');
 const validationBar2 = $('.validation__bar-2');
 const validationBar3 = $('.validation__bar-3');
 const validationBar4 = $('.validation__bar-4');
-const registerAgreeBox = $('#register-agree-to-terms');
-const submitFormButton = $('#submit-form-button');
+const registerAgreeBox = $('#register__agreeToTerms');
+const submitFormButton = $('#register__register');
 const validatePassword = (e) => {
 	validations = [
 		(e.target.value.length > 12),
@@ -98,7 +98,7 @@ const nameRegex = () => {
 	).test(nameField.val());
 }
 $('form').submit(function (evt) {
-	if (!isFormValid()) {
+	if (! isFormValid()) {
 		evt.preventDefault();
 	}
 	$('form').submit();

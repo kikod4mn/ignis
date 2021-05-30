@@ -1,13 +1,13 @@
 let strength = 0;
 let validations = [];
-const passwordField = $('#password-change-with-token');
+const passwordField = $('#change_password__plainPassword');
 const togglePassword = $('.toggle__password');
 const passwordToggleIcon = $('.toggle__password-icon');
 const validationBar1 = $('.validation__bar-1');
 const validationBar2 = $('.validation__bar-2');
 const validationBar3 = $('.validation__bar-3');
 const validationBar4 = $('.validation__bar-4');
-const submitFormButton = $('#submit-form-button');
+const submitFormButton = $('#change_password__reset');
 const validatePassword = (e) => {
 	validations = [
 		(e.target.value.length > 12),
@@ -53,7 +53,7 @@ const hidePassword = () => {
 	passwordToggleIcon.addClass('icon-lock').removeClass('icon-lock-open');
 }
 $(submitFormButton).submit(function (evt) {
-	if (!isFormValid()) {
+	if (! isFormValid()) {
 		evt.preventDefault();
 	}
 	$('form').submit();

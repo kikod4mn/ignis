@@ -29,13 +29,3 @@ services:
     App\Service\FileHandler\FileUploader:
         arguments:
             $projectDir: '%projectDir%'
-    App\Service\Mailer:
-        arguments:
-            $adminTo: '%adminTo%'
-            $adminFrom: '%adminFrom%'
-    App\Security\ResetPasswordService:
-        arguments:
-            $signingKey: '%signingKey%'
-    App\Security\ConfirmEmailService:
-        arguments:
-            $signingKey: '%signingKey%'

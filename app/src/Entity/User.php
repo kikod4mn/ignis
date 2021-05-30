@@ -73,6 +73,16 @@ class User implements IdContract, UserInterface, TimeStampableContract, Stringab
 	private array $oldEmails = [];
 	
 	/**
+	 * @ORM\Column(type="boolean", nullable=false)
+	 */
+	private bool $emailConfirmed = false;
+	
+	/**
+	 * @ORM\Column(type="carbon_immutable", nullable=true)
+	 */
+	private ?DateTimeInterface $emailConfirmedAt = null;
+	
+	/**
 	 * @ORM\OneToOne(targetEntity="App\Entity\Image", inversedBy="userAvatar")
 	 */
 	private ?Image $avatar = null;
@@ -124,11 +134,6 @@ class User implements IdContract, UserInterface, TimeStampableContract, Stringab
 	 * @ORM\Column(type="string", length=300, nullable=true)
 	 */
 	private ?string $lastLoginFromBrowser = null;
-	
-	/**
-	 * @ORM\OneToOne(targetEntity="App\Entity\ConfirmEmailRequest")
-	 */
-	private ?ConfirmEmailRequest $confirmEmailRequest = null;
 	
 	/**
 	 * @ORM\OneToMany(targetEntity="App\Entity\Project", mappedBy="author")
@@ -223,6 +228,22 @@ class User implements IdContract, UserInterface, TimeStampableContract, Stringab
 	public function addOldEmail(string $email): User {
 		$this->oldEmails[] = $email;
 		return $this;
+	}
+	
+	public function isEmailConfirmed(): bool {
+		return $this->emailConfirmed;
+	}
+	
+	public function getEmailConfirmedAt(): ?DateTimeInterface {
+		return $this->emailConfirmedAt;
+	}
+	
+	public function setEmailConfirmedAt(?DateTimeInterface $emailConfirmedAt): void {
+		$this->emailConfirmedAt = $emailConfirmedAt;
+	}
+	
+	public function setEmailConfirmed(bool $emailConfirmed): void {
+		$this->emailConfirmed = $emailConfirmed;
 	}
 	
 	public function displayAvatar(): string {
@@ -332,14 +353,6 @@ class User implements IdContract, UserInterface, TimeStampableContract, Stringab
 	public function setLastLoginFromBrowser(?string $lastLoginFromBrowser): User {
 		$this->lastLoginFromBrowser = $lastLoginFromBrowser;
 		return $this;
-	}
-	
-	public function getConfirmEmailRequest(): ?ConfirmEmailRequest {
-		return $this->confirmEmailRequest;
-	}
-	
-	public function setConfirmEmailRequest(ConfirmEmailRequest $confirmEmailRequest): void {
-		$this->confirmEmailRequest = $confirmEmailRequest;
 	}
 	
 	public function eraseCredentials(): void {

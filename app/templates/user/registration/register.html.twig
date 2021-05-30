@@ -1,0 +1,105 @@
+{% extends 'base/app.html.twig' %}
+{% block title %}Register for a new account{% endblock %}
+{% block body %}
+	<div class="pt-5 col-12 col-lg-8 col-xl-6 mx-auto">
+		{# FORM START #}
+		{{ form_start(form) }}
+		{# FORM START #}
+		
+		{# FORM HEADER #}
+		<div class="form-row">
+			<h1 class="text-center w-100">Register for IGNIS</h1>
+		</div>
+		{# FORM HEADER #}
+		
+		{# GENERAL ERRORS #}
+		<div class="flash flash__error">
+			{{ form_errors(form) }}
+		</div>
+		{# GENERAL ERRORS #}
+		
+		{# USER NAME #}
+		<div class="form-group py-1 px-md-1 p-lg-3">
+			{% if form._name.vars.errors is not empty and form._name.vars.errors|length > 0 %}
+				<div class="flash flash__danger">{{ form_errors(form._name) }}</div>
+			{% endif %}
+			<div class="form-outline">
+				{{ form_widget(form._name, {'attr':{'class':'form-control form-control-lg custom__form-input'}}) }}
+				{{ form_label(form._name, null, {'label_attr':{'class':'form-label'}}) }}
+			</div>
+		</div>
+		{# USER NAME #}
+		
+		{# USER EMAIL #}
+		<div class="form-group py-1 px-md-1 p-lg-3">
+			{% if form._email.vars.errors is not empty and form._email.vars.errors|length > 0 %}
+				<div class="flash flash__danger">{{ form_errors(form._email) }}</div>
+			{% endif %}
+			<div class="form-outline">
+				{{ form_widget(form._email, {'attr':{'class':'form-control form-control-lg custom__form-input'}}) }}
+				{{ form_label(form._email, null, {'label_attr':{'class':'form-label'}}) }}
+				<span class="email__availability p-3 pb-1 text__success invisible"></span>
+			</div>
+		</div>
+		{# USER EMAIL #}
+		
+		{# USER PASSWORD #}
+		<div class="form-group py-1 px-md-1 p-lg-3">
+			{% if form._plainPassword.vars.errors is not empty and form._plainPassword.vars.errors|length > 0 %}
+				<div class="flash flash__danger">{{ form_errors(form._plainPassword) }}</div>
+			{% endif %}
+			<div class="form-outline">
+				<i class="toggle__password-icon icon-lock trailing"></i>
+				{{ form_widget(form._plainPassword, {'attr':{'class':'form-control form-control-lg custom__form-input'}}) }}
+				{{ form_label(form._plainPassword, null, {'label_attr':{'class':'form-label'}}) }}
+			</div>
+		</div>
+		{# USER PASSWORD #}
+		
+		<div class="form-group p-1 p-lg-3 d-flex flex-row">
+			<span class="validation__bar validation__bar-1"></span>
+			<span class="validation__bar validation__bar-2"></span>
+			<span class="validation__bar validation__bar-3"></span>
+			<span class="validation__bar validation__bar-4"></span>
+		</div>
+		<div class="form-group p-1 p-lg-3">
+			<ul class="list-unstyled validations-list">
+				<li><i class="validation__1-icon icon-exclamation"></i> must be at least 12 characters</li>
+				<li><i class="validation__2-icon icon-exclamation"></i> must contain at least one capital letter</li>
+				<li><i class="validation__3-icon icon-exclamation"></i> must contain minimum of one number</li>
+				<li><i class="validation__4-icon icon-exclamation"></i> must contain at least one symbol $&+,:;=?@#</li>
+			</ul>
+		</div>
+		
+		<div class="form-group pt-1 px-1 px-lg-3">
+			{% if form._agreeToTerms.vars.errors is not empty and form._agreeToTerms.vars.errors|length > 0 %}
+				<div class="flash flash__danger">{{ form_errors(form._agreeToTerms) }}</div>
+			{% endif %}
+			<div class="form-check">
+				{{ form_widget(form._agreeToTerms, {'attr':{'class':'form-check-input'}}) }}
+				{{ form_label(form._agreeToTerms, null, {'label_attr':{'class':'form-check-label'}}) }}
+			</div>
+		</div>
+		<div class="form-group pb-1 px-1 px-lg-3 text-center">
+			<a class="" href="{{ path('terms-and-conditions') }}">Read terms and conditions</a>
+		</div>
+		
+		{# FORM SUBMIT #}
+		<div class="form-group py-1 px-md-1 p-lg-3 text-center">
+			{{ form_widget(form._register, {'attr':{'class':'btn btn-primary'}}) }}
+		</div>
+		{# FORM SUBMIT #}
+		
+		{# FORM END #}
+		{{ form_rest(form) }}
+		{{ form_end(form) }}
+		{# FORM END #}
+	
+	</div>
+	<div id="email-check-path-data" data-url="{{ path('security-check-email-exists') }}"></div>
+{% endblock %}
+
+{% block javascripts %}
+	{{ parent() }}
+	{{ encore_entry_script_tags('register-validations') }}
+{% endblock %}
