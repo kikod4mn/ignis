@@ -15,3 +15,5 @@ Will build and run, after is accessible at localhost port 80.
 Ignis is a demo project management app. Track features, bugs and user contributions.
 
 No integration to any git or social, just pure practice app.
+
+It is symfony backend with a tiny bit of JS and Material Bootstrap with some custom CSS on the front.
