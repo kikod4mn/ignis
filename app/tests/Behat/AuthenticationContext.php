@@ -4,7 +4,6 @@ declare(strict_types = 1);
 
 namespace App\Tests\Behat;
 
-use App\Entity\Role;
 use App\Entity\User;
 use App\Service\TimeCreator;
 use App\Tests\TestDatabaseHelper;
@@ -24,8 +23,11 @@ final class AuthenticationContext implements Context {
 	private static Generator          $faker;
 	
 	public function __construct(
-		private KernelInterface $kernel, private EntityManagerInterface $em, private UserPasswordEncoderInterface $encoder,
-		private Session $session, private RouterInterface $router
+		private KernelInterface $kernel,
+		private EntityManagerInterface $em,
+		private UserPasswordEncoderInterface $encoder,
+		private Session $session,
+		private RouterInterface $router
 	) {
 		self::$container = $this->kernel->getContainer();
 		self::$faker     = Factory::create();
@@ -43,7 +45,7 @@ final class AuthenticationContext implements Context {
 	 */
 	public function thereIsAnAdminUserWithPassword(string $email, string $password): void {
 		$role = $this->em->getRepository(Role::class)->findOneBy(['name' => Role::ROLE_ADMIN]);
-		if ($role === null) {
+		if (null === $role) {
 			$role = (new Role())->setName(Role::ROLE_ADMIN);
 			$role->generateUuid();
 			$this->em->persist($role);
@@ -78,7 +80,7 @@ final class AuthenticationContext implements Context {
 	 */
 	public function thereIsARegularUserWithPassword(string $email, string $password): void {
 		$role = $this->em->getRepository(Role::class)->findOneBy(['name' => Role::ROLE_USER]);
-		if ($role === null) {
+		if (null === $role) {
 			$role = (new Role())->setName(Role::ROLE_ADMIN);
 			$role->generateUuid();
 			$this->em->persist($role);
@@ -105,7 +107,7 @@ final class AuthenticationContext implements Context {
 	 * @Then dump the page
 	 */
 	public function dumpThePage(): void {
-		/** @noinspection ForgottenDebugOutputInspection */
+		/* @noinspection ForgottenDebugOutputInspection */
 		dd($this->session->getPage()->getContent());
 	}
 }

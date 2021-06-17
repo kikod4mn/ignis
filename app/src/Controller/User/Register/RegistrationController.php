@@ -4,6 +4,7 @@ declare(strict_types = 1);
 
 namespace App\Controller\User\Register;
 
+use App\Controller\Concerns\FlashFormErrors;
 use App\Entity\User;
 use App\Event\Creators\IdCreateEvent;
 use App\Event\Creators\TimeStampableCreatedEvent;
@@ -24,20 +25,20 @@ use Symfony\Component\Routing\Annotation\Route;
 use SymfonyCasts\Bundle\VerifyEmail\Exception\VerifyEmailExceptionInterface;
 
 class RegistrationController extends AbstractController {
-	public function __construct(private EmailVerifier $emailVerifier, private EntityManagerInterface $em, private EventDispatcherInterface $ed) { }
+	public function __construct(private EmailVerifier $emailVerifier, private EntityManagerInterface $em) { }
 	
 	/**
 	 * @Route("/register", name="security-register")
 	 * @IsGranted("IS_ANONYMOUS")
 	 */
-	public function register(Request $request): Response {
+	public function register(Request $request, EventDispatcherInterface $ed): Response {
 		$user = new User();
 		$form = $this->createForm(RegisterType::class, $user);
 		$form->handleRequest($request);
 		if ($form->isSubmitted() && $form->isValid()) {
-			$this->ed->dispatch(new IdCreateEvent($user));
-			$this->ed->dispatch(new PasswordHashEvent($user));
-			$this->ed->dispatch(new TimeStampableCreatedEvent($user));
+			$ed->dispatch(new IdCreateEvent($user));
+			$ed->dispatch(new PasswordHashEvent($user));
+			$ed->dispatch(new TimeStampableCreatedEvent($user));
 			$this->em->persist($user);
 			$this->em->flush();
 			$this->emailVerifier->sendEmailConfirmation(
@@ -75,5 +76,21 @@ class RegistrationController extends AbstractController {
 		}
 		$this->addFlash(Flashes::SUCCESS_MESSAGE, 'Your email address has been verified.');
 		return $this->redirectToRoute('security-login');
+	}
+	
+	/**
+	 * @Route("/register/check-email", name="security-check-email-exists", methods={"POST"})
+	 * @IsGranted("IS_ANONYMOUS")
+	 */
+	public function emailExists(Request $request, UserRepository $userRepository): Response {
+		$email = $request->get('_email');
+		if ($email === null) {
+			return $this->json(['message' => 'Cannot read email data from client.', Response::HTTP_BAD_REQUEST]);
+		}
+		$user = $userRepository->findOneBy(['email' => $email]);
+		if ($user !== null) {
+			return $this->json(['message' => 'Email is already registered. Click below to reset your password.'], Response::HTTP_CONFLICT);
+		}
+		return $this->json(['message' => 'Email is available.'], Response::HTTP_OK);
 	}
 }
